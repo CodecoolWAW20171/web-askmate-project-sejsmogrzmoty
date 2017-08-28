@@ -1,6 +1,8 @@
 import persistence
 import util
 
+QSTN_TABLE = 'question'
+ANSW_TABLE = 'answer'
 
 # ----- Constants -----------
 QSTN_HEADERS = ["id", "submission_time", "view_number", "vote_number", "title", "message", "image"]
@@ -18,14 +20,13 @@ ANSW_DEFAULTS = {"vote_number": 0, "message": "", "image": ""}
 
 # Get functions
 # ########################################################################
+
 def get_all_questions():
-    questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
-    return questions
+    return persistence.select_all_from_table(QSTN_TABLE)
 
 
 def get_all_answers():
-    answers = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
-    return answers
+    return persistence.select_all_from_table(ANSW_TABLE)
 
 
 def get_all_answers_converted():
@@ -238,3 +239,6 @@ def get_top_questions():
     top_questions.append(questions[0])
 
     return top_questions
+
+
+print(get_all_answers())

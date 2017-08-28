@@ -1,83 +1,56 @@
-import csv
 import os
-
-import util
-import base64
-
-# ----- Constants -----
-ANSW_FILE_PATH = os.getenv('ANSW_FILE_PATH') if 'ANSW_FILE_PATH' in os.environ else "sample_data/answer.csv"
-QSTN_FILE_PATH = os.getenv('QSTN_FILE_PATH') if 'QSTN_FILE_PATH' in os.environ else "sample_data/question.csv"
+import psycopg2
+import psycopg2.extras
+import psycopg2.sql as sql
 
 
-# ----- Transcoding function -----
-def code_string(dictionary, header, key):
-    """
-    Transcoding dictionary value to or from base64.
+def get_connection_string():
+    # setup connection string
+    # to do this, please define these environment variables first
+    user_name = os.environ.get('PSQL_USER_NAME')
+    password = os.environ.get('PSQL_PASSWORD')
+    host = os.environ.get('PSQL_HOST')
+    database_name = os.environ.get('PSQL_DB_NAME')
 
-    Args:
-        dictionary: dictionary
-        header: Dictionary header
-        key: Type of cryptography
+    env_variables_defined = user_name and password and host and database_name
 
-    Returns:
-        Decoded/encoded string
-    """
-    if header in ["title", "message", "image"]:
-        if key == "encode":
-            return str(base64.b64encode(bytes(dictionary[header], "utf-8")))[2:-1]
-        elif key == "decode":
-            return base64.b64decode(bytes(dictionary[header], "utf-8")).decode("utf-8")
-        else:
-            raise ValueError("Wrong key!")
+    if env_variables_defined:
+        # this string describes all info for psycopg2 to connect to the database
+        return 'postgresql://{user_name}:{password}@{host}/{database_name}'.format(
+            user_name=user_name,
+            password=password,
+            host=host,
+            database_name=database_name
+        )
     else:
-        return dictionary[header]
+        raise KeyError('Some necessary environment variable(s) are not defined')
 
 
-# Get functions
-# ########################################################################
-def get_data_from_file(filename):
-    """
-    Reads csv file and returns it as a list of dictionaries.
-    Lines are rows columns are separated by ","
-
-    Args:
-        file_name (str): name of file to read
-
-    Returns:
-        List of dictionaries read from a file.
-    """
-    result = []
-    with open(filename, newline='') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            for header in row:
-                row[header] = code_string(row, header, "decode")
-                if header in ["id", "vote_number", "view_number", "question_id"]:
-                    row[header] = int(row[header])
-                if header == "submission_time":
-                    row[header] = float(row[header])
-            result.append(row)
-    return result
+def open_database():
+    try:
+        connection_string = get_connection_string()
+        connection = psycopg2.connect(connection_string)
+        connection.autocommit = True
+    except psycopg2.DatabaseError as exception:
+        print('Database connection problem')
+        raise exception
+    return connection
 
 
-# Write functions
-# ########################################################################
-def write_data_to_file(data, filename, header):
-    """
-    Writes list of dictionaries into a csv file with base64 encoding.
+def connection_handler(function):
+    def wrapper(*args, **kwargs):
+        connection = open_database()
+        # we set the cursor_factory parameter to return with a RealDictCursor cursor (cursor which provide dictionaries)
+        dict_cur = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        ret_value = function(dict_cur, *args, **kwargs)
+        dict_cur.close()
+        connection.close()
+        return ret_value
+    return wrapper
 
-    Args:
-        file_name (str): name of file to write to
-        data: list of dictionaries to write to a file
-        header: Dictionary header
 
-    Returns:
-        None
-    """
-    with open(filename, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=header)
-        writer.writeheader()
-        for dictionary in data:
-            for key in dictionary:
-                dictionary[key] = code_string(dictionary, key, "encode")
-            writer.writerow(dictionary)
+@connection_handler
+def select_all_from_table(cursor, table):
+    cursor.execute(sql.SQL('SELECT * FROM {}').format(sql.Identifier(table)))
+    data = cursor.fetchall()
+    return data
