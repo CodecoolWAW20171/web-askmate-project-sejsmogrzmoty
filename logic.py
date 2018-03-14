@@ -2,6 +2,11 @@ import persistence
 import util
 
 
+# ----- Constants -----
+QSTN_HEADERS = []
+ANSW_HEADERS = []
+
+
 def get_all_questions():
     pass
 
@@ -27,4 +32,14 @@ def delete_question(qstn_id):
 
 
 def delete_answer(answ_id):
+    pass
+
+
+# Helper function in database management
+# ########################################################################
+def generate_new_id(data):
+    pass
+
+
+def find_id_index(data, id_):
     pass

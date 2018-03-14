@@ -7,8 +7,6 @@ import util
 # ----- Constants -----
 QSTN_FILE_PATH = ''
 ANSW_FILE_PATH = ''
-QSTN_HEADERS = []
-ANSW_HEADERS = []
 
 
 # Get functions
