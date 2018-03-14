@@ -32,6 +32,7 @@ def add_answer_to_question(qstn_id, answer):
     pass
 
 '''
+-->  zakłada, że write_data_to_file nadpisuje istniejący plik  <--
 Removes a specified question and all its answers from csv files
 
 Args:
