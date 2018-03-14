@@ -12,7 +12,7 @@ def route_index():
 
     # Display home page
 
-    return
+    return render_template('index.html')
 
 
 # List
@@ -47,7 +47,7 @@ def ask_question():
 
 # Post answer
 # ########################################################################
-@app.route('question/<int:qstn_id>/new-answer')
+@app.route('/question/<int:qstn_id>/new-answer')
 def post_answer(qstn_id):
 
     # Displays a page with a question and a form to be filled with
@@ -120,3 +120,13 @@ def delete_answer():
     # Redirect to the page with the question after successful deletion
 
     return
+
+
+# Run server
+# ########################################################################
+if __name__ == '__main__':
+    app.run(
+        host='0.0.0.0',
+        port=8000,
+        debug=True,
+    )
