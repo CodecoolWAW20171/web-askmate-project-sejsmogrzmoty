@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% set active_page = "index" %}
+{% block title %}AskMate{% endblock %}
+
+{% block body %}
+<!-- Search bar -->
+<form action="/search" method="get">
+    <div class="search-container">
+        <div class="search-bar">
+            <input type="text" name="search" placeholder="Search...">
+        </div>
+        <div class="search-btn">
+            <button type="submit"><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+    </form>
+<hr>
+<h2>The most recent question</h2>
+<hr>
+<button>Ask a question</button>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
