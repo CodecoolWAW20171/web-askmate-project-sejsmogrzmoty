@@ -11,6 +11,7 @@ def get_all_questions():
     questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
     for question in questions:
         question['answers_number'] = count_how_many_answers(question['id'])
+        question['submission_time'] = util.convert_timestamp(question['submission_time'])
     return questions
 
 
@@ -34,6 +35,8 @@ def count_how_many_answers(qstn_id):
 
 def add_new_question(question):
     questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
+    question["id"] = generate_new_id()
+    question['submission_time'] = util.get_current_timestamp()
     questions.append(question)
     return persistence.write_data_to_file(questions, persistence.QSTN_FILE_PATH, QSTN_HEADERS)
 
@@ -70,18 +73,16 @@ def delete_question(qstn_id):
         ANSW_HEADERS)
 
 
-'''
-Removes a specified answer from csv file
-
-Args:
-        answer id
-Returns:
-        None
-        writes to csv the updated lists of dictionaries
-'''
-
-
 def delete_answer(answ_id):
+    '''
+    Removes a specified answer from csv file
+
+    Args:
+            answer id
+    Returns:
+            None
+            writes to csv the updated lists of dictionaries
+    '''
     answer_data = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
     updated_answers = [[answer for answer in answer_data if answer['id'] != answ_id]]
     return updated_answers
@@ -109,24 +110,6 @@ def sort_by(data, header, ascending=False):
     return sorted(data, key=lambda x: x[header], reverse=ascending)
 
 
-'''
-Changes the vote_number of a specified answer/question
-
-Args:
-        id:
-            id of the voted question
-            type: int
-
-        up_or_down:
-            "up" or "down" depending on whether you're upvoting or downvoting
-            type: str
-
-Returns:
-        None
-        writes to csv the updated lists of dictionaries
-'''
-
-
 def vote_question(id_, up_or_down):
     all_data = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
     all_data = change_vote(id_, all_data, up_or_down)
@@ -140,6 +123,22 @@ def vote_answer(id_, up_or_down):
 
 
 def change_vote(id_, all_data, up_or_down):
+    '''
+    Changes the vote_number of a specified answer/question
+
+    Args:
+            id:
+                id of the voted question
+                type: int
+
+            up_or_down:
+                "up" or "down" depending on whether you're upvoting or downvoting
+                type: str
+
+    Returns:
+            None
+            writes to csv the updated lists of dictionaries
+    '''
     for data in all_data:
         if data["id"] == id_:
             if up_or_down == "up":
