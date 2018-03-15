@@ -101,3 +101,40 @@ def find_id_index(data, id_):
 
 def sort_by(data, header, ascending=False):
     return sorted(data, key=lambda x: x[header], reverse=ascending)
+
+
+'''
+Changes the vote_number of a specified answer/question
+
+Args:
+        id:
+            id of the voted question
+            type: int
+
+        up_or_down:
+            "up" or "down" depending on whether you're upvoting or downvoting
+            type: str
+
+Returns:
+        None
+        writes to csv the updated lists of dictionaries
+'''
+def vote_question(id_, up_or_down):
+    all_data = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
+    all_data = change_vote(id_, all_data, up_or_down)
+    persistence.write_data_to_file(all_data, persistence.QSTN_FILE_PATH, QSTN_HEADERS)
+
+def vote_answer(id_, up_or_down):
+    all_data = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
+    all_data = change_vote(id_, all_data, up_or_down)
+    persistence.write_data_to_file(all_data, persistence.ANSW_FILE_PATH, ANSW_HEADERS)
+
+
+def change_vote(id_, all_data, up_or_down):
+    for data in all_data:
+        if data["id"] == id_:
+            if up_or_down == "up":
+                data["vote_number"] = data["vote_number"] + 1
+            if up_or_down == "down":
+                data["vote_number"] = data["vote_number"] - 1
+        return all_data
