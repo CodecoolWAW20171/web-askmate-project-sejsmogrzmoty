@@ -43,12 +43,21 @@ def count_how_many_answers(qstn_id):
 
 def add_new_question(new_question_input):
     questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
+<<<<<<< HEAD
     question = {header: new_question_input[header] for header,
                 dvalue in QSTN_DEFAULTS.items() if header in new_question_input}
+=======
+    question = {}
+>>>>>>> b658e96e3064687100d65638055dee30a7e0a8bd
     question["id"] = generate_new_id(questions)
     question['submission_time'] = util.get_current_timestamp()
+    for header in QSTN_DEFAULTS:
+        if header in new_question_input:
+            question[header] = new_question_input[header]
+        else:
+            question[header] = QSTN_DEFAULTS[header]
     questions.append(question)
-    return persistence.write_data_to_file(questions, persistence.QSTN_FILE_PATH, QSTN_HEADERS)
+    persistence.write_data_to_file(questions, persistence.QSTN_FILE_PATH, QSTN_HEADERS)
 
 
 def modify_question(qstn_id, modified_question):
@@ -56,9 +65,9 @@ def modify_question(qstn_id, modified_question):
     for question in questions:
         if question['id'] == qstn_id:
             for header in QSTN_HEADERS:
-                question[header] = modified_question[header]
-            question['answers_number'] = count_how_many_answers(question['id'])
-            return questions
+                if header in modified_question:
+                    question[header] = modified_question[header]
+    persistence.write_data_to_file(questions, persistence.QSTN_FILE_PATH, QSTN_HEADERS)
 
 
 def add_answer(answer):

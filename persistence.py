@@ -26,7 +26,7 @@ def code_string(dictionary, header, key):
         if key == "encode":
             return str(base64.b64encode(bytes(dictionary[header], "utf-8")))[2:-1]
         elif key == "decode":
-            return base64.b64decode(bytes(dictionary[header])).decode("utf-8")
+            return base64.b64decode(bytes(dictionary[header], "utf-8")).decode("utf-8")
         else:
             raise ValueError("Wrong key!")
     else:
