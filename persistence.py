@@ -15,7 +15,7 @@ def code_string(dictionary, header, key):
     Transcoding dictionary value to or from base64.
 
     Args:
-        dictionary: dictionary 
+        dictionary: dictionary
         header: Dictionary header
         key: Type of cryptography
 

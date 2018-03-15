@@ -23,6 +23,13 @@ def get_answers_to_question(qstn_id):
     return listed_answers
 
 
+def get_question(qstn_id):
+    questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
+    for question in questions:
+        if question['id'] == qstn_id:
+            return question
+
+
 def count_how_many_answers(qstn_id):
     answers = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
     counter = 0
