@@ -48,6 +48,7 @@ def show_question(qstn_id):
 def ask_question():
 
     # Displays a page with a form to be filled with the new question
+
     question = logic.QSTN_DEFAULTS
 
     return render_template('q_form.html', form_type="new", question=question)
@@ -111,7 +112,10 @@ def modify_question_database(qstn_id=None):
     # Redirect to the page with the question list after successful
     # database modification
 
-    return
+    question = request.form
+    logic.add_new_question(question)
+
+    return redirect(url_for('list_questions'))
 
 
 # Edit answer

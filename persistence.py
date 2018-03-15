@@ -53,7 +53,7 @@ def get_data_from_file(filename):
             for header in row:
                 # print(code_string(row, header, "decode"))
                 row[header] = code_string(row, header, "decode")
-                if header in ["id", "submisson_time", "vote_number", "view_number"]:
+                if header in ["id", "submission_time", "vote_number", "view_number"]:
                     row[header] = int(row[header])
             result.append(row)
     return result
