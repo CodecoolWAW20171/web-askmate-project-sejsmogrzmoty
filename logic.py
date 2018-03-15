@@ -35,7 +35,7 @@ def count_how_many_answers(qstn_id):
 def add_new_question(question):
     questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
     questions.append(question)
-    return persistence.write_data_to_file(questions, persistence.QSTN_FILE_PATH)
+    return persistence.write_data_to_file(questions, persistence.QSTN_FILE_PATH, QSTN_HEADERS)
 
 
 def modify_question(qstn_id, modified_question):
@@ -51,17 +51,23 @@ def modify_question(qstn_id, modified_question):
 def add_answer(answer):
     answers = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
     answers.append(answer)
-    return persistence.write_data_to_file(answers, persistence.ANSW_FILE_PATH)
+    return persistence.write_data_to_file(answers, persistence.ANSW_FILE_PATH, ANSW_HEADERS)
 
 
 def delete_question(qstn_id):
     # Writes an updated list of questions to the csv file
-    question_data = persistence.get_data_from_file("question.csv")
-    persistence.write_data_to_file([question for question in question_data if question['id'] != qstn_id], "question.csv")
+    question_data = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
+    persistence.write_data_to_file(
+        [question for question in question_data if question['id'] != qstn_id],
+        persistence.QSTN_FILE_PATH,
+        QSTN_HEADERS)
 
     # Writes an updated list of answers to the csv file
-    answer_data = persistence.get_data_from_file("answer.csv")
-    persistence.write_data_to_file([answer for answer in answer_data if answer['question_id'] != qstn_id], "answer.csv")
+    answer_data = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
+    persistence.write_data_to_file(
+        [answer for answer in answer_data if answer['question_id'] != qstn_id],
+        persistence.ANSW_FILE_PATH,
+        ANSW_HEADERS)
 
 
 '''
@@ -76,7 +82,7 @@ Returns:
 
 
 def delete_answer(answ_id):
-    answer_data = persistence.get_data_from_file("answer.csv")
+    answer_data = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
     updated_answers = [[answer for answer in answer_data if answer['id'] != answ_id]]
     return updated_answers
 
@@ -119,10 +125,13 @@ Returns:
         None
         writes to csv the updated lists of dictionaries
 '''
+
+
 def vote_question(id_, up_or_down):
     all_data = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
     all_data = change_vote(id_, all_data, up_or_down)
     persistence.write_data_to_file(all_data, persistence.QSTN_FILE_PATH, QSTN_HEADERS)
+
 
 def vote_answer(id_, up_or_down):
     all_data = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
@@ -134,7 +143,7 @@ def change_vote(id_, all_data, up_or_down):
     for data in all_data:
         if data["id"] == id_:
             if up_or_down == "up":
-                data["vote_number"] = data["vote_number"] + 1
+                data["vote_number"] += 1
             if up_or_down == "down":
-                data["vote_number"] = data["vote_number"] - 1
+                data["vote_number"] -= 1
         return all_data
