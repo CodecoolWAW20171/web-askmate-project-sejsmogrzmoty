@@ -6,6 +6,7 @@ import util
 QSTN_HEADERS = ["id", "submission_time", "view_number", "vote_number", "title", "message", "image"]
 QSTN_DEFAULTS = {"view_number": 0, "vote_number": 0, "title": "", "message": "", "image": ""}
 ANSW_HEADERS = ["id", "submission_time", "vote_number", "question_id", "message", "image"]
+ANSW_DEFAULTS = {"vote_number": 0, "message": "", "image": ""}
 
 
 def get_all_questions():
@@ -43,12 +44,7 @@ def count_how_many_answers(qstn_id):
 
 def add_new_question(new_question_input):
     questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
-<<<<<<< HEAD
-    question = {header: new_question_input[header] for header,
-                dvalue in QSTN_DEFAULTS.items() if header in new_question_input}
-=======
     question = {}
->>>>>>> b658e96e3064687100d65638055dee30a7e0a8bd
     question["id"] = generate_new_id(questions)
     question['submission_time'] = util.get_current_timestamp()
     for header in QSTN_DEFAULTS:
@@ -70,10 +66,17 @@ def modify_question(qstn_id, modified_question):
     persistence.write_data_to_file(questions, persistence.QSTN_FILE_PATH, QSTN_HEADERS)
 
 
-def add_answer(answer):
+def add_answer(new_answer_input, qstn_id):
     answers = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
-    answer["id"] = generate_new_id(answers)
+    answer = {}
+    answer["id"] = generate_new_id(questions)
     answer['submission_time'] = util.get_current_timestamp()
+    answer['question_id'] = qstn_id
+    for header in ANSW_DEFAULTS:
+        if header in new_question_input:
+            answer[header] = new_answer_input[header]
+        else:
+            answer[header] = ANSW_DEFAULTS[header]
     answers.append(answer)
     return persistence.write_data_to_file(answers, persistence.ANSW_FILE_PATH, ANSW_HEADERS)
 
