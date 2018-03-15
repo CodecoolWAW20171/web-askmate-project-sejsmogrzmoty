@@ -21,7 +21,7 @@ def route_index():
 # ########################################################################
 @app.route('/list')
 def list_questions():
-    questions = persistence.get_data_from_file("question.csv")
+    questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
     return render_template('list.html',  questions=questions)
     # Display a page with questions list
 
