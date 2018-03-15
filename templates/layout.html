@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+</head>
+<body>
+    <!-- Header -->
+    <header id="top_header" class="inner">
+        <a href="{{ url_for('route_index') }}">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" 
+            width="90" height="50" alt="">
+        </a>
+        <a href="{{ url_for('route_index') }}">
+            <h1><span class="lighter">Ask</span>mate</h1>
+        </a>
+    </header>
+
+    <!-- Topnav -->
+    {% set navigation_bar = [
+        ('/', 'index', 'fa-home', 'Home'),
+        ('/list', 'list_stories', 'fa-list', 'Questions'),
+        ('/story', 'add_story', 'fa-plus-circle', 'Ask a question'),
+        ('/about', 'about', 'fa-question', 'About')
+    ] -%}
+    {% set active_page = active_page|default('index') -%}
+    <nav class="topnav inner" id="myTopnav">
+    {% for href, id, icon, caption in navigation_bar %}
+        <a href="{{ href|e }}" {% if id == active_page %}class="active"{% endif %}><i class="fas {{ icon }}"></i> {{ caption }}</a>
+    {% endfor %}
+        <a href="javascript:void(0);" class="icon" onclick="toogleNavBar()">&#9776;</a>
+    </nav>
+
+    <div id="wrapper">
+        <!-- Main -->
+        <div class="main">
+            <div class="content">
+                {% block body %}{% endblock %}
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <div class="badge">
+                <a href="http://www.w3.org/html/logo/">
+                    <img src="https://www.w3.org/html/logo/badge/html5-badge-h-css3.png"
+                    width="66" height="32" alt="HTML5 Powered with CSS3 / Styling"
+                    title="HTML5 Powered with CSS3 / Styling">
+                </a>
+            </div>
+            <p class="copyright">&copy; 2018 Sejsmogrzmoty. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

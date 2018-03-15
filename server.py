@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 
 import logic
+import persistence
+
 
 app = Flask(__name__)
 
@@ -12,17 +14,18 @@ def route_index():
 
     # Display home page
 
-    return
+    return render_template('index.html')
 
 
 # List
 # ########################################################################
 @app.route('/list')
 def list_questions():
-
+    questions = persistence.get_data_from_file("question.csv")
+    return render_template('list.html',  questions=questions)
     # Display a page with questions list
 
-    return
+
 
 
 # View question
@@ -39,7 +42,7 @@ def show_question(qstn_id):
 # ########################################################################
 @app.route('/new-question')
 def ask_question():
-
+    return render_template('new-question.html')
     # Displays a page with a form to be filled with the new question
 
     return
@@ -47,7 +50,7 @@ def ask_question():
 
 # Post answer
 # ########################################################################
-@app.route('question/<int:qstn_id>/new-answer')
+@app.route('/question/<int:qstn_id>/new-answer')
 def post_answer(qstn_id):
 
     # Displays a page with a question and a form to be filled with
@@ -85,15 +88,9 @@ def edit_question():
 # ########################################################################
 @app.route('/question/delete', methods=['POST'])
 def delete_question():
-
-    # Receive form request with the question id and send request to logic
-    # to delete the question from the database.
-    # !!! IN LOGIC - Remember to delete all answers for this question
-    # and an image file corresponding to question and answers
-    # Redirect to the page with the question list after successful
-    # deletetion
-
-    return
+    result = request.form
+    logic.delete_question(result["id"])
+    return redirect('/list')
 
 
 # Request to modify question database
@@ -120,3 +117,13 @@ def delete_answer():
     # Redirect to the page with the question after successful deletion
 
     return
+
+
+# Run server
+# ########################################################################
+if __name__ == '__main__':
+    app.run(
+        host='0.0.0.0',
+        port=8000,
+        debug=True,
+    )
