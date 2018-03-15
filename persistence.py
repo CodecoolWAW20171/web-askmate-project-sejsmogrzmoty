@@ -9,6 +9,30 @@ ANSW_FILE_PATH = os.getenv('ANSW_FILE_PATH') if 'ANSW_FILE_PATH' in os.environ e
 QSTN_FILE_PATH = os.getenv('QSTN_FILE_PATH') if 'QSTN_FILE_PATH' in os.environ else "sample_data/question.csv"
 
 
+# ----- Transcoding function -----
+def code_string(dictionary, header, key):
+    """
+    Transcoding dictionary value to or from base64.
+
+    Args:
+        dictionary: dictionary 
+        header: Dictionary header
+        key: Type of cryptography
+
+    Returns:
+        Decoded/encoded string
+    """
+    if header in ["title", "message", "image"]:
+        if key == "encode":
+            return str(base64.b64encode(bytes(dictionary[header], "utf-8")))[2:-1]
+        elif key == "decode":
+            return base64.b64decode(bytes(dictionary[header], "utf-8")).decode("utf-8")
+        else:
+            raise ValueError("Wrong key!")
+    else:
+        return dictionary[header]
+
+
 # Get functions
 # ########################################################################
 def get_data_from_file(filename):
@@ -27,8 +51,10 @@ def get_data_from_file(filename):
         reader = csv.DictReader(csvfile)
         for row in reader:
             for header in row:
-                print(header)
+                # print(code_string(row, header, "decode"))
                 row[header] = code_string(row, header, "decode")
+                if header in ["id", "submisson_time", "vote_number", "view_number"]:
+                    row[header] = int(row[header])
             result.append(row)
     return result
 
