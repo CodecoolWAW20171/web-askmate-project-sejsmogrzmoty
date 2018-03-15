@@ -4,6 +4,7 @@ import util
 
 # ----- Constants -----
 QSTN_HEADERS = ["id", "submission_time", "view_number", "vote_number", "title", "message", "image"]
+QSTN_DEFAULTS = {"view_number": 0, "vote_number": 0, "title": "", "message": "", "image": ""}
 ANSW_HEADERS = ["id", "submission_time", "vote_number", "question_id", "message", "image"]
 
 
