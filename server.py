@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 
 import logic
+import persistence
+
 
 app = Flask(__name__)
 
@@ -19,7 +21,8 @@ def route_index():
 # ########################################################################
 @app.route('/list')
 def list_questions():
-
+    questions = persistence.get_data_from_file("question.csv")
+    return render_template('list.html',  questions=questions)
     # Display a page with questions list
 
     questions = logic.get_all_questions()
@@ -44,7 +47,7 @@ def show_question(qstn_id):
 # ########################################################################
 @app.route('/new-question')
 def ask_question():
-
+    return render_template('new-question.html')
     # Displays a page with a form to be filled with the new question
     question = logic.QSTN_DEFAULTS
 
@@ -93,15 +96,9 @@ def edit_question():
 # ########################################################################
 @app.route('/question/delete', methods=['POST'])
 def delete_question():
-
-    # Receive form request with the question id and send request to logic
-    # to delete the question from the database.
-    # !!! IN LOGIC - Remember to delete all answers for this question
-    # and an image file corresponding to question and answers
-    # Redirect to the page with the question list after successful
-    # deletetion
-
-    return
+    result = request.form
+    logic.delete_question(result["id"])
+    return redirect('/list')
 
 
 # Request to modify question database
