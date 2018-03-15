@@ -15,45 +15,43 @@ def get_all_questions():
 
 
 def get_answers_to_question(qstn_id):
-    complete_data = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
+    answers = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
     listed_answers = []
-    for data in complete_data:
-        if data['question_id'] == qstn_id:
+    for answer in answers:
+        if answer['question_id'] == qstn_id:
             listed_answers.append(data)
     return listed_answers
 
 
 def count_how_many_answers(qstn_id):
-    complete_data = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
+    answers = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
     counter = 0
-    for data in complete_data:
-        if data["question_id"] == qstn_id:
+    for answer in answers:
+        if answer["question_id"] == qstn_id:
             counter += 1
     return counter
 
 
 def add_new_question(question):
-    return persistence.write_data_to_file(question, persistence.QSTN_FILE_PATH)
+    questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
+    questions.append(question)
+    return persistence.write_data_to_file(questions, persistence.QSTN_FILE_PATH)
 
 
-def modify_question(qstn_id, question):
-    pass
+def modify_question(qstn_id, modified_question):
+    questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
+    for question in questions:
+        if question['id'] == qstn_id:
+            for header in QSTN_HEADERS:
+                question[header] = modified_question[header]
+            question['answers_number'] = count_how_many_answers(question['id'])
+            return questions
 
 
-def add_answer_to_question(qstn_id, answer):
-    pass
-
-
-'''
--->  zakłada, że write_data_to_file nadpisuje istniejący plik  <--
-Removes a specified question and all its answers from csv files
-
-Args:
-        question id
-Returns:
-        None
-        writes to csv the updated lists of dictionaries
-'''
+def add_answer(answer):
+    answers = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
+    answers.append(answer)
+    return persistence.write_data_to_file(answers, persistence.ANSW_FILE_PATH)
 
 
 def delete_question(qstn_id):
