@@ -6,7 +6,7 @@
     {% set query = url_for('modify_question_database') %}
 {% elif form_type == "edit" %}
     {% set active_page = "edit_question" %}
-    {% set title = "Edit a question: id " + question.id %}
+    {% set title = "Edit a question: id " + question.id|string %}
     {% set query = url_for('modify_question_database', qstn_id=question.id) %}
 {% endif %}
 

@@ -88,8 +88,9 @@ def edit_question():
     # Display a page with the form filled with the question existing data
 
     qstn_id = int(request.form['id'])
+    question = logic.get_question(qstn_id)
 
-    return redirect(url_for('show_question', qstn_id=qstn_id))
+    return render_template('q_form.html', form_type="edit", question=question)
 
 
 # Delete question
@@ -111,11 +112,11 @@ def modify_question_database(qstn_id=None):
     # request to logic to modify the database incorporating the new data
     # Redirect to the page with the question list after successful
     # database modification
-
     question = request.form
     if qstn_id is None:
         logic.add_new_question(question)
-    
+    else:
+        logic.modify_question(qstn_id, question)
 
     return redirect(url_for('list_questions'))
 
