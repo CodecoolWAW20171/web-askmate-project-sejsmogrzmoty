@@ -87,8 +87,7 @@ def generate_new_id(data):
     new_id = 0
     for entry in data:
         new_id = entry['id']
-    return new_id
-
+    return new_id + 1
 
 
 def find_id_index(data, id_):
@@ -98,3 +97,7 @@ def find_id_index(data, id_):
             return index
         else:
             index += 1
+
+
+def sort_by(data, header, ascending=False):
+    return sorted(data, key=lambda x: x[header], reverse=ascending)
