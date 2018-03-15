@@ -21,8 +21,7 @@ def route_index():
 # ########################################################################
 @app.route('/list')
 def list_questions():
-    questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
-    return render_template('list.html',  questions=questions)
+
     # Display a page with questions list
 
     questions = logic.get_all_questions()
@@ -47,7 +46,7 @@ def show_question(qstn_id):
 # ########################################################################
 @app.route('/new-question')
 def ask_question():
-    return render_template('new-question.html')
+
     # Displays a page with a form to be filled with the new question
     question = logic.QSTN_DEFAULTS
 
@@ -87,7 +86,7 @@ def edit_question():
     # to retrive question data.
     # Display a page with the form filled with the question existing data
 
-    qstn_id = request.form['id']
+    qstn_id = int(request.form['id'])
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
@@ -98,7 +97,7 @@ def edit_question():
 def delete_question():
     result = request.form
     logic.delete_question(result["id"])
-    return redirect('/list')
+    return redirect(url_for('list_questions'))
 
 
 # Request to modify question database
