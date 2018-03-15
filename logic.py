@@ -43,7 +43,7 @@ def count_how_many_answers(qstn_id):
 
 def add_new_question(question):
     questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
-    question["id"] = generate_new_id(persistence.QSTN_FILE_PATH)
+    question["id"] = generate_new_id(questions)
     question['submission_time'] = util.get_current_timestamp()
     questions.append(question)
     return persistence.write_data_to_file(questions, persistence.QSTN_FILE_PATH, QSTN_HEADERS)
@@ -61,7 +61,7 @@ def modify_question(qstn_id, modified_question):
 
 def add_answer(answer):
     answers = persistence.get_data_from_file(persistence.ANSW_FILE_PATH)
-    answer["id"] = generate_new_id(persistence.ANSW_FILE_PATH)
+    answer["id"] = generate_new_id(answers)
     answer['submission_time'] = util.get_current_timestamp()
     answers.append(answer)
     return persistence.write_data_to_file(answers, persistence.ANSW_FILE_PATH, ANSW_HEADERS)
