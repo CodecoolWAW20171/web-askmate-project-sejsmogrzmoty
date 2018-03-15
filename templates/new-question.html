@@ -1,0 +1,29 @@
+<!-- Pola Title i Question są wymagane. Question wymaga > 10 char.
+Nie dodaje brakujących wartości (id, upvotes, itp)  -->
+
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <title>Ask a question! </title>
+    </head>
+
+
+    <body>
+
+	       <h3>	Ask a question! </h3>
+         <form action='/question',  method="post">
+	          <h7>Question Title: </h7><br/>
+		        <input type="text" id="title" name="title" required><br/><br/>
+		        <h7>Your Question: </h7><br/>
+		        <textarea id="question" name="question" rows="8" cols="80"  minlength="10" required> </textarea><br><br/>
+		        <h7>Image URL: </h7><br/>
+		        <input type="text" id="image" name="image"><br/><br/>
+          <!-->  <input type="hidden" id="submisson_time" name=submisson_time value=datetime><br/><br/> <-->
+	          <button type="submit">Post your question!</button>
+        </form>
+	</pre>
+
+    </body>
+</html>
