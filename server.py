@@ -113,7 +113,9 @@ def modify_question_database(qstn_id=None):
     # database modification
 
     question = request.form
-    logic.add_new_question(question)
+    if qstn_id is None:
+        logic.add_new_question(question)
+    
 
     return redirect(url_for('list_questions'))
 

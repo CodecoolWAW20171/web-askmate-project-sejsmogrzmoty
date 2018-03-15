@@ -52,8 +52,10 @@ def get_data_from_file(filename):
         for row in reader:
             for header in row:
                 row[header] = code_string(row, header, "decode")
-                if header in ["id", "submission_time", "vote_number", "view_number"]:
+                if header in ["id", "vote_number", "view_number"]:
                     row[header] = int(row[header])
+                if header == "submission_time":
+                    row[header] = float(row[header])
             result.append(row)
     return result
 
