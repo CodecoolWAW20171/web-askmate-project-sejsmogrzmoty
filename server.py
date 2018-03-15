@@ -42,7 +42,7 @@ def show_question(qstn_id):
 # ########################################################################
 @app.route('/new-question')
 def ask_question():
-
+    return render_template('new-question.html')
     # Displays a page with a form to be filled with the new question
 
     return
