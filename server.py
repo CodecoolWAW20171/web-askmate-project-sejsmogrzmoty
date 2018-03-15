@@ -22,7 +22,9 @@ def list_questions():
 
     # Display a page with questions list
 
-    return
+    questions = logic.get_all_questions()
+
+    return render_template('list.html', questions=questions)
 
 
 # View question
@@ -32,7 +34,10 @@ def show_question(qstn_id):
 
     # Display a page with a single question
 
-    return
+    question = logic.get_question(qstn_id)
+    answers = logic.get_answers_to_question(qstn_id)
+
+    return render_template('detail.html', question=question, answers=answers)
 
 
 # Ask question
@@ -41,8 +46,9 @@ def show_question(qstn_id):
 def ask_question():
 
     # Displays a page with a form to be filled with the new question
+    question = logic.QSTN_DEFAULTS
 
-    return
+    return render_template('q_form.html', form_type="new", question=question)
 
 
 # Post answer
@@ -78,7 +84,9 @@ def edit_question():
     # to retrive question data.
     # Display a page with the form filled with the question existing data
 
-    return
+    qstn_id = request.form['id']
+
+    return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
 # Delete question
@@ -106,6 +114,18 @@ def modify_question_database(qstn_id=None):
     # request to logic to modify the database incorporating the new data
     # Redirect to the page with the question list after successful
     # database modification
+
+    return
+
+
+# Edit answer
+# ########################################################################
+@app.route('/answer/edit', methods=['POST'])
+def edit_answer():
+
+    # Receive form request with the answer id and send request to logic
+    # to retrive answer data.
+    # Display a page with the form filled with the answer existing data
 
     return
 

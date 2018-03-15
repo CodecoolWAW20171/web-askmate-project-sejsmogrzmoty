@@ -35,6 +35,7 @@
     
     a {
         text-decoration: none;
+        color: inherit;
     }
 
     body, input, select, textarea {
@@ -213,21 +214,50 @@
         align-content: center;
     }
 
-    .lig {
-        width: 5em;
-        float: left;
+/* Display question */
+    .container {
+        display: flex;
+        flex-direction: row;
     }
 
-    .art-txt {
-        float: left;
+    .side-left {
+        max-width: 3em;
+        padding: 0.8em;
+    }
+    
+    .side-right {
+       max-width: 15em;
+       padding: 1em;
+    }
+    
+    .mid {
+        flex: 100%;
+        padding: 0.5em;
     }
 
-    .art-lig::after {
-        content: "";
-        display: table;
-        clear: both;
+    .vote-num {
+        text-align: center;
+        color: #2774CC;
     }
 
+    .side-right * {
+        margin: 0;
+    }
+
+    .side-right .label {
+        font-size: 0.8em;
+        color: #a6a6a6;
+    }
+
+    .side-right .data {
+        font-size: 0.9em;
+        margin-bottom: 0.5em;
+    }
+
+    .side-right button {
+        width: 100%;
+        font-size: 1em;
+    }
 
 /* Table */
     .data-table {
@@ -241,13 +271,36 @@
     }
     
     .data-table th {
-        background-color: #67AFCB;
+        background-color: #A2D045;
+    }
+    
+    .data-table tr {
+        border-top: solid 1px #0A203A;
+        border-bottom: solid 1px #0A203A;
     }
 
     .data-table td, .data-table th {
-        border: solid 1px #092834;
         padding: 0.33em;
         vertical-align: top;
+    }
+
+    .data-table td.number {
+        line-height: 1em;
+        text-align: center;
+    }
+
+    .data-table .num-caption {
+        font-size: 0.8em;
+    }
+
+    .data-table .question a {
+        color: #2774CC;
+        font-size: 1.1em;
+        font-weight: 600;
+    }
+
+    .data-table .actions {
+        text-align: center;
     }
 
     .data-table tr:nth-child(odd) {
@@ -281,9 +334,22 @@
     button {
         background-color: #A2D045;
         color: #0A203A;
-        padding: 0.33em 0.5em;
+        padding: 0.3em 0.5em;
         border: none;
         border-radius: 4px;
+    }
+
+    .action-btn {
+        background-color: transparent;
+        border: none;
+        padding: 0;
+    }
+
+    .vote {
+        background-color: transparent;
+        font-size: 1.5em;
+        line-height: 1em;
+        padding: 0;
     }
     
 /* Forms */
@@ -365,7 +431,7 @@
         background-color: #347B98;
     }
 
-    .container {
+    .form-container {
         border-radius: 5px;
         padding: 0.67em;
     }
@@ -412,19 +478,9 @@
         }
     }
 
-    #searchTableBox {
-        margin-bottom: 1em;
-        background-image: url('/static/images/searchicon.png');
-        background-repeat: no-repeat;
-        background-position: 5px;
-        padding-left: 33px;
-        width: 100%;
-    }
 
-    .action-btn {
-        background-color: transparent;
-        border: none;
-    }
+
+
 
 
 /* Icons */
@@ -443,6 +499,7 @@
     .last-add i {
         font-size: 2em;
     }
+
 
     .col-33 i {
         margin: 0 0.5em;

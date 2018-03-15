@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% set active_page = "detail" %}
+{% block title %}AskMate - {{ question.title }}{% endblock %}
+
+{% block body %}
+<h2>{{ question.title }}</h2>
+<hr>
+<div class="container">
+    <div class="side-left">
+        <button class="vote"><i class="fas fa-chevron-up"></i></button>
+        <div class="vote-num">{{ question.vote_number }}</div>
+        <button class="vote"><i class="fas fa-chevron-down"></i></button>
+    </div>
+    <div class="mid">
+        {% for line in question.message.splitlines() %}
+        <p>{{ line|e }}</p>
+        {% endfor %}
+    </div>
+    <div class="side-right">
+        <p class="label">asked</p>
+        <p id="q-time" class="data"></p>
+        
+        <p class="label">views</p>
+        <p class="data">{{ question.view_number }}</p>
+
+        <br>
+        <form action="{{ url_for('edit_question') }}" method="post">
+            <button type="submit"><i class="fas fa-edit"></i> Edit</button>
+        </form>
+    </div>
+</div>
+
+<h3>{{ question.answers_number }} Answers</h3>
+<hr>
+
+{% for answer in answers %}
+    <div class="container">
+        <div class="side-left">
+            <button class="vote"><i class="fas fa-chevron-up"></i></button>
+            <div class="vote-num">{{ answer.vote_number }}</div>
+            <button class="vote"><i class="fas fa-chevron-down"></i></button>
+        </div>
+        <div class="mid">
+            {% for line in answer.message.splitlines() %}
+            <p>{{ line|e }}</p>
+            {% endfor %}
+        </div>
+        <div class="side-right">
+            <p class="label">answered</p>
+            <p id="{{ "timestamp" + answer.id|string }}" class="data"></p>
+            
+            <br>
+            <form action="{{ url_for('edit_answer') }}" method="post">
+                <button type="submit"><i class="fas fa-edit"></i> Edit</button>
+            </form>
+        </div>
+    </div>
+    <hr>
+{% endfor %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    dateToString({{ (question.submission_time|string + ', \"q-time\"')|safe }});
+    {% for answer in answers %}
+    dateToString({{ (answer.submission_time|string + ', \"timestamp' + answer.id|string + '\"')|safe }});
+    {% endfor %}
+</script>
+{% endblock %}

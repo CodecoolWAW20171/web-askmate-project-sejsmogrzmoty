@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% set active_page = "list_questions" %}
+
+{% block title %}Askmate - List of questions{% endblock %}
+
+{% block body %}
+    <h2>Questions already asked:</h2>
+    <div class="search-container">
+        <div class="search-bar">
+            <input type="text" id="searchTableBox" onkeyup="filterTable(3)"
+            placeholder="Search for questions...">
+        </div>
+        <div class="search-btn">
+            <button disabled><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+
+        <div class="data-table">
+            <table id="dataTable">
+                <tr>
+                    <th style="width: 6%">Votes</th>
+                    <th style="width: 6%">Answers</th>
+                    <th style="width: 6%">Views</th>
+                    <th>Question</th>
+                    <th style="width: 15%">Asked</th>
+                    <th style="width: 10%">Actions</th>
+                </tr>
+                {% for question in questions %}
+                    <tr>
+                        <td class="number">
+                            {{- question.vote_number }}<br>
+                            <span class="num-caption">votes</span>
+                        </td>
+                        <td class="number">
+                            {{- question.answers_number }}<br>
+                            <span class="num-caption">answers</span>
+                        </td>
+                        <td class="number">
+                            {{- question.view_number }}<br>
+                            <span class="num-caption">views</span>
+                        </td>
+                        <td class="question">
+                            <a href="{{ url_for('show_question', qstn_id=question.id) }}">
+                                {{- question.title|e -}}
+                            </a>
+                        </td>
+                        <td id="{{ "timestamp" + question.id|string }}"></td>
+                        <td class="actions">
+                            <form action="{{ url_for('post_answer', qstn_id=question.id) }}" method="get">
+                                <button type="submit" name="qstn_id" value="{{ question.id }}">
+                                    Post answer
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="8" class="last-add">
+                        <a href="{{ url_for('ask_question') }}">
+                            <i class="fas fa-plus-circle"></i>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        {% for question in questions %}
+        dateToString({{ (question.submission_time|string + ', \"timestamp' + question.id|string + '\"')|safe }});
+        {% endfor %}
+    </script>
+{% endblock %}

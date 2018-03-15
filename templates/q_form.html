@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% if form_type == "new" %}
+    {% set active_page = "ask_question" %}
+    {% set title = "Ask a question" %}
+    {% set query = url_for('ask_question') %}
+{% elif form_type == "edit" %}
+    {% set active_page = "edit_question" %}
+    {% set title = "Edit a question: id " + question.id %}
+    {% set query = url_for('edit_question') %}
+{% endif %}
+
+{% block title %}
+    {{ "Askmate " + title }}
+{% endblock %}
+
+{% block body %}
+    <h2>{{ title }}</h2>
+    <div class="form-container">
+        <form action="{{ query }}" method="post">
+
+            <!-- Title -->
+            <div class="row">
+                <div class="col-25">
+                    <label for="title">Title</label>
+                </div>
+                <div class="col-75">
+                    <input type="text" id="title" name="title" class="full-width"
+                    placeholder="Ask question..." value="{{ question.title }}">
+                </div>
+            </div>
+
+            <!-- Message -->
+            <div class="row">
+                <div class="col-25">
+                    <label for="message">Question description</label>
+                </div>
+                <div class="col-75">
+                    <textarea id="message" name="message" rows="5"
+                    placeholder="Describe the question..." class="full-width">
+                        {{- question.message -}}
+                    </textarea>
+                </div>
+            </div>
+
+            <!-- Image -->
+            <div class="row">
+                <div class="col-25">
+                    <label for="image">Image path</label>
+                </div>
+                <div class="col-75">
+                    <input type="text" id="image" name="image" class="full-width"
+                    placeholder="Image path..." value="{{ question.image }}">
+                </div>
+            </div>
+
+            <!-- Submit button -->
+            <div class="row">
+                <input type="submit" value="Submit">
+            </div>
+            
+        </form>
+    </div>
+{% endblock %}

@@ -21,10 +21,10 @@
 
     <!-- Topnav -->
     {% set navigation_bar = [
-        ('/', 'index', 'fa-home', 'Home'),
-        ('/list', 'list_stories', 'fa-list', 'Questions'),
-        ('/story', 'add_story', 'fa-plus-circle', 'Ask a question'),
-        ('/about', 'about', 'fa-question', 'About')
+        (url_for('route_index'), 'index', 'fa-home', 'Home'),
+        (url_for('list_questions'), 'list_questions', 'fa-list', 'Questions'),
+        (url_for('ask_question'), 'ask_question', 'fa-plus-circle', 'Ask a question'),
+        (url_for('about'), 'about', 'fa-question', 'About')
     ] -%}
     {% set active_page = active_page|default('index') -%}
     <nav class="topnav inner" id="myTopnav">
