@@ -84,11 +84,19 @@ def delete_answer(answ_id):
 # Helper function in database management
 # ########################################################################
 def generate_new_id(data):
-    pass
+    new_id = 0
+    for entry in data:
+        new_id = entry['id']
+    return new_id
 
 
 def find_id_index(data, id_):
-    pass
+    index = 0
+    for entry in data:
+        if entry['id'] == id_:
+            return index
+        else:
+            index += 1
 
 
 def code_string(dictionary, header, key):
