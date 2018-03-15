@@ -41,8 +41,9 @@ def count_how_many_answers(qstn_id):
     return counter
 
 
-def add_new_question(question):
+def add_new_question(new_question_input):
     questions = persistence.get_data_from_file(persistence.QSTN_FILE_PATH)
+    question = new_question_input
     question["id"] = generate_new_id(questions)
     question['submission_time'] = util.get_current_timestamp()
     questions.append(question)
