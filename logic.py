@@ -5,6 +5,7 @@ import util
 # ----- Constants -----------
 QSTN_HEADERS = ["id", "submission_time", "view_number", "vote_number", "title", "message", "image"]
 ANSW_HEADERS = ["id", "submission_time", "vote_number", "question_id", "message", "image"]
+ANSW_DEFAULTS = {"vote_number": 0, "message": "", "image": ""}
 
 # ----- Column indecies -----
 QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG = range(len(QSTN_HEADERS))
