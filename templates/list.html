@@ -24,7 +24,7 @@
                     <th style="width: 6%">Views</th>
                     <th>Question</th>
                     <th style="width: 15%">Asked</th>
-                    <th style="width: 10%">Actions</th>
+                    <th style="width: 12%">Actions</th>
                 </tr>
                 {% for question in questions %}
                     <tr>
@@ -45,10 +45,16 @@
                                 {{- question.title|e -}}
                             </a>
                         </td>
-                        <td id="{{ "timestamp" + question.id|string }}"></td>
+                        <td>{{ question.submission_time }}</td>
                         <td class="actions">
-                            <form action="{{ url_for('post_answer', qstn_id=question.id) }}" method="get">
-                                <button type="submit" name="qstn_id" value="{{ question.id }}">
+                            <form  method="get">
+                                <button type="submit" formaction="{{ url_for('show_question', qstn_id=question.id) }}"
+                                name="qstn_id" value="{{ question.id }}" class="action-btn">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                
+                                <button type="submit" formaction="{{ url_for('post_answer', qstn_id=question.id) }}"
+                                name="qstn_id" value="{{ question.id }}">
                                     Post answer
                                 </button>
                             </form>
@@ -68,9 +74,4 @@
 {% endblock %}
 
 {% block scripts %}
-    <script>
-        {% for question in questions %}
-        dateToString({{ (question.submission_time|string + ', \"timestamp' + question.id|string + '\"')|safe }});
-        {% endfor %}
-    </script>
 {% endblock %}

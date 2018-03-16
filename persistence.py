@@ -47,12 +47,12 @@ def get_data_from_file(filename):
         List of dictionaries read from a file.
     """
     result = []
-    with open(filename) as csvfile:
+    with open(filename, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             for header in row:
                 row[header] = code_string(row, header, "decode")
-                if header in ["id", "vote_number", "view_number"]:
+                if header in ["id", "vote_number", "view_number", "question_id"]:
                     row[header] = int(row[header])
                 if header == "submission_time":
                     row[header] = float(row[header])
@@ -74,7 +74,7 @@ def write_data_to_file(data, filename, header):
     Returns:
         None
     """
-    with open(filename, 'w') as csvfile:
+    with open(filename, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=header)
         writer.writeheader()
         for dictionary in data:

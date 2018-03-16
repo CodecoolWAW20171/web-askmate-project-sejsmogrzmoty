@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 
 {% if form_type == "new" %}
-    {% set active_page = "ask_question" %}
-    {% set title = "Ask a question" %}
-    {% set query = url_for('modify_question_database') %}
+    {% set active_page = "post_answer" %}
+    {% set title = "Post answer" %}
+    {% set query = url_for('modify_answer_database', qstn_id=question.id) %}
 {% elif form_type == "edit" %}
-    {% set active_page = "edit_question" %}
-    {% set title = "Edit a question: id " + question.id|string %}
-    {% set query = url_for('modify_question_database', qstn_id=question.id) %}
+    {% set active_page = "edit_answer" %}
+    {% set title = "Edit an answer: id " + answer.id|string %}
+    {% set query = url_for('modify_answer_database', answ_id=answer.id, qstn_id=question.id) %}
 {% endif %}
 
 {% block title %}
@@ -15,31 +15,51 @@
 {% endblock %}
 
 {% block body %}
-    <h2>{{ title }}</h2>
+    <h2>{{ question.title }}</h2>
+    <hr>
+
+    <div class="container">
+        <div class="mid">
+            {% for line in question.message.splitlines() %}
+            <p>{{ line|e }}</p>
+            {% endfor %}
+        </div>
+        <div class="side-right">
+            <p class="label">asked</p>
+            <p class="data">{{ question.submission_time }}</p>
+            
+            <p class="label">views</p>
+            <p class="data">{{ question.view_number }}</p>
+
+            <p class="label">votes</p>
+            <p class="data">{{ question.vote_number }}</p>
+    
+        </div>
+    </div>
+    <hr>
+
     <div class="form-container">
         <form action="{{ query }}" method="post">
 
             <!-- Title -->
-            <div class="row">
+            <div class="row hidden">
                 <div class="col-25">
-                    <label for="title">Title</label>
+                    <label for="question_id">Question id</label>
                 </div>
                 <div class="col-75">
-                    <input type="text" id="title" name="title" class="full-width"
-                    placeholder="Ask question..." value="{{ question.title }}"
-                    pattern=".{10,}" title="Question should be at least 10 characters long" required>
+                    <input type="hidden" id="question_id" name="question_id" value="{{ question.id }}">
                 </div>
             </div>
 
             <!-- Message -->
             <div class="row">
                 <div class="col-25">
-                    <label for="message">Question description</label>
+                    <label for="message">Answer</label>
                 </div>
                 <div class="col-75">
                     <textarea id="message" name="message" rows="5"
                     placeholder="Describe the question..." class="full-width">
-                        {{- question.message -}}
+                        {{- answer.message -}}
                     </textarea>
                 </div>
             </div>
@@ -51,14 +71,13 @@
                 </div>
                 <div class="col-75">
                     <input type="text" id="image" name="image" class="full-width"
-                    placeholder="Image path..." value="{{ question.image }}">
+                    placeholder="Image path..." value="{{ answer.image }}">
                 </div>
             </div>
 
             <!-- Submit button -->
             <div class="row">
                 <button type="submit" class="confirm form-sub"><i class="fas fa-check"></i><span> {% if form_type == "edit" %}Submit{% else %}Create{% endif %}</span></button>
-                <!-- <input type="submit" value="{% if form_type == "edit" %}Submit{% else %}Create{% endif %}"> -->
             </div>
             
         </form>
@@ -68,8 +87,9 @@
         <!-- Delete button -->
         <div class="">
             <div class="row">
-                <form action="{{ url_for('delete_question') }}" method="post">
-                    <button type="submit" name="id" value="{{ question.id }}"
+                <form action="{{ url_for('delete_answer') }}" method="post">
+                    <input type="hidden" id="question_id" name="question_id" value="{{ question.id }}">
+                    <button type="submit" name="id" value="{{ answer.id }}"
                     class="confirm delete" onclick="return confirmation();">
                         <i class="fas fa-trash"></i><span> Delete</span>
                     </button>

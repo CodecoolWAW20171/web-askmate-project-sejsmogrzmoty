@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, abort
 
 import logic
 import persistence
@@ -14,7 +14,15 @@ def route_index():
 
     # Display home page
 
-    return render_template('index.html')
+    top_question_titles = ['The most recent question',
+                           'The most viewed question',
+                           'The top voted question']
+
+    top_question_data = logic.get_top_questions()
+    top_questions = list(zip(top_question_titles, top_question_data))
+    print(top_questions)
+
+    return render_template('index.html', top_questions=top_questions)
 
 
 # List
@@ -24,7 +32,7 @@ def list_questions():
 
     # Display a page with questions list
 
-    questions = logic.get_all_questions()
+    questions = logic.get_sorted_questions('submission_time')
 
     return render_template('list.html', questions=questions)
 
@@ -37,7 +45,10 @@ def show_question(qstn_id):
     # Display a page with a single question
 
     question = logic.get_question(qstn_id)
+    if question is None:
+        abort(404)
     answers = logic.get_answers_to_question(qstn_id)
+    logic.increase_view_counter(qstn_id)
 
     return render_template('detail.html', question=question, answers=answers)
 
@@ -62,7 +73,12 @@ def post_answer(qstn_id):
     # Displays a page with a question and a form to be filled with
     # the new answer
 
-    return
+    question = logic.get_question(qstn_id)
+    if question is None:
+        abort(404)
+    answer = logic.ANSW_DEFAULTS
+
+    return render_template('ans_form.html', form_type='new', answer=answer, question=question)
 
 
 # About
@@ -72,7 +88,17 @@ def about():
 
     # Display some 'about' page with info about the application
 
-    return
+    return render_template('about.html')
+
+
+# Error message
+# ########################################################################
+@app.errorhandler(404)
+def page_not_found(e):
+
+    # Display some 'about' page with info about the application
+
+    return render_template('error_page.html'), 404
 
 
 # <------------------------------ ____ --------------------------------------->
@@ -97,8 +123,10 @@ def edit_question():
 # ########################################################################
 @app.route('/question/delete', methods=['POST'])
 def delete_question():
-    result = request.form
-    logic.delete_question(result["id"])
+
+    qstn_id = int(request.form['id'])
+    logic.delete_question(qstn_id)
+
     return redirect(url_for('list_questions'))
 
 
@@ -112,6 +140,7 @@ def modify_question_database(qstn_id=None):
     # request to logic to modify the database incorporating the new data
     # Redirect to the page with the question list after successful
     # database modification
+
     question = request.form
     if qstn_id is None:
         logic.add_new_question(question)
@@ -130,7 +159,12 @@ def edit_answer():
     # to retrive answer data.
     # Display a page with the form filled with the answer existing data
 
-    return
+    answ_id = int(request.form['id'])
+    qstn_id = int(request.form['question_id'])
+    answer = logic.get_answer(answ_id)
+    question = logic.get_question(qstn_id)
+
+    return render_template('ans_form.html', form_type="edit", answer=answer, question=question)
 
 
 # Delete answer
@@ -142,7 +176,54 @@ def delete_answer():
     # to delete the answer from the database.
     # Redirect to the page with the question after successful deletion
 
-    return
+    answ_id = int(request.form['id'])
+    qstn_id = int(request.form['question_id'])
+    logic.delete_answer(answ_id)
+
+    return redirect(url_for('show_question', qstn_id=qstn_id))
+
+
+# Request to modify answer database
+# ########################################################################
+@app.route('/answer', methods=['POST'])
+@app.route('/answer/<int:answ_id>', methods=['POST'])
+def modify_answer_database(answ_id=None):
+
+    # Receive form request with the new data filled by the user and send
+    # request to logic to modify the database incorporating the new data
+    # Redirect to the page with the question after successful
+    # database modification
+
+    answer = request.form
+    qstn_id = answer['question_id']
+    if answ_id is None:
+        logic.add_new_answer(answer)
+    else:
+        logic.modify_answer(answ_id, answer)
+
+    return redirect(url_for('show_question', qstn_id=qstn_id))
+
+
+# Vote
+# ########################################################################
+@app.route('/question/<int:qstn_id>/vote', methods=['POST'])
+def vote_question(qstn_id):
+
+    vote = request.form['vote']
+    logic.vote_question(qstn_id, vote)
+
+    return redirect(url_for('show_question', qstn_id=qstn_id))
+
+
+@app.route('/answer/<int:answ_id>/vote', methods=['POST'])
+def vote_answer(answ_id):
+
+    vote = request.form['vote']
+    answer = logic.get_answer(answ_id)
+    qstn_id = answer['question_id']
+    logic.vote_answer(answ_id, vote)
+
+    return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
 # Run server

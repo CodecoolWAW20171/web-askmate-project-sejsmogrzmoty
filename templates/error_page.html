@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% set active_page = "error" %}
+{% block title %}AskMate - 404{% endblock %}
+
+{% block body %}
+<div class="error">
+    <h2>Congrats! - you broke something</h2>
+    <hr>
+    <p>Probably you're just a moron who fell asleep on his keyboard.</p>
+    <p>Our developers are so great they could not have messed up, never in a million years.</p>
+    <img src="{{ url_for('static', filename='images/gitlog.png') }}" alt="Git log">
+    <p>Either way go where you came from:</p>
+    <button class="confirm"><i class="fas fa-home fa-2x"></i><span> Go home you're drunk</span></button>
+</div>
+{% endblock %}

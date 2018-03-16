@@ -8,17 +8,47 @@
 <form action="/search" method="get">
     <div class="search-container">
         <div class="search-bar">
-            <input type="text" name="search" placeholder="Search...">
+            <input type="text" name="search" placeholder="Search..." disabled>
         </div>
         <div class="search-btn">
-            <button type="submit"><i class="fas fa-search"></i></button>
+            <button type="submit" disabled><i class="fas fa-search"></i></button>
         </div>
     </div>
 </form>
 <hr>
-<h2>The most recent question</h2>
-<hr>
-<button>Ask a question</button>
+
+
+{% for title, question in top_questions %}
+    <h2>{{ title }}</h2>
+    <h3><a href="{{ url_for('show_question', qstn_id=question.id) }}">{{ question.title }}</a></h3>
+    <hr>
+
+    <div class="container">
+        <div class="mid">
+            {% for line in question.message.splitlines() %}
+            <p>{{ line|e }}</p>
+            {% endfor %}
+        </div>
+        <div class="side-right">
+            <p class="label">asked</p>
+            <p class="data">{{ question.submission_time }}</p>
+            
+            <p class="label">views</p>
+            <p class="data">{{ question.view_number }}</p>
+
+            <p class="label">votes</p>
+            <p class="data">{{ question.vote_number }}</p>
+    
+        </div>
+    </div>
+    <hr>
+{% endfor %}
+
+<div class="centered">
+    <form action="{{ url_for('ask_question') }}">
+        <button type="submit" class="main confirm"><span>Ask a question </span><i class="fas fa-comment"></i></button>
+    </form>
+</div>
 {% endblock %}
 
 {% block scripts %}

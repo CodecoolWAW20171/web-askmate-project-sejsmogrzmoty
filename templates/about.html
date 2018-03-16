@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% set active_page = "about" %}
+{% block title %}AskMate by Sejsmogrzmoty{% endblock %}
+
+{% block body %}
+<div class="error">
+    <p></p>
+    <img src="{{ url_for('static', filename='images/logo-L.png') }}" alt="Askmate"
+    width="500" height="278">
+    <h1><span class="lighter">Ask</span>mate</h1>
+    <p>by Sejsmogrzmoty</p>
+</div>
+{% endblock %}

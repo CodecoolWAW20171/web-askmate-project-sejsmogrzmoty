@@ -67,7 +67,7 @@
         }
     }
 
-/* Header */
+/* ------------------------------ Header ----------------------------------- */
     header {
         background-color: #A2D045;
         font-family: "Roboto Slab", "serif";
@@ -81,6 +81,7 @@
 
     h1 {
         color: #0A203A;
+        font-family: "Roboto Slab", "serif";        
         font-size: 2.5em;
         font-weight: 900;
         margin: 0.3em 0.5em;
@@ -92,7 +93,7 @@
     }
 
 
-/* Top navigation */
+/* ------------------------------ Top navigation --------------------------- */
     .topnav {
         overflow: hidden;
         background-color: #092834;
@@ -146,7 +147,7 @@
     }
 
 
-/* Wrapper */
+/* ------------------------------ Wrapper ------------------------------ */
     #wrapper {
         padding: 0 6em 0;
         margin: 0 auto;
@@ -193,7 +194,7 @@
     }
 
 
-/* Main */
+/* ------------------------------ Main ------------------------------------- */
     .content {
         padding: 1em 0.67em;
     }
@@ -210,11 +211,11 @@
         margin-bottom: 0.5em;
     }
 
-    .art-lig {
-        align-content: center;
+    .centered {
+        text-align: center;
     }
 
-/* Display question */
+/* ------------------------------ Display question ------------------------- */
     .container {
         display: flex;
         flex-direction: row;
@@ -228,6 +229,7 @@
     .side-right {
        max-width: 15em;
        padding: 1em;
+       flex: 100%;
     }
     
     .mid {
@@ -259,7 +261,12 @@
         font-size: 1em;
     }
 
-/* Table */
+    .mid2 {
+        flex: 100%;
+        padding: 0 0.5em;
+    }
+
+/* ------------------------------ Table ------------------------------ */
     .data-table {
         overflow-x: auto;
     }
@@ -269,11 +276,11 @@
         font-size: 0.9em;
         width: 100%;
     }
-    
+
     .data-table th {
         background-color: #A2D045;
     }
-    
+
     .data-table tr {
         border-top: solid 1px #0A203A;
         border-bottom: solid 1px #0A203A;
@@ -284,6 +291,7 @@
         vertical-align: top;
     }
 
+    /* ---------- Number with caption cell ------------ */
     .data-table td.number {
         line-height: 1em;
         text-align: center;
@@ -293,12 +301,14 @@
         font-size: 0.8em;
     }
 
+    /* ---------- Title cell --------------------------- */
     .data-table .question a {
         color: #2774CC;
         font-size: 1.1em;
         font-weight: 600;
     }
 
+    /* ---------- Actions cell ------------------------- */
     .data-table .actions {
         text-align: center;
     }
@@ -311,6 +321,7 @@
         background-color: #BBDBE7;
     }
 
+    /* ---------- Add button in the bottom row --------- */
     .data-table tr:last-child {
         border: none;
         text-align: center;
@@ -330,19 +341,21 @@
     }
         
 
-/* Buttons */
+/* ------------------------------ Buttons ------------------------------ */
     button {
         background-color: #A2D045;
         color: #0A203A;
         padding: 0.3em 0.5em;
         border: none;
         border-radius: 4px;
+        cursor: pointer;
     }
 
     .action-btn {
         background-color: transparent;
         border: none;
-        padding: 0;
+        padding: 0 0.3em;
+        vertical-align: middle;
     }
 
     .vote {
@@ -351,7 +364,49 @@
         line-height: 1em;
         padding: 0;
     }
-    
+
+    /* ---------- Confirm button ---------- */
+    button.confirm {
+        width: 10em;
+        margin-top: 1em;
+        padding: 0.8em 0.5em;
+        font-size: 1.25em;
+    }
+
+    .confirm i {
+        transition: 0.5s;
+    }
+
+    .confirm span {
+        font-size: 0.8em;
+        color: #2774CC;
+        transition: 0.5s;
+    }
+
+    button.confirm:hover {
+        background-color: #6B9023;
+    }
+
+    button.confirm:hover i, button.confirm:hover span {
+        color: white;
+    }
+
+    /* ---------- Delete button -------------- */
+    button.delete:hover {
+        background-color: #ff3300;
+    }
+
+    button.form-sub, button.delete {
+        float: right;
+    }
+
+    @media (max-width: 600px) {
+        button.confirm {
+            width: 100%;
+        }
+    }
+
+
 /* Forms */
     input[type=text], input[type=number], select, textarea {
         padding: 0.33em;
@@ -418,9 +473,10 @@
     }
 
     input[type=submit] {
-        background-color: #67AFCB;
+        background-color: #A2D045;
         color: white;
         padding: 12px 20px;
+        margin-top: 1em;
         border: none;
         border-radius: 4px;
         cursor: pointer;
@@ -428,7 +484,7 @@
     }
 
     input[type=submit]:hover {
-        background-color: #347B98;
+        background-color: #AED75B;
     }
 
     .form-container {
@@ -474,10 +530,12 @@
         }
         input[type=submit] {
             width: 100%;
-            margin-top: 1em;
         }
     }
 
+    .hidden {
+        display: none;
+    }
 
 
 
@@ -522,4 +580,17 @@
 
     #footer .badge {
         padding: 0.33em 0 0.1em;
+    }
+
+/* ------------------------------ Error page ------------------------------- */
+    .error {
+        text-align: center;
+        font-size: 2em;
+    }
+
+    .error button {
+        float: none;
+        width: 15em;
+        margin: 0;
+        padding: 0.5em;
     }
