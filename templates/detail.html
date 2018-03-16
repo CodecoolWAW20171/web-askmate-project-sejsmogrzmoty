@@ -8,9 +8,11 @@
 <hr>
 <div class="container">
     <div class="side-left">
-        <button class="vote" value="1"><i class="fas fa-chevron-up"></i></button>
-        <div class="vote-num">{{ question.vote_number }}</div>
-        <button class="vote" value="-1"><i class="fas fa-chevron-down"></i></button>
+        <form action="{{ url_for('vote_question', qstn_id=question.id) }}" method="post">
+            <button class="vote" name="vote" value="up"><i class="fas fa-chevron-up"></i></button>
+            <div class="vote-num">{{ question.vote_number }}</div>
+            <button class="vote" name="vote" value="down"><i class="fas fa-chevron-down"></i></button>
+        </form>
     </div>
     <div class="mid">
         {% for line in question.message.splitlines() %}
@@ -19,7 +21,7 @@
     </div>
     <div class="side-right">
         <p class="label">asked</p>
-        <p id="q-time" class="data"></p>
+        <p class="data">{{ question.submission_time }}</p>
         
         <p class="label">views</p>
         <p class="data">{{ question.view_number }}</p>
@@ -32,15 +34,27 @@
     </div>
 </div>
 
-<h3>{{ question.answers_number }} Answers</h3>
+<hr>
+<div class="container">
+    <div class="mid2">
+        <h3>{{ question.answers_number|default(0) }} Answers</h3>
+    </div>
+    <div class="side-right">
+        <form action="{{ url_for('post_answer', qstn_id=question.id) }}">
+            <button type="submit" class="form-sub"><span>Post answer </span><i class="fas fa-comment"></i></button>
+        </form>
+    </div>
+</div>
 <hr>
 
 {% for answer in answers %}
     <div class="container">
         <div class="side-left">
-            <button class="vote"><i class="fas fa-chevron-up"></i></button>
-            <div class="vote-num">{{ answer.vote_number }}</div>
-            <button class="vote"><i class="fas fa-chevron-down"></i></button>
+            <form action="{{ url_for('vote_answer', answ_id=answer.id) }}" method="post">
+                <button class="vote" name="vote" value="up"><i class="fas fa-chevron-up"></i></button>
+                <div class="vote-num">{{ answer.vote_number }}</div>
+                <button class="vote" name="vote" value="down"><i class="fas fa-chevron-down"></i></button>
+            </form>
         </div>
         <div class="mid">
             {% for line in answer.message.splitlines() %}
@@ -49,11 +63,12 @@
         </div>
         <div class="side-right">
             <p class="label">answered</p>
-            <p id="{{ "timestamp" + answer.id|string }}" class="data"></p>
+            <p class="data">{{ answer.submission_time }}</p>
             
             <br>
             <form action="{{ url_for('edit_answer') }}" method="post">
-                <button type="submit"><i class="fas fa-edit"></i> Edit</button>
+                <input type="hidden" name="question_id" value="{{ question.id }}">
+                <button type="submit" name="id" value="{{ answer.id }}"><i class="fas fa-edit"></i> Edit</button>
             </form>
         </div>
     </div>
@@ -63,10 +78,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-    dateToString({{ (question.submission_time|string + ', \"q-time\"')|safe }});
-    {% for answer in answers %}
-    dateToString({{ (answer.submission_time|string + ', \"timestamp' + answer.id|string + '\"')|safe }});
-    {% endfor %}
-</script>
+
 {% endblock %}
