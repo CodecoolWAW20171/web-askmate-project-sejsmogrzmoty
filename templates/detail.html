@@ -18,6 +18,9 @@
         {% for line in question.message.splitlines() %}
         <p>{{ line|e }}</p>
         {% endfor %}
+        {% if question.image %}
+        <img src="{{ question.image }}" id="myImg" width="200px" alt="">
+        {% endif %}
     </div>
     <div class="side-right">
         <p class="label">asked</p>

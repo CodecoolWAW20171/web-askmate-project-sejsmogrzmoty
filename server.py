@@ -20,7 +20,6 @@ def route_index():
 
     top_question_data = logic.get_top_questions()
     top_questions = list(zip(top_question_titles, top_question_data))
-    print(top_questions)
 
     return render_template('index.html', top_questions=top_questions)
 
@@ -96,7 +95,7 @@ def about():
 @app.errorhandler(404)
 def page_not_found(e):
 
-    # Display some 'about' page with info about the application
+    # Display error page
 
     return render_template('error_page.html'), 404
 

@@ -46,8 +46,3 @@ function filterTable(n) {
         }
     }
 }
-
-function dateToString(timeStamp, elemId) {
-    var date_mod = new Date(timeStamp*1000);
-    document.getElementById(elemId).innerHTML = date_mod.toLocaleString();
-}

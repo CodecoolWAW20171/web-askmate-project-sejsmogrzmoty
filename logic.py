@@ -47,7 +47,6 @@ def get_question(qstn_id):
 def get_answer(answ_id):
     answers = get_all_answers_converted()
     for answer in answers:
-        print(answer)
         if answer['id'] == answ_id:
             return answer
 

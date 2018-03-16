@@ -266,6 +266,10 @@
         padding: 0 0.5em;
     }
 
+    .mid img {
+        margin: 0.5em;
+    }
+
 /* ------------------------------ Table ------------------------------ */
     .data-table {
         overflow-x: auto;
