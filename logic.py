@@ -3,6 +3,11 @@ import util
 
 QSTN_TABLE = 'question'
 ANSW_TABLE = 'answer'
+CMNT_TABLE = 'comment'
+TAG_TABLE = 'tag'
+QSTN_TAG_TABLE = 'question_tag'
+
+SBMSN_TIME = 'submission_time'
 
 # ----- Constants -----------
 QSTN_HEADERS = ["id", "submission_time", "view_number", "vote_number", "title", "message", "image"]
@@ -22,11 +27,17 @@ ANSW_DEFAULTS = {"vote_number": 0, "message": "", "image": ""}
 # ########################################################################
 
 def get_all_questions():
-    return persistence.select_all_from_table(QSTN_TABLE)
+    questions = persistence.select_all_from_table(QSTN_TABLE)
+    for index, question in enumerate(questions):
+        questions[index][SBMSN_TIME] = str(questions[index][SBMSN_TIME])
+    return questions
 
 
 def get_all_answers():
-    return persistence.select_all_from_table(ANSW_TABLE)
+    answers = persistence.select_all_from_table(ANSW_TABLE)
+    for index, answers in enumerate(answers):
+        answers[index][SBMSN_TIME] = str(answers[index[SBMSN_TIME]])
+    return answers
 
 
 def get_all_answers_converted():
@@ -241,4 +252,4 @@ def get_top_questions():
     return top_questions
 
 
-print(get_all_answers())
+print(get_all_questions())
