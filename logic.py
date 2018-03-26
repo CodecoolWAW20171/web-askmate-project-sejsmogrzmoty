@@ -6,6 +6,7 @@ ANSW_TABLE = 'answer'
 CMNT_TABLE = 'comment'
 TAG_TABLE = 'tag'
 QSTN_TAG_TABLE = 'question_tag'
+QSTN_COLUMNS = ['id', 'submission_time', 'view_number', 'vote_number', 'title']
 
 SBMSN_TIME = 'submission_time'
 
@@ -26,18 +27,25 @@ ANSW_DEFAULTS = {"vote_number": 0, "message": "", "image": ""}
 # Get functions
 # ########################################################################
 
-def get_all_questions():
-    questions = persistence.select_all_from_table(QSTN_TABLE)
-    for index, question in enumerate(questions):
-        questions[index][SBMSN_TIME] = str(questions[index][SBMSN_TIME])
-    return questions
+def change_time_to_string(data):
+    for index, single_data in enumerate(data):
+        data[index][SBMSN_TIME] = str(data[index][SBMSN_TIME])
+    return data
+
+
+def get_all_questions(order_by='id'):
+    questions = persistence.select_all_from_table(QSTN_TABLE, order_by)
+    return change_time_to_string(questions)
 
 
 def get_all_answers():
     answers = persistence.select_all_from_table(ANSW_TABLE)
-    for index, answers in enumerate(answers):
-        answers[index][SBMSN_TIME] = str(answers[index[SBMSN_TIME]])
-    return answers
+    return change_time_to_string(answers)
+
+
+def get_user_friendly_questions():
+    questions = persistence.select_specific_from_table(QSTN_COLUMNS, QSTN_TABLE)
+    return change_time_to_string(questions)
 
 
 def get_all_answers_converted():
