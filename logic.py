@@ -8,6 +8,9 @@ TAG_TABLE = 'tag'
 QSTN_TAG_TABLE = 'question_tag'
 TABLES = [QSTN_TABLE, ANSW_TABLE, CMNT_TABLE, TAG_TABLE, QSTN_TAG_TABLE]
 QSTN_COLUMNS = ['id', 'submission_time', 'view_number', 'vote_number', 'title']
+COMPARISON_TYPES = ('=', '<>', '<', '>', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN')
+ASC = 'ASC'
+DESC = 'DESC'
 
 SBMSN_TIME = 'submission_time'
 

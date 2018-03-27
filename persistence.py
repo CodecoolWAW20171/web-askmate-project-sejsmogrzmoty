@@ -9,7 +9,8 @@ ANSW_TABLE = 'answer'
 CMNT_TABLE = 'comment'
 TAG_TABLE = 'tag'
 QSTN_TAG_TABLE = 'question_tag'
-QSTN_COLUMNS = ['id', 'submission_time', 'view_number', 'vote_number', 'title']
+QSTN_VIEW_COLUMNS = ['id', 'submission_time', 'view_number', 'vote_number', 'title']
+QSTN_COLUMNS = ['submission_time', 'view_number', 'vote_number', 'title', 'message', 'image']
 COMPARISON_TYPES = ('=', '<>', '<', '>', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN')
 ASC = 'ASC'
 DESC = 'DESC'
@@ -58,6 +59,12 @@ def connection_handler(function):
         connection.close()
         return ret_value
     return wrapper
+
+
+def change_time_to_string(data):
+    for index, single_data in enumerate(data):
+        data[index][SBMSN_TIME] = str(data[index][SBMSN_TIME])
+    return data
 
 
 def choose_columns(columns):
@@ -137,11 +144,20 @@ def update(cursor, table, columns, values, where=None):
     cursor.execute(update_query, values)
 
 
+@connection_handler
+def insert_into(cursor, columns, table, values):
+    insert_query = sql.SQL("INSERT INTO {tbl}({cols}) VALUES ({val})").format(
+        tbl=sql.Identifier(table),
+        cols=choose_columns(columns),
+        val=sql.SQL(",").join(sql.Placeholder()*len(values)))
+    cursor.execute(insert_query, values)
+
+
 def delete_query(table):
     query = sql.SQL("DELETE FROM {tbl} ").format(tbl=sql.Identifier(table))
     return query
 
+
 @connection_handler
 def delete_from_table(cursor,table,where):
     cursor.execute(delete_query(table)+construct_query_where(where),where[2])
-    

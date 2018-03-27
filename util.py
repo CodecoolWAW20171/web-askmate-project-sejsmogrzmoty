@@ -1,7 +1,7 @@
 import os
 import datetime
 import time
-
+from datetime import datetime
 
 # Other functions
 # ########################################################################
@@ -30,3 +30,5 @@ def prepare_new_entry(data, new_data, defaults):
         else:
             entry[header] = defaults[header]
     return entry
+
+dt = datetime.now().replace(microsecond=0)
