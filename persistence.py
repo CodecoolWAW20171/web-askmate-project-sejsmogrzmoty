@@ -98,7 +98,7 @@ def select_query(cursor, columns, table, where=None, order_by=None, order_type=N
         ordered_by = sql.SQL('')
 
     if order_type is not None:
-        type_of_order = sql.SQL(order_type)
+        type_of_order = sql.SQL(order_type.upper())
     else:
         type_of_order = sql.SQL('')
 
@@ -120,3 +120,24 @@ def select_query(cursor, columns, table, where=None, order_by=None, order_type=N
     cursor.execute(query)
     data = cursor.fetchall()
     return data
+    query = sql.SQL("SELECT {cols} FROM {tbl}").format(
+        cols=select_cols,
+        tbl=sql.Identifier(table))
+
+    return query
+
+
+@connection_handler
+def update(cursor, table, columns, values, where=None):
+
+    where_query = construct_query_where(where)
+
+    update_query = sql.SQL("UPDATE {tbl} SET {col_vals} {where}").format(
+        tbl=sql.Identifier(table),
+        col_vals=sql.SQL(', ').join(sql.SQL("{}={}").format(
+            sql.Identifier(column),  sql.Placeholder()) for column in columns),
+        where=where_query)
+
+    if where is not None:
+        values = (*values, where[2])
+    cursor.execute(update_query, values)
