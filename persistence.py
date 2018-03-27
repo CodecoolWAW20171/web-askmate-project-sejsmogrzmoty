@@ -100,3 +100,24 @@ def select_where(cursor, table, select_cols,
     cursor.execute(query, values)
     data = cursor.fetchall()
     return data
+
+
+def select_all_from_table(cursor, table, order_by):
+    cursor.execute(
+        sql.SQL('SELECT * FROM {} ORDER BY {}').format(
+            sql.Identifier(table), sql.Identifier(order_by)
+        )
+    )
+    return cursor.fetchall()
+
+
+@connection_handler
+def select_specific_from_table(cursor, columns, table):
+    cursor.execute(
+        sql.SQL('SELECT {} FROM {}').format(
+            sql.SQL(', ').join(sql.Identifier(column) for column in columns), (sql.Identifier(table))))
+    return cursor.fetchall()
+
+
+# @connection_handler
+# def select_specific_from_table(cursor, table, id):
