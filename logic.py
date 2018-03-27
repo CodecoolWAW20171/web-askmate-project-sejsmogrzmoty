@@ -29,17 +29,16 @@ ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = range(len(AN
 # Get functions
 # ########################################################################
 
-def convert_time_to_string(data):
-    for index, single_data in enumerate(data):
-        data[index][SBMSN_TIME] = str(data[index][SBMSN_TIME])
-    return data
-
-
 def get_all_questions():
     questions = persistence.select_query(
         table=QSTN_TABLE,
-        columns=('vote_number', 'view_number', )
+        columns=('id', 'vote_number', 'view_number', 'title', SBMSN_TIME),
+        order_by=SBMSN_TIME,
+        order_type=DESC
     )
+    for question in questions:
+        question['answers_number'] = 0
+        question[SBMSN_TIME] = str(question[SBMSN_TIME])
     return questions
 
 
@@ -89,17 +88,19 @@ def add_new_question(new_question_input):
     new_question[SBMSN_TIME] = util.get_current_time()
     persistence.insert_into(
         table=QSTN_TABLE,
-        columns=new_question.keys(),
-        values=new_question.values()
+        columns=tuple(new_question.keys()),
+        values=tuple(new_question.values())
     )
 
 
 def add_new_answer(new_answer_input):
-    answers = get_all_answers()
-    new_answer = util.prepare_new_entry(answers, new_answer_input, ANSW_DEFAULTS)
-    new_answer['question_id'] = new_answer_input['question_id']
-    answers.append(new_answer)
-    write_all_answers_to_file(answers)
+    new_answer = {key: new_answer_input[key] for key in new_answer_input}
+    new_answer[SBMSN_TIME] = util.get_current_time()
+    persistence.insert_into(
+        table=QSTN_TABLE,
+        columns=tuple(new_answer.keys()),
+        values=tuple(new_answer.values())
+    )
 
 
 # Modify question database

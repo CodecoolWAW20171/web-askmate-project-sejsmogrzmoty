@@ -146,7 +146,7 @@ def update(cursor, table, columns, values, where=None):
 
 @connection_handler
 def insert_into(cursor, columns, table, values):
-    insert_query = sql.SQL("INSERT INTO {tbl}({cols}) VALUES ({val})").format(
+    insert_query = sql.SQL("INSERT INTO {tbl} ({cols}) VALUES ({val})").format(
         tbl=sql.Identifier(table),
         cols=choose_columns(columns),
         val=sql.SQL(",").join(sql.Placeholder()*len(values)))
