@@ -111,13 +111,6 @@ def join_and_execute(cursor, queries, values):
     data = cursor.fetchall()
     return data
 
-import ui
-values = (35,)
-q1 = select('answer', ('id', 'vote_number'))
-q2 = query_where('vote_number', '=', values)
-da = join_and_execute([q1, q2], values)
-ui.print_table(da)
-
 
 def select_all_from_table(cursor, table, order_by):
     cursor.execute(
@@ -138,3 +131,12 @@ def select_specific_from_table(cursor, columns, table):
 
 # @connection_handler
 # def select_specific_from_table(cursor, table, id):
+
+def delete_query(table):
+    query = sql.SQL("DELETE FROM {tbl} ").format(tbl=sql.Identifier(table))
+    return query
+
+@connection_handler
+def delete_from_table(cursor,table,where_col, where_comparison, values):
+    cursor.execute(delete_query(table)+query_where(where_col, where_comparison, values),values)
+    
