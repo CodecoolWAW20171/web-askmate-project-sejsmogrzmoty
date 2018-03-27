@@ -23,8 +23,7 @@ QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG = ra
 ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = range(len(ANSW_HEADERS))
 
 # ----- Default values ------
-QSTN_DEFAULTS = {"view_number": 0, "vote_number": 0, "title": "", "message": "", "image": ""}
-ANSW_DEFAULTS = {"vote_number": 0, "message": "", "image": ""}
+
 
 
 # Get functions
@@ -45,16 +44,7 @@ def get_all_questions():
 
 
 def get_all_answers():
-    # answers = persistence.select_all_from_table(ANSW_TABLE)
-    # return change_time_to_string(answers)
     pass
-
-
-def get_user_friendly_questions():
-    # questions = persistence.select_specific_from_table(QSTN_COLUMNS, QSTN_TABLE)
-    # return change_time_to_string(questions)
-    pass
-
 
 def get_all_answers_converted():
     answers = get_all_answers()
@@ -95,10 +85,13 @@ def get_answers_to_question(qstn_id):
 # Add functions
 # ########################################################################
 def add_new_question(new_question_input):
-    questions = get_all_questions()
-    new_question = util.prepare_new_entry(questions, new_question_input, QSTN_DEFAULTS)
-    questions.append(new_question)
-    write_all_questions_to_file(questions)
+    new_question = {key: new_question_input[key] for key in new_question_input}
+    new_question[SBMSN_TIME] = util.get_current_time()
+    persistence.insert_into(
+        table=QSTN_TABLE,
+        columns=new_question.keys(),
+        values=new_question.values()
+    )
 
 
 def add_new_answer(new_answer_input):
@@ -257,30 +250,3 @@ def get_top_questions():
     return top_questions
 
 
-<<<<<<< HEAD
-def select_where(where):
-    if where is not None:
-        where_col, where_comparison, values = where
-        if where_comparison.upper() in COMPARISON_TYPES:
-            where_comparison = sql.SQL(where_comparison.upper())
-        else:
-            raise ValueError("Unsupported WHERE conditional.")
-
-        if select_cols == '*':
-            select_cols = sql.SQL('*')
-        elif isinstance(select_cols, (list, tuple)):
-            select_cols = sql.SQL(', ').join(map(sql.Identifier, select_cols))
-        else:
-            raise TypeError("Columns to select specified invalidly.")
-
-        query = sql.SQL("WHERE {col} {comp} ({vals});").format(
-            col=sql.Identifier(where_col),
-            comp=where_comparison,
-            vals=sql.SQL(', ').join(sql.Placeholder()*len(values)))
-    else:
-        query = sql.SQL('')
-    return query
-
-
-=======
->>>>>>> 7b47d1186a5313fe1b449e95d4a6259f54070736
