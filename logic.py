@@ -80,17 +80,19 @@ def add_new_question(new_question_input):
     new_question[SBMSN_TIME] = util.get_current_time()
     persistence.insert_into(
         table=QSTN_TABLE,
-        columns=new_question.keys(),
-        values=new_question.values()
+        columns=tuple(new_question.keys()),
+        values=tuple(new_question.values())
     )
 
 
 def add_new_answer(new_answer_input):
-    answers = get_all_answers()
-    new_answer = util.prepare_new_entry(answers, new_answer_input, ANSW_DEFAULTS)
-    new_answer['question_id'] = new_answer_input['question_id']
-    answers.append(new_answer)
-    write_all_answers_to_file(answers)
+    new_answer = {key: new_answer_input[key] for key in new_answer_input}
+    new_answer[SBMSN_TIME] = util.get_current_time()
+    persistence.insert_into(
+        table=QSTN_TABLE,
+        columns=tuple(new_answer.keys()),
+        values=tuple(new_answer.values())
+    )
 
 
 # Modify question database
