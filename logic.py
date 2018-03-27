@@ -38,13 +38,15 @@ def convert_time_to_string(data):
 def get_all_questions():
     questions = persistence.select_query(
         table=QSTN_TABLE,
-        columns=('vote_number', 'view_number', )
+        columns=(QSTN_HEADERS)
     )
+    convert_time_to_string(questions)
     return questions
 
 
 def get_all_answers():
     pass
+
 
 def get_all_answers_converted():
     answers = get_all_answers()
@@ -54,32 +56,21 @@ def get_all_answers_converted():
 
 
 def get_question(qstn_id):
-    questions = get_all_questions()
-    for question in questions:
-        if question['id'] == qstn_id:
-            question['submission_time'] = util.convert_timestamp(int(question['submission_time']))
-            question['answers_number'] = count_how_many_answers(question['id'])
-            return question
+    question = persistence.select_query(QSTN_TABLE, '*', ('id', '=', (qstn_id,)))
+    convert_time_to_string(question)
+    return question
 
 
 def get_answer(answ_id):
-    answers = get_all_answers_converted()
-    for answer in answers:
-        if answer['id'] == answ_id:
-            return answer
+    answer = persistence.select_query(ANSW_TABLE, '*', ('id', '=', (answ_id,)))
+    convert_time_to_string(answer)
+    return answer
 
 
 def get_answers_to_question(qstn_id):
-    answers = get_all_answers_converted()
-    listed_answers = []
-    for answer in answers:
-        if answer['question_id'] == qstn_id:
-            listed_answers.append(answer)
-    return listed_answers
-
-
-# Write functions
-# ########################################################################
+    answers = persistence.select_query(ANSW_TABLE, '*', ('question_id', '=', (qstn_id,)))
+    convert_time_to_string(answers)
+    return answers
 
 
 # Add functions
@@ -121,30 +112,11 @@ def modify_answer(answ_id, modified_answer):
 
 
 def delete_question(qstn_id):
-    # Writes an updated list of questions to the csv file
-    question_data = get_all_questions()
-    questions_filtered = [question for question in question_data if question['id'] != qstn_id]
-    write_all_questions_to_file(questions_filtered)
-
-    # Writes an updated list of answers to the csv file
-    answer_data = get_all_answers()
-    answers_filtered = [answer for answer in answer_data if answer['question_id'] != qstn_id]
-    write_all_answers_to_file(answers_filtered)
+    persistence.delete_from_table(QSTN_TABLE, ('question_id', '=', (qstn_id,)))
 
 
 def delete_answer(answ_id):
-    '''
-    Removes a specified answer from csv file
-
-    Args:
-            answer id
-    Returns:
-            None
-            writes to csv the updated lists of dictionaries
-    '''
-    answer_data = get_all_answers()
-    updated_answers = [answer for answer in answer_data if answer['id'] != answ_id]
-    write_all_answers_to_file(updated_answers)
+    persistence.delete_from_table(ANSW_TABLE, ('question_id', '=', (answ_id)))
 
 
 # Helper function in database management

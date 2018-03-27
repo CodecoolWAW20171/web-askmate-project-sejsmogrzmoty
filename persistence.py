@@ -85,7 +85,7 @@ def construct_query_where(where):
         else:
             raise ValueError("Unsupported WHERE conditional.")
 
-        where_query = sql.SQL("WHERE {col} {comp} ({vals});").format(
+        where_query = sql.SQL("WHERE {col} {comp} ({vals})").format(
             col=sql.Identifier(where_col),
             comp=where_comparison,
             vals=sql.SQL(', ').join(sql.Placeholder()*len(values)))
@@ -97,7 +97,7 @@ def construct_query_where(where):
 @connection_handler
 def select_query(cursor, table, columns, where=None, order_by=None, order_type=None, limit=None):
 
-    where = construct_query_where(where)
+    where_query = construct_query_where(where)
 
     if order_by is not None:
         ordered_by = sql.SQL('ORDER BY {}').format(sql.Identifier(order_by))
@@ -118,15 +118,20 @@ def select_query(cursor, table, columns, where=None, order_by=None, order_type=N
         "SELECT {col_data} FROM {table_data} {where_data} {order_by_data} {order_type_data} {limit_data};").format(
         col_data=choose_columns(columns),
         table_data=sql.Identifier(table),
-        where_data=where,
+        where_data=where_query,
         order_by_data=ordered_by,
         order_type_data=type_of_order,
         limit_data=limited_to
     )
 
-    cursor.execute(query)
-    data = cursor.fetchall()
-    return data
+    if where == sql.SQL(''):
+        cursor.execute(query)
+        data = cursor.fetchall()
+        return data
+    else:
+        cursor.execute(query, where[2])
+        data = cursor.fetchall()
+        return data
 
 
 @connection_handler
@@ -159,5 +164,5 @@ def delete_query(table):
 
 
 @connection_handler
-def delete_from_table(cursor,table,where):
+def delete_from_table(cursor, table, where):
     cursor.execute(delete_query(table)+construct_query_where(where),where[2])
