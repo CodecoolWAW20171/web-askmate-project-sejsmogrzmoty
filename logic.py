@@ -58,7 +58,7 @@ def get_all_answers_converted():
 def get_question(qstn_id):
     question = persistence.select_query(QSTN_TABLE, '*', ('id', '=', (qstn_id,)))
     convert_time_to_string(question)
-    return question
+    return question[0]
 
 
 def get_answer(answ_id):
