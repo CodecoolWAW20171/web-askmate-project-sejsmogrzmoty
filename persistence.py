@@ -124,7 +124,7 @@ def select_query(cursor, table, columns, where=None, order_by=None, order_type=N
         limit_data=limited_to
     )
 
-    if where == sql.SQL(''):
+    if where_query == sql.SQL(''):
         cursor.execute(query)
         data = cursor.fetchall()
         return data
@@ -165,4 +165,4 @@ def delete_query(table):
 
 @connection_handler
 def delete_from_table(cursor, table, where):
-    cursor.execute(delete_query(table)+construct_query_where(where),where[2])
+    cursor.execute(delete_query(table)+construct_query_where(where), where[2])
