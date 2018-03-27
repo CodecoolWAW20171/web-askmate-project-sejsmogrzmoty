@@ -38,7 +38,7 @@ def get_all_questions():
         table=QSTN_TABLE,
         columns=('vote_number', 'view_number', )
     )
-    
+    return questions
 
 
 def get_all_answers():
