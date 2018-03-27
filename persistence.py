@@ -77,7 +77,7 @@ def choose_columns(columns):
     return columns
 
 
-def select_where(where):
+def construct_query_where(where):
     if where is not None:
         where_col, where_comparison, values = where
         if where_comparison.upper() in COMPARISON_TYPES:
@@ -95,9 +95,9 @@ def select_where(where):
 
 
 @connection_handler
-def select_query(cursor, columns, table, where=None, order_by=None, order_type=None, limit=None):
+def select_query(cursor, table, columns, where=None, order_by=None, order_type=None, limit=None):
 
-    where = select_where(where)
+    where = construct_query_where(where)
 
     if order_by is not None:
         ordered_by = sql.SQL('ORDER BY {}').format(sql.Identifier(order_by))
@@ -140,7 +140,7 @@ def update(cursor, table, columns, values, where=None):
             sql.Identifier(column),  sql.Placeholder()) for column in columns),
         where=where_query)
     if where is not None:
-        values = (*values, where[2])
+        values = (*values, *where[2])
     cursor.execute(update_query, values)
 
 

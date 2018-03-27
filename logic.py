@@ -30,25 +30,30 @@ ANSW_DEFAULTS = {"vote_number": 0, "message": "", "image": ""}
 # Get functions
 # ########################################################################
 
-def change_time_to_string(data):
+def convert_time_to_string(data):
     for index, single_data in enumerate(data):
         data[index][SBMSN_TIME] = str(data[index][SBMSN_TIME])
     return data
 
 
-def get_all_questions(order_by='id'):
-    questions = persistence.select_all_from_table(QSTN_TABLE, order_by)
-    return change_time_to_string(questions)
+def get_all_questions():
+    questions = persistence.select_query(
+        table=QSTN_TABLE,
+        columns=('vote_number', 'view_number', )
+    )
+    return questions
 
 
 def get_all_answers():
-    answers = persistence.select_all_from_table(ANSW_TABLE)
-    return change_time_to_string(answers)
+    # answers = persistence.select_all_from_table(ANSW_TABLE)
+    # return change_time_to_string(answers)
+    pass
 
 
 def get_user_friendly_questions():
-    questions = persistence.select_specific_from_table(QSTN_COLUMNS, QSTN_TABLE)
-    return change_time_to_string(questions)
+    # questions = persistence.select_specific_from_table(QSTN_COLUMNS, QSTN_TABLE)
+    # return change_time_to_string(questions)
+    pass
 
 
 def get_all_answers_converted():
@@ -85,12 +90,6 @@ def get_answers_to_question(qstn_id):
 
 # Write functions
 # ########################################################################
-def write_all_questions_to_file(questions):
-    persistence.write_data_to_file(questions, persistence.QSTN_FILE_PATH, QSTN_HEADERS)
-
-
-def write_all_answers_to_file(answers):
-    persistence.write_data_to_file(answers, persistence.ANSW_FILE_PATH, ANSW_HEADERS)
 
 
 # Add functions
@@ -113,24 +112,19 @@ def add_new_answer(new_answer_input):
 # Modify question database
 # ########################################################################
 def modify_question(qstn_id, modified_question):
-    questions = get_all_questions()
-    for question in questions:
-        if question['id'] == qstn_id:
-            for header in QSTN_HEADERS:
-                if header in modified_question:
-                    question[header] = modified_question[header]
-    write_all_questions_to_file(questions)
+
+    persistence.update(table=QSTN_TABLE,
+                       columns=modified_question.keys(),
+                       values=modified_question.values(),
+                       where=('id', '=', (qstn_id,)))
 
 
 def modify_answer(answ_id, modified_answer):
-    answers = get_all_answers()
-    for answer in answers:
-        if answer['id'] == answ_id:
-            for header in ANSW_HEADERS:
-                if header in modified_answer:
-                    answer[header] = modified_answer[header]
-            answer['question_id'] = modified_answer['question_id']
-    write_all_answers_to_file(answers)
+
+    persistence.update(table=ANSW_TABLE,
+                       columns=modified_answer.keys(),
+                       values=modified_answer.values(),
+                       where=('id', '=', (answ_id,)))
 
 
 def delete_question(qstn_id):
@@ -263,6 +257,7 @@ def get_top_questions():
     return top_questions
 
 
+<<<<<<< HEAD
 def select_where(where):
     if where is not None:
         where_col, where_comparison, values = where
@@ -287,3 +282,5 @@ def select_where(where):
     return query
 
 
+=======
+>>>>>>> 7b47d1186a5313fe1b449e95d4a6259f54070736
