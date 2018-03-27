@@ -132,7 +132,16 @@ def update(cursor, table, columns, values, where=None):
         col_vals=sql.SQL(', ').join(sql.SQL("{}={}").format(
             sql.Identifier(column),  sql.Placeholder()) for column in columns),
         where=where_query)
-
     if where is not None:
         values = (*values, *where[2])
     cursor.execute(update_query, values)
+
+
+def delete_query(table):
+    query = sql.SQL("DELETE FROM {tbl} ").format(tbl=sql.Identifier(table))
+    return query
+
+@connection_handler
+def delete_from_table(cursor,table,where):
+    cursor.execute(delete_query(table)+construct_query_where(where),where[2])
+    
