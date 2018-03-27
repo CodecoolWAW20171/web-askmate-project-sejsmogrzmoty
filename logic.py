@@ -25,9 +25,9 @@ ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = range(len(AN
 # ----- Default values ------
 
 
-
 # Get functions
 # ########################################################################
+
 
 def convert_time_to_string(data):
     for index, single_data in enumerate(data):
@@ -212,15 +212,6 @@ def increase_view_counter(id_):
 # Get top questions
 # ########################################################################
 def get_top_questions():
-    top_questions = []
-
-    questions = get_sorted_questions('submission_time')
-    top_questions.append(questions[0])
-    questions = sort_by(questions, 'view_number')
-    top_questions.append(questions[0])
-    questions = sort_by(questions, 'vote_number')
-    top_questions.append(questions[0])
-
-    return top_questions
-
-
+    questions = persistence.select_query(QSTN_TABLE, QSTN_HEADERS, order_by='vote_number', order_type=DESC)
+    convert_time_to_string(questions)
+    return questions
