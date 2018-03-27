@@ -23,7 +23,7 @@ QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG = ra
 ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = range(len(ANSW_HEADERS))
 
 # ----- Default values ------
-
+QSTN_DEFAULTS = {"view_number": 0, "vote_number": 0, "title": "", "message": "", "image": ""}
 
 # Get functions
 # ########################################################################
@@ -62,13 +62,13 @@ def get_question(qstn_id):
 
 
 def get_answer(answ_id):
-    answer = persistence.select_query(ANSW_TABLE, '*', ('id', '=', (answ_id,)))
+    answer = persistence.select_query(ANSW_TABLE, '*', ('id', '=', (answ_id,),))
     convert_time_to_string(answer)
-    return answer
+    return answer[0]
 
 
 def get_answers_to_question(qstn_id):
-    answers = persistence.select_query(ANSW_TABLE, '*', ('question_id', '=', (qstn_id,)))
+    answers = persistence.select_query(ANSW_TABLE, '*', ('question_id', '=', (qstn_id,)), 'submission_time', DESC)
     convert_time_to_string(answers)
     return answers
 
@@ -89,7 +89,7 @@ def add_new_answer(new_answer_input):
     new_answer = {key: new_answer_input[key] for key in new_answer_input}
     new_answer[SBMSN_TIME] = util.get_current_time()
     persistence.insert_into(
-        table=QSTN_TABLE,
+        table=ANSW_TABLE,
         columns=tuple(new_answer.keys()),
         values=tuple(new_answer.values())
     )
@@ -114,11 +114,11 @@ def modify_answer(answ_id, modified_answer):
 
 
 def delete_question(qstn_id):
-    persistence.delete_from_table(QSTN_TABLE, ('question_id', '=', (qstn_id,)))
+    persistence.delete_from_table(QSTN_TABLE, ('id', '=', (qstn_id,)))
 
 
 def delete_answer(answ_id):
-    persistence.delete_from_table(ANSW_TABLE, ('question_id', '=', (answ_id)))
+    persistence.delete_from_table(ANSW_TABLE, ('id', '=', (answ_id)))
 
 
 # Helper function in database management
