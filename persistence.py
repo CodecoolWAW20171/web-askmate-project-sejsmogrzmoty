@@ -4,6 +4,17 @@ import psycopg2.extras
 import psycopg2.sql as sql
 
 
+QSTN_TABLE = 'question'
+ANSW_TABLE = 'answer'
+CMNT_TABLE = 'comment'
+TAG_TABLE = 'tag'
+QSTN_TAG_TABLE = 'question_tag'
+QSTN_COLUMNS = ['id', 'submission_time', 'view_number', 'vote_number', 'title']
+COMPARISON_TYPES = ('=', '<>', '<', '>', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN')
+ASC = 'ASC'
+DESC = 'DESC'
+
+
 def get_connection_string():
     # setup connection string
     # to do this, please define these environment variables first
@@ -49,75 +60,63 @@ def connection_handler(function):
     return wrapper
 
 
-@connection_handler
-def select_all_from_table(cursor, table):
-    cursor.execute(sql.SQL('SELECT * FROM {}').format(sql.Identifier(table)))
-    data = cursor.fetchall()
-    return data
-
-
-@connection_handler
-def select_columns_from_table(cursor, table, select_cols):
-    if select_cols == '*':
-        select_cols = sql.SQL('*')
-    elif isinstance(select_cols, (list, tuple)):
-        select_cols = sql.SQL(', ').join(map(sql.Identifier, select_cols))
+def choose_columns(columns):
+    if columns == '*':
+        columns = sql.SQL('*')
+    elif isinstance(columns, (list, tuple)):
+        columns = sql.SQL(', ').join(map(sql.Identifier, columns))
     else:
         raise TypeError("Columns to select specified invalidly.")
+    return columns
 
-    query = sql.SQL("SELECT {cols} FROM {tbl};").format(
-        cols=select_cols,
-        tbl=sql.Identifier(table))
+
+def select_where(where):
+    if where is not None:
+        where_col, where_comparison, values = where
+        if where_comparison.upper() in COMPARISON_TYPES:
+            where_comparison = sql.SQL(where_comparison.upper())
+        else:
+            raise ValueError("Unsupported WHERE conditional.")
+
+        where_query = sql.SQL("WHERE {col} {comp} ({vals});").format(
+            col=sql.Identifier(where_col),
+            comp=where_comparison,
+            vals=sql.SQL(', ').join(sql.Placeholder()*len(values)))
+    else:
+        where_query = sql.SQL('')
+    return where_query
+
+
+@connection_handler
+def select_query(cursor, columns, table, where=None, order_by=None, order_type=None, limit=None):
+
+    where = select_where(where)
+
+    if order_by is not None:
+        ordered_by = sql.SQL('ORDER BY {}').format(sql.Identifier(order_by))
+    else:
+        ordered_by = sql.SQL('')
+
+    if order_type is not None:
+        type_of_order = sql.SQL(order_type)
+    else:
+        type_of_order = sql.SQL('')
+
+    if limit is not None:
+        limited_to = sql.SQL('LIMIT {}').format(sql.Placeholder(limit))
+    else:
+        limited_to = sql.SQL('')
+
+    query = sql.SQL(
+        "SELECT {col_data} FROM {table_data} {where_data} {order_by_data} {order_type_data} {limit_data};").format(
+        col_data=choose_columns(columns),
+        table_data=sql.Identifier(table),
+        where_data=where,
+        order_by_data=ordered_by,
+        order_type_data=type_of_order,
+        limit_data=limited_to
+    )
+
     cursor.execute(query)
     data = cursor.fetchall()
     return data
-
-
-@connection_handler
-def select_where(cursor, table, select_cols,
-                 where_col, where_comparison, values):
-
-    if where_comparison.upper() in ('=', '<>', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN'):
-        where_comparison = sql.SQL(where_comparison.upper())
-    else:
-        raise ValueError("Unsupported WHERE conditional.")
-
-    if select_cols == '*':
-        select_cols = sql.SQL('*')
-    elif isinstance(select_cols, (list, tuple)):
-        select_cols = sql.SQL(', ').join(map(sql.Identifier, select_cols))
-    else:
-        raise TypeError("Columns to select specified invalidly.")
-
-    query = sql.SQL("SELECT {cols} FROM {tbl} WHERE {col} {comp} ({vals});").format(
-        cols=select_cols,
-        tbl=sql.Identifier(table),
-        col=sql.Identifier(where_col),
-        comp=where_comparison,
-        vals=sql.SQL(', ').join(sql.Placeholder()*len(values)))
-
-    print(query.as_string(cursor))
-    cursor.execute(query, values)
-    data = cursor.fetchall()
-    return data
-
-
-def select_all_from_table(cursor, table, order_by):
-    cursor.execute(
-        sql.SQL('SELECT * FROM {} ORDER BY {}').format(
-            sql.Identifier(table), sql.Identifier(order_by)
-        )
-    )
-    return cursor.fetchall()
-
-
-@connection_handler
-def select_specific_from_table(cursor, columns, table):
-    cursor.execute(
-        sql.SQL('SELECT {} FROM {}').format(
-            sql.SQL(', ').join(sql.Identifier(column) for column in columns), (sql.Identifier(table))))
-    return cursor.fetchall()
-
-
-# @connection_handler
-# def select_specific_from_table(cursor, table, id):
