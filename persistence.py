@@ -89,52 +89,50 @@ def select(table, select_cols):
     return query
 
 
-def query_where(where_col, where_comparison, values):
+def construct_query_where(where):
 
-    if where_comparison.upper() in ('=', '<', '>', '<>', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN'):
-        where_comparison = sql.SQL(where_comparison.upper())
+    if where is not None:
+        where_col, where_comparison, values = where
+        if where_comparison.upper() in ('=', '<', '>', '<>', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN'):
+            where_comparison = sql.SQL(where_comparison.upper())
+        else:
+            raise ValueError("Unsupported WHERE conditional.")
+
+        query = sql.SQL("WHERE {col} {comp} ({vals})").format(
+            col=sql.Identifier(where_col),
+            comp=where_comparison,
+            vals=sql.SQL(', ').join(sql.Placeholder()*len(values)))
     else:
-        raise ValueError("Unsupported WHERE conditional.")
+        query = sql.SQL('')
 
-    query = sql.SQL("WHERE {col} {comp} ({vals})").format(
-        col=sql.Identifier(where_col),
-        comp=where_comparison,
-        vals=sql.SQL(', ').join(sql.Placeholder()*len(values)))
+    return query
+
+
+def query_order_by(order_col, order):
+
+    if order.upper() in ('ASC', 'DESC'):
+        order = sql.SQL(order.upper())
+    else:
+        raise ValueError("Unsupported ORDER type.")
+
+    query = sql.SQL("ORDER BY {col} {order}").format(
+        col=sql.Identifier(order_col),
+        order=order)
 
     return query
 
 
 @connection_handler
-def join_and_execute(cursor, queries, values):
-    final_query = sql.SQL(' ').join(queries)
-    cursor.execute(final_query, values)
-    data = cursor.fetchall()
-    return data
+def update(cursor, table, columns, values, where=None):
 
-import ui
-values = (35,)
-q1 = select('answer', ('id', 'vote_number'))
-q2 = query_where('vote_number', '=', values)
-da = join_and_execute([q1, q2], values)
-ui.print_table(da)
+    where_query = construct_query_where(where)
 
+    update_query = sql.SQL("UPDATE {tbl} SET {col_vals} {where}").format(
+        tbl=sql.Identifier(table),
+        col_vals=sql.SQL(', ').join(sql.SQL("{}={}").format(
+            sql.Identifier(column),  sql.Placeholder()) for column in columns),
+        where=where_query)
 
-def select_all_from_table(cursor, table, order_by):
-    cursor.execute(
-        sql.SQL('SELECT * FROM {} ORDER BY {}').format(
-            sql.Identifier(table), sql.Identifier(order_by)
-        )
-    )
-    return cursor.fetchall()
-
-
-@connection_handler
-def select_specific_from_table(cursor, columns, table):
-    cursor.execute(
-        sql.SQL('SELECT {} FROM {}').format(
-            sql.SQL(', ').join(sql.Identifier(column) for column in columns), (sql.Identifier(table))))
-    return cursor.fetchall()
-
-
-# @connection_handler
-# def select_specific_from_table(cursor, table, id):
+    if where is not None:
+        values = (*values, where[2])
+    cursor.execute(update_query, values)
