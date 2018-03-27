@@ -73,14 +73,7 @@ def select_columns_from_table(cursor, table, select_cols):
     return data
 
 
-@connection_handler
-def select_where(cursor, table, select_cols,
-                 where_col, where_comparison, values):
-
-    if where_comparison.upper() in ('=', '<>', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN'):
-        where_comparison = sql.SQL(where_comparison.upper())
-    else:
-        raise ValueError("Unsupported WHERE conditional.")
+def select(table, select_cols):
 
     if select_cols == '*':
         select_cols = sql.SQL('*')
@@ -89,17 +82,41 @@ def select_where(cursor, table, select_cols,
     else:
         raise TypeError("Columns to select specified invalidly.")
 
-    query = sql.SQL("SELECT {cols} FROM {tbl} WHERE {col} {comp} ({vals});").format(
+    query = sql.SQL("SELECT {cols} FROM {tbl}").format(
         cols=select_cols,
-        tbl=sql.Identifier(table),
+        tbl=sql.Identifier(table))
+
+    return query
+
+
+def query_where(where_col, where_comparison, values):
+
+    if where_comparison.upper() in ('=', '<', '>', '<>', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN'):
+        where_comparison = sql.SQL(where_comparison.upper())
+    else:
+        raise ValueError("Unsupported WHERE conditional.")
+
+    query = sql.SQL("WHERE {col} {comp} ({vals})").format(
         col=sql.Identifier(where_col),
         comp=where_comparison,
         vals=sql.SQL(', ').join(sql.Placeholder()*len(values)))
 
-    print(query.as_string(cursor))
-    cursor.execute(query, values)
+    return query
+
+
+@connection_handler
+def join_and_execute(cursor, queries, values):
+    final_query = sql.SQL(' ').join(queries)
+    cursor.execute(final_query, values)
     data = cursor.fetchall()
     return data
+
+import ui
+values = (35,)
+q1 = select('answer', ('id', 'vote_number'))
+q2 = query_where('vote_number', '=', values)
+da = join_and_execute([q1, q2], values)
+ui.print_table(da)
 
 
 def select_all_from_table(cursor, table, order_by):
