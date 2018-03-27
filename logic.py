@@ -7,6 +7,9 @@ CMNT_TABLE = 'comment'
 TAG_TABLE = 'tag'
 QSTN_TAG_TABLE = 'question_tag'
 QSTN_COLUMNS = ['id', 'submission_time', 'view_number', 'vote_number', 'title']
+COMPARISON_TYPES = ('=', '<>', '<', '>', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN')
+ASC = 'ASC'
+DESC = 'DESC'
 
 SBMSN_TIME = 'submission_time'
 
@@ -260,4 +263,27 @@ def get_top_questions():
     return top_questions
 
 
-print(get_all_questions())
+def select_where(where):
+    if where is not None:
+        where_col, where_comparison, values = where
+        if where_comparison.upper() in COMPARISON_TYPES:
+            where_comparison = sql.SQL(where_comparison.upper())
+        else:
+            raise ValueError("Unsupported WHERE conditional.")
+
+        if select_cols == '*':
+            select_cols = sql.SQL('*')
+        elif isinstance(select_cols, (list, tuple)):
+            select_cols = sql.SQL(', ').join(map(sql.Identifier, select_cols))
+        else:
+            raise TypeError("Columns to select specified invalidly.")
+
+        query = sql.SQL("WHERE {col} {comp} ({vals});").format(
+            col=sql.Identifier(where_col),
+            comp=where_comparison,
+            vals=sql.SQL(', ').join(sql.Placeholder()*len(values)))
+    else:
+        query = sql.SQL('')
+    return query
+
+
