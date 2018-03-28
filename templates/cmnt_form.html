@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+
+{% if form_type == "new" %}
+    {% set active_page = "post_comment" %}
+    {% set title = "Post comment" %}
+    {% set query = url_for('modify_comment_to_question') %}
+{% elif form_type == "edit" %}
+    {% set active_page = "edit_comment" %}
+    {% set title = "Edit a comment: id " + answer.id|string %}
+    {% set query = url_for('modify_comment_to_question', id_=question.id) %}
+{% endif %}
+
+{% block title %}
+    {{ "Askmate " + title }}
+{% endblock %}
+
+{% block body %}
+    <h2>{{ question.title }}</h2>
+    <hr>
+
+    <div class="container">
+        <div class="mid">
+            {% for line in question.message.splitlines() %}
+            <p>{{ line|e }}</p>
+            {% endfor %}
+        </div>
+        <div class="side-right">
+            <p class="label">asked</p>
+            <p class="data">{{ question.submission_time }}</p>
+            
+            <p class="label">views</p>
+            <p class="data">{{ question.view_number }}</p>
+
+            <p class="label">votes</p>
+            <p class="data">{{ question.vote_number }}</p>
+    
+        </div>
+    </div>
+    <hr>
+
+    <div class="form-container">
+        <form action="{{ query }}" method="post">
+
+            <!-- Title -->
+            <div class="row hidden">
+                <div class="col-25">
+                    <label for="question_id">Question id</label>
+                </div>
+                <div class="col-75">
+                    <input type="hidden" id="question_id" name="question_id" value="{{ question.id }}">
+                </div>
+            </div>
+
+            <!-- Message -->
+            <div class="row">
+                <div class="col-25">
+                    <label for="message">Comment</label>
+                </div>
+                <div class="col-75">
+                    <textarea id="message" name="message" rows="5"
+                    placeholder="Write a comment..." class="full-width">
+                        {{- comment.message -}}
+                    </textarea>
+                </div>
+            </div>
+
+            <!-- Submit button -->
+            <div class="row">
+                <button type="submit" class="confirm form-sub"><i class="fas fa-check"></i><span> {% if form_type == "edit" %}Submit{% else %}Create{% endif %}</span></button>
+            </div>
+            
+        </form>
+        {% if form_type == "edit" %}
+        <div class="spacer"></div>
+        
+        <!-- Delete button -->
+        <div class="">
+            <div class="row">
+                <form action="{{ url_for('delete_comment') }}" method="post">
+                    <input type="hidden" id="question_id" name="question_id" value="{{ question.id }}">
+                    <button type="submit" name="id" value="{{ comment.id }}"
+                    class="confirm delete" onclick="return confirmation();">
+                        <i class="fas fa-trash"></i><span> Delete</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}            
+        
+    </div>
+{% endblock %}
