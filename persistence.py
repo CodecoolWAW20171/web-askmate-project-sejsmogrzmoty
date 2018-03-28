@@ -110,7 +110,7 @@ def select_query(cursor, table, columns, where=None, order_by=None, order_type=N
         type_of_order = sql.SQL('')
 
     if limit is not None:
-        limited_to = sql.SQL('LIMIT {}').format(sql.Placeholder(limit))
+        limited_to = sql.SQL('LIMIT {}').format(sql.Literal(limit))
     else:
         limited_to = sql.SQL('')
 
