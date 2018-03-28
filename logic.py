@@ -212,19 +212,19 @@ def increase_view_counter(id_):
 
 # Get top questions
 # ########################################################################
-def get_top_questions():
-    questions = persistence.select_query(QSTN_TABLE, QSTN_HEADERS, order_by='submission_time', order_type=DESC)
+def get_most_recent_questions(limit):
+    questions = persistence.select_query(QSTN_TABLE, QSTN_HEADERS, order_by='submission_time', order_type=DESC, limit=limit)
     convert_time_to_string(questions)
     return questions
 
 
-def get_most_voted_question():
-    questions = persistence.select_query(QSTN_TABLE, QSTN_HEADERS, order_by='vote_number', order_type=DESC)
+def get_most_voted_question(limit):
+    questions = persistence.select_query(QSTN_TABLE, QSTN_HEADERS, order_by='vote_number', order_type=DESC, limit=limit)
     convert_time_to_string(questions)
     return questions
 
 
-def get_most_viewed_question():
-    questions = persistence.select_query(QSTN_TABLE, QSTN_HEADERS, order_by='view_number', order_type=DESC)
+def get_most_viewed_question(limit):
+    questions = persistence.select_query(QSTN_TABLE, QSTN_HEADERS, order_by='view_number', order_type=DESC, limit=limit)
     convert_time_to_string(questions)
     return questions

@@ -18,7 +18,7 @@ def route_index():
                            'The most viewed question',
                            'The top voted question']
 
-    top_question_data = logic.get_top_questions()
+    top_question_data = logic.get_most_recent_questions(1)[0], logic.get_most_viewed_question(1)[0], logic.get_most_voted_question(1)[0]
     top_questions = list(zip(top_question_titles, top_question_data))
 
     return render_template('index.html', top_questions=top_questions)
