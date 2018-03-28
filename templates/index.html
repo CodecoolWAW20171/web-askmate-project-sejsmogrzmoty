@@ -17,9 +17,8 @@
 </form>
 <hr>
 
-
-{% for title, question in top_questions %}
-    <h2>{{ title }}</h2>
+<h2>The most recent questions</h2>
+{% for question in top_questions %}
     <h3><a href="{{ url_for('show_question', qstn_id=question.id) }}">{{ question.title }}</a></h3>
     <hr>
 
@@ -41,7 +40,6 @@
     
         </div>
     </div>
-    <hr>
 {% endfor %}
 
 <div class="centered">
