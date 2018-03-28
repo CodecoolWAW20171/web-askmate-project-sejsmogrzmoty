@@ -186,8 +186,7 @@ def query_conditional(column, comparison, values):
             raise ValueError("Exactly 2 values required for BETWEEN conditional.")
     else:
         raise ValueError("Unsupported WHERE conditional.\n    "
-                         "(\"{}\" is not a valid comparison type.)".format(comparison)
-                        )
+                         "(\"{}\" is not a valid comparison type.)".format(comparison))
 
     return query, values
 # ########################################################################
@@ -271,16 +270,16 @@ def construct_query_LIMIT(limit):
 # ########################################################################
 
 
-# SQL SELECT query construction
+# SQL SELECT query
 # ########################################################################
 @db_connection.connection_handler
 def select_query(cursor, table, columns,
                  wheres=None, orders=None, join=None, groups=None, limit=None):
 
     if wheres is not None:
-        where_query, values = construct_query_WHERE(*wheres)
+        where_query, where_values = construct_query_WHERE(*wheres)
     else:
-        where_query, values = (sql.SQL(''), None)
+        where_query, where_values = (sql.SQL(''), None)
 
     if orders is not None:
         order_query = construct_query_ORDER_BY(orders)
@@ -312,8 +311,8 @@ def select_query(cursor, table, columns,
         limit=limit_query
     )
 
-    if values:
-        cursor.execute(query, values)
+    if where_values:
+        cursor.execute(query, where_values)
     else:
         cursor.execute(query)
     data = cursor.fetchall()
@@ -321,40 +320,58 @@ def select_query(cursor, table, columns,
 # ########################################################################
 
 
-# SQL UPDATE query construction
+# SQL UPDATE query
 # ########################################################################
 @db_connection.connection_handler
-def update(cursor, table, columns, values, wheres=None):
+def update_query(cursor, table, columns, values, wheres=None):
 
-    where = construct_query_WHERE(where)
+    if wheres is not None:
+        where_query, where_values = construct_query_WHERE(*wheres)
+    else:
+        where_query, where_values = (sql.SQL(''), None)
 
     update_query = sql.SQL("UPDATE {tbl} SET {col_vals} {where}").format(
         tbl=sql.Identifier(table),
         col_vals=sql.SQL(', ').join(sql.SQL("{}={}").format(
             sql.Identifier(column),  sql.Placeholder()) for column in columns),
         where=where_query)
-    if where is not None:
-        values = (*values, *where[2])
+    if where_values is not None:
+        values = (*values, *where_values)
     cursor.execute(update_query, values)
+# ########################################################################
 
 
+# SQL INSERT query
+# ########################################################################
 @db_connection.connection_handler
-def insert_into(cursor, columns, table, values):
+def insert_into_query(cursor, table, columns, values):
     insert_query = sql.SQL("INSERT INTO {tbl} ({cols}) VALUES ({val})").format(
         tbl=sql.Identifier(table),
         cols=choose_columns(columns),
-        val=sql.SQL(",").join(sql.Placeholder()*len(values)))
+        val=sql.SQL(', ').join(sql.Placeholder()*len(values)))
     cursor.execute(insert_query, values)
+# ########################################################################
 
 
-def delete_query(table):
-    query = sql.SQL("DELETE FROM {tbl} ").format(tbl=sql.Identifier(table))
-    return query
-
-
+# SQL DELETE query
+# ########################################################################
 @db_connection.connection_handler
-def delete_from_table(cursor, table, where):
-    cursor.execute(delete_query(table)+construct_query_WHERE(where), where[2])
+def delete_query(cursor, table, wheres=None):
+
+    if wheres is not None:
+        where_query, where_values = construct_query_WHERE(*wheres)
+    else:
+        where_query, where_values = (sql.SQL(''), None)
+
+    query = sql.SQL("DELETE FROM {tbl} {where}").format(
+        tbl=sql.Identifier(table),
+        where=where_query)
+
+    if where_values:
+        cursor.execute(query, where_values)
+    else:
+        cursor.execute(query)
+# ########################################################################
 
 
 @db_connection.connection_handler

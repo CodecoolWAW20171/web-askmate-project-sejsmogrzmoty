@@ -8,69 +8,63 @@ TAG_TABLE = 'tag'
 QSTN_TAG_TABLE = 'question_tag'
 TABLES = [QSTN_TABLE, ANSW_TABLE, CMNT_TABLE, TAG_TABLE, QSTN_TAG_TABLE]
 QSTN_COLUMNS = ['id', 'submission_time', 'view_number', 'vote_number', 'title']
-COMPARISON_TYPES = ('=', '<>', '<', '>', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN')
 ASC = 'ASC'
 DESC = 'DESC'
 
 SBMSN_TIME = 'submission_time'
 
 # ----- Constants -----------
-QSTN_HEADERS = ["id", "submission_time", "view_number", "vote_number", "title", "message", "image"]
-ANSW_HEADERS = ["id", "submission_time", "vote_number", "question_id", "message", "image"]
+QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image")
+ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image")
 ANSW_DEFAULTS = {"vote_number": 0, "message": "", "image": ""}
 
 # ----- Column indecies -----
-QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG = range(len(QSTN_HEADERS))
-ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = range(len(ANSW_HEADERS))
+QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG = QSTN_HEADERS
+ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = ANSW_HEADERS
 
 # ----- Default values ------
 QSTN_DEFAULTS = {"view_number": 0, "vote_number": 0, "title": "", "message": "", "image": ""}
 
+
 # Get functions
 # ########################################################################
-
-
-def convert_time_to_string(data):
-    for index, single_data in enumerate(data):
-        data[index][SBMSN_TIME] = str(data[index][SBMSN_TIME])
-    return data
-
-
 def get_all_questions():
+    cols = [(QSTN_TABLE, header) for header in
+            (QSTN_ID, QSTN_STIME, QSTN_TITLE, QSTN_VIEWN, QSTN_VOTEN)]
+    cols.append(('COUNT', (ANSW_TABLE, ANSW_QSTN_ID), 'answers_number'))
+    join_on_cols = [(QSTN_TABLE, QSTN_ID), ANSW_QSTN_ID]
+    group_by = [(QSTN_TABLE, QSTN_ID)]
+    order_by = [(QSTN_STIME, DESC)]
     questions = persistence.select_query(
         table=QSTN_TABLE,
-        columns=(QSTN_HEADERS)
+        columns=cols,
+        join=(ANSW_TABLE, join_on_cols, 'LEFT'),
+        groups=group_by,
+        orders=order_by
     )
-    convert_time_to_string(questions)
+    util.convert_time_to_string(questions, QSTN_STIME)
     return questions
 
 
-def get_all_answers():
-    pass
-
-
-def get_all_answers_converted():
-    answers = get_all_answers()
-    for a, answer in enumerate(answers):
-        answers[a]['submission_time'] = util.convert_timestamp(int(answer['submission_time']))
-    return answers
-
-
 def get_question(qstn_id):
-    question = persistence.select_query(QSTN_TABLE, '*', ('id', '=', (qstn_id,)))
-    convert_time_to_string(question)
+    question = persistence.select_query(QSTN_TABLE, '*', wheres=[[('id', '=', (qstn_id,))]])
+    util.convert_time_to_string(question, QSTN_STIME)
     return question[0]
 
 
 def get_answer(answ_id):
-    answer = persistence.select_query(ANSW_TABLE, '*', ('id', '=', (answ_id,),))
-    convert_time_to_string(answer)
+    answer = persistence.select_query(ANSW_TABLE, '*', wheres=[[('id', '=', (answ_id,))]])
+    util.convert_time_to_string(answer, ANSW_STIME)
     return answer[0]
 
 
 def get_answers_to_question(qstn_id):
-    answers = persistence.select_query(ANSW_TABLE, '*', ('question_id', '=', (qstn_id,)), 'submission_time', DESC)
-    convert_time_to_string(answers)
+    answers = persistence.select_query(
+        ANSW_TABLE, '*',
+        wheres=[[(ANSW_QSTN_ID, '=', (qstn_id,))]],
+        orders=[(ANSW_STIME, DESC)]
+    )
+    util.convert_time_to_string(answers, ANSW_STIME)
     return answers
 
 
@@ -78,7 +72,7 @@ def get_answers_to_question(qstn_id):
 # ########################################################################
 def add_new_question(new_question_input):
     new_question = {key: new_question_input[key] for key in new_question_input}
-    new_question[SBMSN_TIME] = util.get_current_time()
+    new_question[QSTN_STIME] = util.get_current_time()
     persistence.insert_into(
         table=QSTN_TABLE,
         columns=tuple(new_question.keys()),
@@ -88,7 +82,7 @@ def add_new_question(new_question_input):
 
 def add_new_answer(new_answer_input):
     new_answer = {key: new_answer_input[key] for key in new_answer_input}
-    new_answer[SBMSN_TIME] = util.get_current_time()
+    new_answer[ANSW_STIME] = util.get_current_time()
     persistence.insert_into(
         table=ANSW_TABLE,
         columns=tuple(new_answer.keys()),
@@ -103,7 +97,7 @@ def modify_question(qstn_id, modified_question):
     persistence.update(table=QSTN_TABLE,
                        columns=modified_question.keys(),
                        values=modified_question.values(),
-                       where=('id', '=', (qstn_id,)))
+                       wheres=[[('id', '=', (qstn_id,))]])
 
 
 def modify_answer(answ_id, modified_answer):
@@ -111,15 +105,15 @@ def modify_answer(answ_id, modified_answer):
     persistence.update(table=ANSW_TABLE,
                        columns=modified_answer.keys(),
                        values=modified_answer.values(),
-                       where=('id', '=', (answ_id,)))
+                       wheres=[[('id', '=', (answ_id,))]])
 
 
 def delete_question(qstn_id):
-    persistence.delete_from_table(QSTN_TABLE, ('id', '=', (qstn_id,)))
+    persistence.delete_query(QSTN_TABLE, wheres=[[('id', '=', (qstn_id,))]])
 
 
 def delete_answer(answ_id):
-    persistence.delete_from_table(ANSW_TABLE, ('id', '=', (answ_id,)))
+    persistence.delete_query(ANSW_TABLE, wheres=[[('id', '=', (answ_id,))]])
 
 
 # Helper function in database management
@@ -215,20 +209,20 @@ def increase_view_counter(id_):
 def get_most_recent_questions(limit):
     questions = persistence.select_query(
         QSTN_TABLE, QSTN_HEADERS, order_by='submission_time', order_type=DESC, limit=limit)
-    convert_time_to_string(questions)
+    util.convert_time_to_string(questions)
     return questions
 
 
 def get_most_voted_question(limit):
     questions = persistence.select_query(
         QSTN_TABLE, QSTN_HEADERS, order_by='vote_number', order_type=DESC, limit=limit)
-    convert_time_to_string(questions)
+    util.convert_time_to_string(questions)
     return questions
 
 
 def get_most_viewed_question(limit):
     questions = persistence.select_query(QSTN_TABLE, QSTN_HEADERS, order_by='view_number', order_type=DESC, limit=limit)
-    convert_time_to_string(questions)
+    util.convert_time_to_string(questions)
     return questions
 
 
@@ -242,3 +236,7 @@ def add_comment_new_comment(new_comment_input):
         columns=tuple(new_comment.keys()),
         values=tuple(new_comment.values())
     )
+
+
+
+
