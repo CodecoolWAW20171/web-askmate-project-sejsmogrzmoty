@@ -49,7 +49,7 @@ def show_question(qstn_id):
         abort(404)
     answers = logic.get_answers_to_question(qstn_id)
     answers_ids = [answer['id'] for answer in answers]
-    print(persistence.get_comments_for_answers_and_questions(answers_ids, qstn_id))
+    # comments = persistence.get_comments_for_answers_and_questions(answers_ids, qstn_id))
 
     return render_template('detail.html', question=question, answers=answers)
 
