@@ -173,7 +173,7 @@ def show_all_questions_with_counter(cursor):
     cursor.execute("""
                     SELECT question.*, COUNT(answer.id) as answers_number
                     FROM question
-                    left JOIN answer ON question.id=question_id
+                    LEFT JOIN answer ON question.id=question_id
                     GROUP BY question.id;
                     """)
     data = cursor.fetchall()
@@ -194,13 +194,32 @@ def show_searched_questions(cursor,search_string):
 
 
 @connection_handler
-def get_comments_for_answers_and_questions(cursor, answers_ids, qstn_id):
-    query = sql.SQL('SELECT * FROM comment WHERE {} IN ({}) OR {}={}').format(
-        sql.Identifier('answer_id'),
-        sql.Placeholder()*len(answers_ids),
-        sql.Identifier('question_id'),
-        sql.Literal(qstn_id)
+def get_comments_for_answers_and_questions(cursor, qstn_id, answers_ids):
+    if answers_ids:
+        query = sql.SQL('SELECT * FROM comment WHERE {} IN ({}) OR {}={}').format(
+            sql.Identifier('answer_id'),
+            sql.SQL(', ').join(sql.Placeholder()*len(answers_ids)),
+            sql.Identifier('question_id'),
+            sql.Literal(qstn_id)
+        )
+        cursor.execute(query, answers_ids)
+        data = cursor.fetchall()
+    else:
+        data = select_query(CMNT_TABLE, '*', ('question_id', '=', (qstn_id,)))
+    return(data)
+
+
+@connection_handler
+def update_vote_number(cursor, table, column, value, where=None):
+
+    where_query = construct_query_where(where)
+
+    query = sql.SQL('UPDATE {tbl} SET {column} = {column}+{value} {where}').format(
+        tbl=sql.Identifier(table),
+        column=sql.Identifier(column),
+        value=sql.Literal(value),
+        where=where_query
     )
-    cursor.execute(query, answers_ids)
-    data = cursor.fetchall()
-    return data
+    if where is not None:
+        values = where[2]
+    cursor.execute(query, values)
