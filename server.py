@@ -47,7 +47,6 @@ def show_question(qstn_id):
     if question is None:
         abort(404)
     answers = logic.get_answers_to_question(qstn_id)
-    logic.increase_view_counter(qstn_id)
 
     return render_template('detail.html', question=question, answers=answers)
 
