@@ -14,9 +14,8 @@ COMPARISON_TYPES = ('=', '<>', '<', '>', '<=', '>=', 'LIKE', 'NOT LIKE', 'IN', '
 COMPARISON_TYPES_EXTENDED = ('BETWEEN', 'NOT BETWEEN')
 JOIN_WORDS = ('AND', 'OR')
 SQL_FUNCTIONS = ('COUNT', 'SUM', 'AVG', '')
-
-ASC = 'ASC'
-DESC = 'DESC'
+ORDER_TYPES = ('ASC', 'DESC')
+JOIN_TYPES = ('LEFT', 'RIGHT', 'FULL', '')
 
 
 # SQL column query construction
@@ -71,9 +70,9 @@ def query_column(column):
     """
 
     if isinstance(column, (list, tuple)):
-        if len(column) > 2:
+        if len(column) == 3:
             column = query_column_function(*column)
-        elif len(column) > 1:
+        elif len(column) == 2:
             if column[1] == '*':
                 column = (sql.Identifier(column[0]), sql.SQL('*'))
             else:
@@ -111,7 +110,7 @@ def query_column_function(function, column, alias):
 
 # SQL WHERE query construction
 # ########################################################################
-def construct_query_where(where_conditionals, where_join_words=[]):
+def construct_query_WHERE(where_conditionals, where_join_words=[]):
     """
     Construct a complex WHERE query. Example:
         construct_query_where(
@@ -172,14 +171,14 @@ def query_conditional(column, comparison, values):
 
     if comparison in COMPARISON_TYPES:
         query = sql.SQL("({col} {comp} ({vals}))").format(
-            col=sql.Identifier(column),
+            col=query_column(column),
             comp=sql.SQL(comparison),
             vals=sql.SQL(', ').join(sql.Placeholder()*len(values)))
 
     elif comparison in COMPARISON_TYPES_EXTENDED:
         if len(values) == 2:
             query = sql.SQL("({col} {comp} {val1} AND {val2})").format(
-                col=sql.Identifier(column),
+                col=query_column(column),
                 comp=sql.SQL(comparison),
                 val1=sql.Placeholder(),
                 val2=sql.Placeholder())
@@ -196,88 +195,138 @@ def query_conditional(column, comparison, values):
 
 # SQL ORDER BY query construction
 # ########################################################################
-def construct_query_order_by(orders):
+def construct_query_ORDER_BY(orders):
+    """
+    Example of usage:
+        construct_query_order_by([('answers_number', 'DESC'),
+                                 (('question', 'id'), 'ASC')]
+    Example of result string representation:
+        ORDER BY "answers_number" DESC, "question"."id" ASC
+
+    Args:
+        orders (list/tuple): list/tuple of 2-elem list/tuples of strings in form of
+            (column to order by, order_type) where order_type is "ASC" or "DESC"
+
+    Returns:
+        (psycopg2.sql.Composable) object with an SQL ORDER BY query
+
+    Raises:
+        ValueError: if order_type is not "ASC" or "DESC" or if order elements are not
+            2-elem lists/tuples
+    """
+
+    sql_orders = []
     for order in orders:
         if isinstance(order, (list, tuple)) and len(order) == 2:
-            if order[1] in ORDER
+            if order[1] in ORDER_TYPES:
+                sql_orders.append(sql.SQL(' ').join((query_column(order[0]), sql.SQL(order[1]))))
+            else:
+                raise ValueError("Invalid order type.")
+        else:
+            raise ValueError("Invalid syntax. Provide 2-elem list/tuple")
+
+    final_query = sql.SQL("ORDER BY ")+sql.SQL(', ').join(sql_orders)
+
+    return final_query
+# ########################################################################
 
 
-import datetime
-@db_connection.connection_handler
-def test(cursor):
-    # wheres = [
-    #     ('view_number', '>=', (0,)),
-    #     ('submission_time', 'between', (datetime.datetime(2017,4,29), datetime.datetime.now()))
-    # ]
-    # long_q = construct_query_where(wheres, ['and'])
-    # print(long_q[0].as_string(cursor))
-    # print(long_q[1])
-    cols = (('question', 'id'),
-            ('question', 'submission_time'),
-            ('question', 'view_number'),
-            ('question', 'vote_number'),
-            ('COUNT', ('answer', 'id'), 'answers_number'))
-    q_final = sql.SQL("SELECT {cols} FROM {tbl} JOIN answer ON (question.id=question_id) GROUP BY question.id {where}").format(
-        tbl=sql.Identifier('question'),
-        cols=choose_columns(cols),
-        where=sql.SQL(''))
-    print(q_final.as_string(cursor))
-    cursor.execute(q_final)
-    data = cursor.fetchall()
-    print(data)
-    return data
+# SQL GROUP BY query construction
+# ########################################################################
+def construct_query_GROUP_BY(groups):
+    sql_groups = [query_column(group) for group in groups]
+    final_query = sql.SQL("GROUP BY ")+sql.SQL(', ').join(sql_groups)
 
-import ui
-ui.print_table(test())
+    return final_query
+# ########################################################################
 
 
+# SQL JOIN query construction
+# ########################################################################
+def construct_query_JOIN(table, on_cols, join_type=''):
+    join_type = join_type.upper()
+    if join_type not in JOIN_TYPES:
+        raise ValueError("Unsupported JOIN statement.")
+    if len(on_cols) != 2:
+        raise ValueError("Exactly 2 columns to join on are required.")
+    final_query = sql.SQL("{join_type} JOIN {tbl} ON ({col1}={col2})").format(
+        join_type=sql.SQL(join_type),
+        tbl=sql.Identifier(table),
+        col1=query_column(on_cols[0]),
+        col2=query_column(on_cols[1]))
+
+    return final_query
+# ########################################################################
 
 
+# SQL LIMIT query construction
+# ########################################################################
+def construct_query_LIMIT(limit):
+    if isinstance(limit, int):
+        final_query = sql.SQL('LIMIT {}').format(sql.Literal(limit))
+    else:
+        raise ValueError("Limit should be an integer.")
+
+    return final_query
+# ########################################################################
+
+
+# SQL SELECT query construction
 # ########################################################################
 @db_connection.connection_handler
-def select_query(cursor, table, columns, where=None, order_by=None, order_type=None, limit=None):
+def select_query(cursor, table, columns,
+                 wheres=None, orders=None, join=None, groups=None, limit=None):
 
-    where_query = construct_query_where(where)
-
-    if order_by is not None:
-        ordered_by = sql.SQL('ORDER BY {}').format(sql.Identifier(order_by))
+    if wheres is not None:
+        where_query, values = construct_query_WHERE(*wheres)
     else:
-        ordered_by = sql.SQL('')
+        where_query, values = (sql.SQL(''), None)
 
-    if order_type is not None:
-        type_of_order = sql.SQL(order_type.upper())
+    if orders is not None:
+        order_query = construct_query_ORDER_BY(orders)
     else:
-        type_of_order = sql.SQL('')
+        order_query = sql.SQL('')
+
+    if join is not None:
+        join_query = construct_query_JOIN(*join)
+    else:
+        join_query = sql.SQL('')
+
+    if groups is not None:
+        group_query = construct_query_GROUP_BY(groups)
+    else:
+        group_query = sql.SQL('')
 
     if limit is not None:
-        limited_to = sql.SQL('LIMIT {}').format(sql.Literal(limit))
+        limit_query = construct_query_LIMIT(limit)
     else:
-        limited_to = sql.SQL('')
+        limit_query = sql.SQL('')
 
-    query = sql.SQL(
-        "SELECT {col_data} FROM {table_data} {where_data} {order_by_data} {order_type_data} {limit_data};").format(
-        col_data=choose_columns(columns),
-        table_data=sql.Identifier(table),
-        where_data=where_query,
-        order_by_data=ordered_by,
-        order_type_data=type_of_order,
-        limit_data=limited_to
+    query = sql.SQL("SELECT {cols} FROM {tbl} {join} {where} {group} {order} {limit};").format(
+        cols=choose_columns(columns),
+        tbl=sql.Identifier(table),
+        join=join_query,
+        where=where_query,
+        group=group_query,
+        order=order_query,
+        limit=limit_query
     )
 
-    if where_query == sql.SQL(''):
-        cursor.execute(query)
-        data = cursor.fetchall()
-        return data
+    if values:
+        cursor.execute(query, values)
     else:
-        cursor.execute(query, where[2])
-        data = cursor.fetchall()
-        return data
+        cursor.execute(query)
+    data = cursor.fetchall()
+    return data
+# ########################################################################
 
 
+# SQL UPDATE query construction
+# ########################################################################
 @db_connection.connection_handler
-def update(cursor, table, columns, values, where=''):
+def update(cursor, table, columns, values, wheres=None):
 
-    where = construct_query_where(where)
+    where = construct_query_WHERE(where)
 
     update_query = sql.SQL("UPDATE {tbl} SET {col_vals} {where}").format(
         tbl=sql.Identifier(table),
@@ -305,10 +354,10 @@ def delete_query(table):
 
 @db_connection.connection_handler
 def delete_from_table(cursor, table, where):
-    cursor.execute(delete_query(table)+construct_query_where(where), where[2])
+    cursor.execute(delete_query(table)+construct_query_WHERE(where), where[2])
 
 
-@connection_handler
+@db_connection.connection_handler
 def show_all_questions_with_counter(cursor):
     cursor.execute("""
                     SELECT question.*, COUNT(answer.id) as answers_number
@@ -320,7 +369,7 @@ def show_all_questions_with_counter(cursor):
     return data
 
 
-@connection_handler
+@db_connection.connection_handler
 def get_comments_for_answers_and_questions(cursor, answers_ids, qstn_id):
     query = sql.SQL('SELECT * FROM comment WHERE {} IN ({}) OR {}={}').format(
         sql.Identifier('answer_id'),
@@ -331,3 +380,38 @@ def get_comments_for_answers_and_questions(cursor, answers_ids, qstn_id):
     cursor.execute(query, answers_ids)
     data = cursor.fetchall()
     return data
+
+
+if __name__ == "__main__":
+
+    import datetime
+    def test():
+        # wheres = [
+        #     (('question', 'view_number'), '>=', (0,)),
+        #     (('question', 'submission_time'), 'between', (datetime.datetime(2017,4,29), datetime.datetime.now()))
+        # ]
+        orders = [
+            ('answers_number', 'DESC'),
+            (('question', 'id'), 'ASC')
+        ]
+        groups = [('question', 'id')]
+        on_cols = (('question', 'id'), 'question_id')
+        cols = (('question', 'id'),
+                ('question', 'submission_time'),
+                ('question', 'view_number'),
+                ('question', 'vote_number'),
+                ('COUNT', ('answer', 'id'), 'answers_number')
+        )
+        # data = select_query(
+        #     table='question',
+        #     columns=cols,
+        #     orders=orders,
+        #     join=('answer', on_cols, 'LEFT'),
+        #     groups=groups,
+        #     limit=2
+        # )
+        data = select_query('answer', '*')
+        return data
+
+    import ui
+    ui.print_table(test())
