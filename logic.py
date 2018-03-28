@@ -119,7 +119,7 @@ def delete_question(qstn_id):
 
 
 def delete_answer(answ_id):
-    persistence.delete_from_table(ANSW_TABLE, ('id', '=', (answ_id)))
+    persistence.delete_from_table(ANSW_TABLE, ('id', '=', (answ_id,)))
 
 
 # Helper function in database management
