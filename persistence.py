@@ -173,9 +173,22 @@ def show_all_questions_with_counter(cursor):
     cursor.execute("""
                     SELECT question.*, COUNT(answer.id) as answers_number
                     FROM question
-                    JOIN answer ON question.id=question_id
+                    left JOIN answer ON question.id=question_id
                     GROUP BY question.id;
                     """)
+    data = cursor.fetchall()
+    return data
+
+@connection_handler
+def show_searched_questions(cursor,search_string):
+    query = sql.SQL("""
+                    SELECT DISTINCT question.* 
+                    FROM question LEFT JOIN answer 
+                    ON question.id=question_id 
+                    WHERE question.message ILIKE {x} 
+                    OR question.title ILIKE {x} 
+                    OR answer.message ILIKE {x}""").format(x=sql.Literal('%'+search_string+'%'))
+    cursor.execute(query)
     data = cursor.fetchall()
     return data
 

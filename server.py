@@ -36,6 +36,17 @@ def list_questions():
 
     return render_template('list.html', questions=questions)
 
+# search
+# ########################################################################
+@app.route('/search')
+def list_searched_questions():
+
+    # Display a page with questions list
+
+    # questions = logic.get_all_questions()
+    search_phrase=request.args.get('search')
+    questions = persistence.show_searched_questions(search_phrase)
+    return render_template('list_searched.html', questions=questions)
 
 # View question
 # ########################################################################
@@ -49,7 +60,6 @@ def show_question(qstn_id):
         abort(404)
     answers = logic.get_answers_to_question(qstn_id)
     answers_ids = [answer['id'] for answer in answers]
-    print(persistence.get_comments_for_answers_and_questions(answers_ids, qstn_id))
 
     return render_template('detail.html', question=question, answers=answers)
 
