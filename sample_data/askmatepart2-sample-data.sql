@@ -80,20 +80,31 @@ ALTER TABLE ONLY question_tag
 ALTER TABLE ONLY tag
     ADD CONSTRAINT pk_tag_id PRIMARY KEY (id);
 
-ALTER TABLE ONLY comment
-    ADD CONSTRAINT fk_answer_id FOREIGN KEY (answer_id) REFERENCES answer(id);
+ALTER TABLE public.comment
+  ADD CONSTRAINT fk_answer_id FOREIGN KEY (answer_id)
+      REFERENCES public.answer (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE;
 
-ALTER TABLE ONLY answer
-    ADD CONSTRAINT fk_question_id FOREIGN KEY (question_id) REFERENCES question(id);
+ALTER TABLE public.answer
+  ADD CONSTRAINT pk_question_id FOREIGN KEY (question_id)
+      REFERENCES public.question (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE;
 
-ALTER TABLE ONLY question_tag
-    ADD CONSTRAINT fk_question_id FOREIGN KEY (question_id) REFERENCES question(id);
 
-ALTER TABLE ONLY comment
-    ADD CONSTRAINT fk_question_id FOREIGN KEY (question_id) REFERENCES question(id);
+ALTER TABLE public.question_tag
+  ADD CONSTRAINT fk_question_id FOREIGN KEY (question_id)
+      REFERENCES public.question (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE;
+      
+ALTER TABLE public.comment
+  ADD CONSTRAINT fk_question_id FOREIGN KEY (question_id)
+      REFERENCES public.question (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE;
 
-ALTER TABLE ONLY question_tag
-    ADD CONSTRAINT fk_tag_id FOREIGN KEY (tag_id) REFERENCES tag(id);
+ALTER TABLE public.question_tag
+  ADD CONSTRAINT fk_tag_id FOREIGN KEY (tag_id)
+      REFERENCES public.tag (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE;
 
 INSERT INTO question VALUES (0, '2017-04-28 08:29:00', 29, 7, 'How to make lists in Python?', 'I am totally new to this, any hints?', NULL);
 INSERT INTO question VALUES (1, '2017-04-29 09:19:00', 15, 9, 'Wordpress loading multiple jQuery Versions', 'I developed a plugin that uses the jquery booklet plugin (http://builtbywill.com/booklet/#/) this plugin binds a function to $ so I cann call $(".myBook").booklet();
