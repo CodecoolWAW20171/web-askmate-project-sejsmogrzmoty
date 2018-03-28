@@ -14,7 +14,7 @@ def route_index():
 
     # Display home page
 
-    top_question_titles = ['The most recent question',
+    top_question_titles = ['The most recent questions',
                            'The most viewed question',
                            'The top voted question']
 
@@ -31,7 +31,7 @@ def list_questions():
 
     # Display a page with questions list
 
-    questions = logic.get_sorted_questions('submission_time')
+    questions = logic.get_all_questions()
 
     return render_template('list.html', questions=questions)
 
@@ -47,7 +47,6 @@ def show_question(qstn_id):
     if question is None:
         abort(404)
     answers = logic.get_answers_to_question(qstn_id)
-    logic.increase_view_counter(qstn_id)
 
     return render_template('detail.html', question=question, answers=answers)
 

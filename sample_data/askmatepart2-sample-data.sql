@@ -21,8 +21,8 @@ DROP SEQUENCE IF EXISTS public.question_id_seq;
 CREATE TABLE question (
     id serial NOT NULL,
     submission_time timestamp without time zone,
-    view_number integer,
-    vote_number integer,
+    view_number integer DEFAULT 0,
+    vote_number integer DEFAULT 0,
     title text,
     message text,
     image text
@@ -33,7 +33,7 @@ DROP SEQUENCE IF EXISTS public.answer_id_seq;
 CREATE TABLE answer (
     id serial NOT NULL,
     submission_time timestamp without time zone,
-    vote_number integer,
+    vote_number integer DEFAULT 0,
     question_id integer,
     message text,
     image text
