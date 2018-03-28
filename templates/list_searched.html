@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+
+{% set active_page = "list_questions" %}
+
+{% block title %}Askmate - List of searched questions{% endblock %}
+
+{% block body %}
+    {% if questions%}
+        <h2>Search results for 
+        {% if search_phrase %} 
+            '{{search_phrase}}':
+        {% else %}
+            someone who wants it all:
+        {% endif %}
+        </h2> 
+    {% else %}
+        <h2>No results for '{{search_phrase}}':</h2>
+    {% endif %}
+    <form action="/search" method="get">
+        <div class="search-container">
+            <div class="search-bar">
+                <input type="text" name="search" placeholder="Search..." >
+            </div>
+            <div class="search-btn">
+                <button type="submit" ><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </form>
+
+        <div class="data-table">
+            <table id="dataTable">
+                <tr>
+                    <th style="width: 6%">Votes</th>
+                    <th style="width: 6%">Answers</th>
+                    <th style="width: 6%">Views</th>
+                    <th>Question</th>
+                    <th style="width: 15%">Asked</th>
+                    <th style="width: 12%">Actions</th>
+                </tr>
+                {% for question in questions %}
+                    <tr>
+                        <td class="number">
+                            {{- question.vote_number }}<br>
+                            <span class="num-caption">votes</span>
+                        </td>
+                        <td class="number">
+                            {{- question.answers_number }}<br>
+                            <span class="num-caption">answers</span>
+                        </td>
+                        <td class="number">
+                            {{- question.view_number }}<br>
+                            <span class="num-caption">views</span>
+                        </td>
+                        <td class="question">
+                            <a href="{{ url_for('show_question', qstn_id=question.id) }}">
+                                {{- question.title|e -}}
+                            </a>
+                        </td>
+                        <td>{{ question.submission_time }}</td>
+                        <td class="actions">
+                            <form  method="get">
+                                <button type="submit" formaction="{{ url_for('show_question', qstn_id=question.id) }}"
+                                name="qstn_id" value="{{ question.id }}" class="action-btn">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                
+                                <button type="submit" formaction="{{ url_for('post_answer', qstn_id=question.id) }}"
+                                name="qstn_id" value="{{ question.id }}">
+                                    Post answer
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="8" class="last-add">
+                        
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

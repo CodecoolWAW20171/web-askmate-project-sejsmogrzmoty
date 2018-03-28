@@ -41,12 +41,9 @@ def list_questions():
 @app.route('/search')
 def list_searched_questions():
 
-    # Display a page with questions list
-
-    # questions = logic.get_all_questions()
     search_phrase=request.args.get('search')
     questions = persistence.show_searched_questions(search_phrase)
-    return render_template('list_searched.html', questions=questions)
+    return render_template('list_searched.html',search_phrase=search_phrase, questions=questions)
 
 # View question
 # ########################################################################
