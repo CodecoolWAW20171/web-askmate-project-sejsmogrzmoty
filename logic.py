@@ -25,9 +25,9 @@ ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = range(len(AN
 # ----- Default values ------
 
 
-
 # Get functions
 # ########################################################################
+
 
 def convert_time_to_string(data):
     for index, single_data in enumerate(data):
@@ -222,5 +222,3 @@ def get_top_questions():
     top_questions.append(questions[0])
 
     return top_questions
-
-
