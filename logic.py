@@ -158,43 +158,6 @@ def delete_comment_of_answer(answ_id):
     persistence.delete_from_table(CMNT_TABLE, ('answer_id', '=', (answ_id,)))
 
 
-# Helper function in database management
-# ########################################################################
-def count_how_many_answers(qstn_id):
-    answers = get_all_answers()
-    counter = 0
-    for answer in answers:
-        if answer["question_id"] == qstn_id:
-            counter += 1
-    return counter
-
-
-def find_id_index(data, id_):
-    for e, entry in enumerate(data):
-        if entry['id'] == id_:
-            return e
-
-
-def count_answered_questions():
-    pass
-
-
-# Sorting
-# ########################################################################
-def sort_by(data, header, descending=True):
-    return sorted(data, key=lambda x: x[header], reverse=descending)
-
-
-def get_sorted_questions(header, descending=True):
-    questions = get_all_questions()
-    for question in questions:
-        question['answers_number'] = count_how_many_answers(question['id'])
-    questions = sort_by(questions, header, descending)
-    for question in questions:
-        question['submission_time'] = util.convert_timestamp(int(question['submission_time']))
-    return questions
-
-
 # Voting
 # ########################################################################
 def vote_question(id_, up_or_down):
@@ -211,43 +174,6 @@ def vote_answer(id_, up_or_down):
         VOTE_CLMN,
         int(up_or_down),
         ('id', '=', (id_,)))
-
-
-def change_vote(id_, all_data, up_or_down):
-    '''
-    Changes the vote_number of a specified answer/question
-
-    Args:
-            id:
-                id of the voted question
-                type: int
-
-            up_or_down:
-                "up" or "down" depending on whether you're upvoting or downvoting
-                type: str
-
-    Returns:
-            None
-            writes to csv the updated lists of dictionaries
-    '''
-    for data in all_data:
-        if data["id"] == id_:
-            if up_or_down == "up":
-                data["vote_number"] += 1
-            elif up_or_down == "down":
-                data["vote_number"] -= 1
-            return all_data
-
-
-# Counting views
-# ########################################################################
-def increase_view_counter(id_):
-    questions = get_all_questions()
-    found_index = find_id_index(questions, id_)
-    if found_index is None:
-        return
-    questions[found_index]['view_number'] += 1
-    write_all_questions_to_file(questions)
 
 
 # Get top questions
