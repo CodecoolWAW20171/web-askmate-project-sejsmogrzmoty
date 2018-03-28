@@ -21,6 +21,12 @@
         {% if question.image %}
         <img src="{{ question.image }}" id="myImg" width="200px" alt="">
         {% endif %}
+        <br>
+        {% for comment in comments %}
+            {% if comment.question_id == question.id %}
+                <p>{{ comment.message|e }}</p>
+            {% endif %}
+        {% endfor %}
     </div>
     <div class="side-right">
         <p class="label">asked</p>
@@ -62,6 +68,13 @@
         <div class="mid">
             {% for line in answer.message.splitlines() %}
             <p>{{ line|e }}</p>
+            {% endfor %}
+            <br>
+            {% for comment in comments %}
+                {% if comment.answer_id == answer.id %}
+                    <p>{{ comment.message|e }}</p>
+                    <hr>
+                {% endif %}
             {% endfor %}
         </div>
         <div class="side-right">

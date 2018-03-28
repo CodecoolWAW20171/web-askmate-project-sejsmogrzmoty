@@ -26,6 +26,7 @@ ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = range(len(AN
 
 # ----- Default values ------
 QSTN_DEFAULTS = {"view_number": 0, "vote_number": 0, "title": "", "message": "", "image": ""}
+CMNT_DEFAULTS = {"message": ""}
 
 # Get functions
 # ########################################################################

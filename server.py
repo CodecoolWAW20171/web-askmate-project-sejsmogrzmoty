@@ -44,9 +44,8 @@ def show_question(qstn_id):
         abort(404)
     answers = logic.get_answers_to_question(qstn_id)
     answers_ids = [answer['id'] for answer in answers]
-    # comments = persistence.get_comments_for_answers_and_questions(answers_ids, qstn_id))
-
-    return render_template('detail.html', question=question, answers=answers)
+    comments = persistence.get_comments_for_answers_and_questions(qstn_id, answers_ids)
+    return render_template('detail.html', question=question, answers=answers, comments=comments)
 
 
 # Ask question
@@ -220,6 +219,47 @@ def vote_answer(answ_id):
     logic.vote_answer(answ_id, vote)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
+
+
+# Modify comment database
+# ########################################################################
+@app.route('/question/save-comment', methods=['POST'])
+def modify_comment_to_question(id_=None):
+
+    comment = request.form
+    qstn_id = int(comment['question_id'])
+    if id_ is None:
+        logic.add_new_comment(comment)
+    else:
+        logic.modify_comment_of_question(id_, comment)
+
+    return redirect(url_for('show_question', qstn_id=qstn_id))
+
+
+@app.route('/answer/<int:answ_id>/new-comment', methods=['POST'])
+def modify_comment_to_answer(qstn_id, answ_id=None):
+
+    comment = request.form
+    if answ_id is None:
+        logic.add_new_comment(comment)
+    else:
+        logic.modify_comment_of_answer(answ_id, comment)
+
+    return redirect(url_for('show_question', qstn_id=qstn_id))
+
+
+@app.route('/question/<int:qstn_id>/new-comment')
+def post_comment_to_question(qstn_id):
+
+    # Displays a page with a question and a form to be filled with
+    # the new comment
+
+    question = logic.get_question(qstn_id)
+    if question is None:
+        abort(404)
+    comment = logic.CMNT_DEFAULTS
+
+    return render_template('cmnt_form.html', form_type='new', comment=comment, question=question)
 
 
 # Run server
