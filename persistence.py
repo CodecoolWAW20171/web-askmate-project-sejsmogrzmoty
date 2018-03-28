@@ -166,3 +166,28 @@ def delete_query(table):
 @connection_handler
 def delete_from_table(cursor, table, where):
     cursor.execute(delete_query(table)+construct_query_where(where), where[2])
+
+
+@connection_handler
+def show_all_questions_with_counter(cursor):
+    cursor.execute("""
+                    SELECT question.*, COUNT(answer.id) as answers_number
+                    FROM question
+                    JOIN answer ON question.id=question_id
+                    GROUP BY question.id;
+                    """)
+    data = cursor.fetchall()
+    return data
+
+
+@connection_handler
+def get_comments_for_answers_and_questions(cursor, answers_ids, qstn_id):
+    query = sql.SQL('SELECT * FROM comment WHERE {} IN ({}) OR {}={}').format(
+        sql.Identifier('answer_id'),
+        sql.Placeholder()*len(answers_ids),
+        sql.Identifier('question_id'),
+        sql.Literal(qstn_id)
+    )
+    cursor.execute(query, answers_ids)
+    data = cursor.fetchall()
+    return data

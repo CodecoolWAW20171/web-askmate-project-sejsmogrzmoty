@@ -230,3 +230,15 @@ def get_most_viewed_question(limit):
     questions = persistence.select_query(QSTN_TABLE, QSTN_HEADERS, order_by='view_number', order_type=DESC, limit=limit)
     convert_time_to_string(questions)
     return questions
+
+
+# Add comments
+# ########################################################################
+def add_comment_new_comment(new_comment_input):
+    new_comment = {key: new_comment_input[key] for key in new_comment_input}
+    new_comment[SBMSN_TIME] = util.get_current_time()
+    persistence.insert_into(
+        table=CMNT_TABLE,
+        columns=tuple(new_comment.keys()),
+        values=tuple(new_comment.values())
+    )

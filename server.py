@@ -31,7 +31,8 @@ def list_questions():
 
     # Display a page with questions list
 
-    questions = logic.get_all_questions()
+    # questions = logic.get_all_questions()
+    questions = persistence.show_all_questions_with_counter()
 
     return render_template('list.html', questions=questions)
 
@@ -47,6 +48,8 @@ def show_question(qstn_id):
     if question is None:
         abort(404)
     answers = logic.get_answers_to_question(qstn_id)
+    answers_ids = [answer['id'] for answer in answers]
+    print(persistence.get_comments_for_answers_and_questions(answers_ids, qstn_id))
 
     return render_template('detail.html', question=question, answers=answers)
 
