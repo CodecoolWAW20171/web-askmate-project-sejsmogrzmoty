@@ -15,9 +15,11 @@
         </form>
     </div>
     <div class="mid">
+        {% if question.message %}
         {% for line in question.message.splitlines() %}
         <p>{{ line|e }}</p>
         {% endfor %}
+        {% endif %}
         {% if question.image %}
         <img src="{{ question.image }}" id="myImg" width="200px" alt="">
         {% endif %}

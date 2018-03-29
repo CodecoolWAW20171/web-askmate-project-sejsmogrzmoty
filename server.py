@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, abort
 
 import logic
-import persistence
 
 
 app = Flask(__name__)
@@ -14,7 +13,7 @@ def route_index():
 
     # Display home page
 
-    top_question_data = logic.get_most_recent_questions(5)
+    top_question_data = logic.get_all_questions(5)
 
     return render_template('index.html', top_questions=top_question_data)
 
@@ -26,19 +25,21 @@ def list_questions():
 
     # Display a page with questions list
 
-    # questions = logic.get_all_questions()
-    questions = persistence.show_all_questions_with_counter()
+    questions = logic.get_all_questions()
+    # questions = persistence.show_all_questions_with_counter()
 
     return render_template('list.html', questions=questions)
 
-# search
+
+# Search
 # ########################################################################
 @app.route('/search')
 def list_searched_questions():
 
-    search_phrase=request.args.get('search')
-    questions = persistence.show_searched_questions(search_phrase)
-    return render_template('list_searched.html',search_phrase=search_phrase, questions=questions)
+    search_phrase = request.args.get('search')
+    questions = logic.show_searched_questions(search_phrase)
+    return render_template('list_searched.html', search_phrase=search_phrase, questions=questions)
+
 
 # View question
 # ########################################################################
@@ -47,12 +48,13 @@ def show_question(qstn_id):
 
     # Display a page with a single question
 
+    logic.increase_view_counter(qstn_id)
     question = logic.get_question(qstn_id)
     if question is None:
         abort(404)
     answers = logic.get_answers_to_question(qstn_id)
-    answers_ids = [answer['id'] for answer in answers]
-    comments = persistence.get_comments_for_answers_and_questions(qstn_id, answers_ids)
+    answers_ids = [answer[logic.ANSW_ID] for answer in answers]
+    comments = logic.get_comments_to_question_and_answers(qstn_id, answers_ids)
     return render_template('detail.html', question=question, answers=answers, comments=comments)
 
 
