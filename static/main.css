@@ -292,7 +292,7 @@
     .comment p {
         margin: 0.2em 0;
         color: #606060;
-        flex: 80%;
+        flex: 60%;
     }
 
     hr.less {
