@@ -86,7 +86,7 @@
             <br>
             {% for comment in comments %}
                 {% if comment.answer_id == answer.id %}
-                    <p>{{ comment.message|e }}<span class="submission">Edited: {{ comment.edited_count|e }}  {{ comment.submission_time|e }}</span>
+                    <p>{{ comment.message|e }}<span class="submission">Edited: {{ comment.edited_count|e }} | {{ comment.submission_time|e }}</span>
                         <form action="{{ url_for('edit_answer_comment', answ_id=answer.id) }}" method="post">
                             <input type="hidden" name="id" value="{{ comment.id }}">
                             <button type="submit" class="action-btn-comment"><i class="fas fa-edit"></i></button>
