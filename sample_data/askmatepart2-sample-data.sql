@@ -226,7 +226,7 @@ To be honest, I don''t really know what any of these error message mean.
 Many other C++ programs have source files with a .cpp extension, so I thought perhaps I needed to rename my file. I changed its name to helloworld.cpp, but that didn''t help. I think there is a very serious bug in Clang because when I tried using it to compile the renamed program, it flipped out, printed "84 warnings and 20 errors generated." and made my computer beep a lot!
 What have I done wrong here? Have I missed some critical part of the C++ Standard? Or are all three compilers really just so broken that they can''t compile this simple program?', 'https://i.stack.imgur.com/JQXWL.png');
 
-SELECT pg_catalog.setval('question_id_seq', 2, true);
+SELECT pg_catalog.setval('question_id_seq', 40, true);
 
 INSERT INTO answer VALUES (1, '2017-04-28 16:49:00', 4, 1, 'You need to use brackets: my_list = []', NULL);
 INSERT INTO answer VALUES (2, '2017-04-25 14:42:00', 35, 1, 'Look it up in the Python docs', 'images/image2.jpg');
@@ -390,7 +390,7 @@ INSERT INTO answer VALUES (17, '2011-04-01 05:35:37', 576, 40, 'Originally from 
 INSERT INTO answer VALUES (18, '2011-04-01 13:55:50', 320, 40, 'Try this way:', 'https://i.stack.imgur.com/OjB9Z.png');
 INSERT INTO answer VALUES (19, '2011-04-01 01:03:33', 212, 40, 'Your < and  >, ( and  ), { and  } don''t seem to match very well; Try drawing them better.', NULL);
 
-SELECT pg_catalog.setval('answer_id_seq', 2, true);
+SELECT pg_catalog.setval('answer_id_seq', 19, true);
 
 INSERT INTO comment VALUES (1, 0, NULL, 'Please clarify the question as it is too vague!', '2017-05-01 05:49:00');
 INSERT INTO comment VALUES (2, NULL, 1, 'I think you could use my_list = list() as well.', '2017-05-02 16:55:00');
@@ -425,7 +425,7 @@ INSERT INTO comment VALUES (30, NULL, 14, 'This is the key observation - you cou
 INSERT INTO comment VALUES (31, NULL, 16, 'I think that sentence is ambiguous at best. The Merriam-Webster dictionary says that text is the original words and form of a written or printed work or a work containing such text. This source file clearly falls under that definition. Do you think I should file a defect report with the Core Language Working Group?', '2011-04-01 01:27:54');
 INSERT INTO comment VALUES (32, NULL, 19, 'While I don''t appreciate you making fun of my handwriting, this might be the real issue, and would explain the error I get when I try compiling the renamed helloworld.cpp with Visual C++: "fatal error C1004: unexpected end-of-file found" I''ll try again and report back soon. Thanks!', '2011-04-01 01:31:23');
 
-SELECT pg_catalog.setval('comment_id_seq', 2, true);
+SELECT pg_catalog.setval('comment_id_seq', 32, true);
 
 INSERT INTO tag VALUES (1, 'python');
 INSERT INTO tag VALUES (2, 'sql');
