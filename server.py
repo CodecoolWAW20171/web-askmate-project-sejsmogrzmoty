@@ -48,6 +48,7 @@ def show_question(qstn_id):
 
     # Display a page with a single question
 
+    logic.increase_view_counter(qstn_id)
     question = logic.get_question(qstn_id)
     if question is None:
         abort(404)

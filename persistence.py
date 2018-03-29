@@ -396,12 +396,14 @@ def delete_query(cursor, table, where=None):
 def search_questions(cursor, search_phrase):
     search_string = '%'+search_phrase+'%'
     query = sql.SQL("""
-                    SELECT DISTINCT question.*
+                    SELECT DISTINCT question.*, COUNT(answer.id) as answers_number
                     FROM question LEFT JOIN answer
                     ON question.id=question_id
                     WHERE question.message ILIKE {x}
                     OR question.title ILIKE {x}
-                    OR answer.message ILIKE {x}""").format(x=sql.Placeholder())
+                    OR answer.message ILIKE {x}
+                    GROUP BY question.id
+                    ORDER BY question.submission_time DESC""").format(x=sql.Placeholder())
     cursor.execute(query, (search_string,)*3)
     data = cursor.fetchall()
     return data

@@ -189,6 +189,16 @@ def vote_answer(answ_id, up_or_down):
         where=(ANSW_ID, '=', (answ_id,)))
 
 
+# Views
+# ########################################################################
+def increase_view_counter(qstn_id):
+    persistence.update_increment_query(
+        table=QSTN_TABLE,
+        column=QSTN_VIEWN,
+        value=1,
+        where=(QSTN_ID, '=', (qstn_id,)))
+
+
 # Get top questions
 # ########################################################################
 def get_most_recent_questions():
