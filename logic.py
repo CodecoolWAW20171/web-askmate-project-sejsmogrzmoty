@@ -85,9 +85,14 @@ def get_answers_to_question(qstn_id):
 
 
 def get_comment(cmnt_id):
-    comment = persistence.select_query(CMNT_TABLE, '*', ('id', '=', (cmnt_id,)))
-    convert_time_to_string(comment)
+    comment = persistence.select_query(
+        CMNT_TABLE, '*',
+        where=(CMNT_ID, '=', (cmnt_id,)))
+    util.convert_time_to_string(comments, CMNT_STIME)
+    util.switch_null_to_default(comments, CMNT_DEFAULTS, (CMNT_ANSW_ID, CMNT_QSTN_ID))
     return comment
+
+
 def get_comments_to_question_and_answers(qstn_id, answ_ids):
     if answ_ids:
         where = [
@@ -167,14 +172,8 @@ def delete_answer(answ_id):
     persistence.delete_query(ANSW_TABLE, where=(ANSW_ID, '=', (answ_id,)))
 
 
-def delete_comment(id_):
-    persistence.delete_from_table(CMNT_TABLE, ('id', '=', (id_,)))
-def delete_comment_of_question(qstn_id):
-    persistence.delete_query(CMNT_TABLE, where=(QSTN_ID, '=', (qstn_id,)))
-
-
-def delete_comment_of_answer(answ_id):
-    persistence.delete_query(CMNT_TABLE, where=(ANSW_ID, '=', (answ_id,)))
+def delete_comment(cmnt_id):
+    persistence.delete_query(CMNT_TABLE, where=(CMNT_ID, '=', (cmnt_id,)))
 
 
 # Voting
