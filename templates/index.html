@@ -24,9 +24,11 @@
 
     <div class="container">
         <div class="mid">
+            {% if question.message %}
             {% for line in question.message.splitlines() %}
             <p>{{ line|e }}</p>
             {% endfor %}
+            {% endif %}
         </div>
         <div class="side-right">
             <p class="label">asked</p>
@@ -37,7 +39,10 @@
 
             <p class="label">votes</p>
             <p class="data">{{ question.vote_number }}</p>
-    
+            
+            <p class="label">answers</p>
+            <p class="data">{{ question.answers_number }}</p>
+
         </div>
     </div>
 {% endfor %}

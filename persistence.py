@@ -2,14 +2,6 @@ import db_connection
 import psycopg2.sql as sql
 
 
-QSTN_TABLE = 'question'
-ANSW_TABLE = 'answer'
-CMNT_TABLE = 'comment'
-TAG_TABLE = 'tag'
-QSTN_TAG_TABLE = 'question_tag'
-QSTN_VIEW_COLUMNS = ['id', 'submission_time', 'view_number', 'vote_number', 'title']
-QSTN_COLUMNS = ['submission_time', 'view_number', 'vote_number', 'title', 'message', 'image']
-
 COMPARISON_TYPES = ('=', '<>', '<', '>', '<=', '>=', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN')
 COMPARISON_TYPES_EXTENDED = ('BETWEEN', 'NOT BETWEEN')
 JOIN_WORDS = ('AND', 'OR')
@@ -110,7 +102,22 @@ def query_column_function(function, column, alias):
 
 # SQL WHERE query construction
 # ########################################################################
-def construct_query_WHERE(where_conditionals, where_join_words=[]):
+def evaluate_query_WHERE(where):
+    if isinstance(where, tuple):
+        return construct_query_WHERE(where)
+    elif isinstance(where, list):
+        return construct_complex_query_WHERE(*where)
+    else:
+        raise TypeError("Invalid type for WHERE statement.")
+
+
+def construct_query_WHERE(where):
+    where_query, where_values = query_conditional(*where)
+    where_query = sql.SQL("WHERE ") + where_query
+    return where_query, where_values
+
+
+def construct_complex_query_WHERE(where_conditionals, where_join_words=[]):
     """
     Construct a complex WHERE query. Example:
         construct_query_where(
@@ -242,6 +249,10 @@ def construct_query_GROUP_BY(groups):
 
 # SQL JOIN query construction
 # ########################################################################
+def evaluate_query_JOIN(join_params):
+    return construct_query_JOIN(*join_params)
+
+
 def construct_query_JOIN(table, on_cols, join_type=''):
     join_type = join_type.upper()
     if join_type not in JOIN_TYPES:
@@ -270,36 +281,30 @@ def construct_query_LIMIT(limit):
 # ########################################################################
 
 
+# Evaluate optional queries
+# ########################################################################
+def evaluate_optionals(func, arg):
+    if arg is not None:
+        return func(arg)
+    else:
+        if func == evaluate_query_WHERE:
+            return (sql.SQL(''), None)
+        else:
+            return sql.SQL('')
+# ########################################################################
+
+
 # SQL SELECT query
 # ########################################################################
 @db_connection.connection_handler
 def select_query(cursor, table, columns,
-                 wheres=None, orders=None, join=None, groups=None, limit=None):
+                 where=None, orders=None, join_params=None, groups=None, limit=None):
 
-    if wheres is not None:
-        where_query, where_values = construct_query_WHERE(*wheres)
-    else:
-        where_query, where_values = (sql.SQL(''), None)
-
-    if orders is not None:
-        order_query = construct_query_ORDER_BY(orders)
-    else:
-        order_query = sql.SQL('')
-
-    if join is not None:
-        join_query = construct_query_JOIN(*join)
-    else:
-        join_query = sql.SQL('')
-
-    if groups is not None:
-        group_query = construct_query_GROUP_BY(groups)
-    else:
-        group_query = sql.SQL('')
-
-    if limit is not None:
-        limit_query = construct_query_LIMIT(limit)
-    else:
-        limit_query = sql.SQL('')
+    where_query, where_values = evaluate_optionals(evaluate_query_WHERE, where)
+    order_query = evaluate_optionals(construct_query_ORDER_BY, orders)
+    join_query = evaluate_optionals(evaluate_query_JOIN, join_params)
+    group_query = evaluate_optionals(construct_query_GROUP_BY, groups)
+    limit_query = evaluate_optionals(construct_query_LIMIT, limit)
 
     query = sql.SQL("SELECT {cols} FROM {tbl} {join} {where} {group} {order} {limit};").format(
         cols=choose_columns(columns),
@@ -323,20 +328,34 @@ def select_query(cursor, table, columns,
 # SQL UPDATE query
 # ########################################################################
 @db_connection.connection_handler
-def update_query(cursor, table, columns, values, wheres=None):
+def update_query(cursor, table, columns, values, where=None):
 
-    if wheres is not None:
-        where_query, where_values = construct_query_WHERE(*wheres)
-    else:
-        where_query, where_values = (sql.SQL(''), None)
+    where_query, where_values = evaluate_optionals(evaluate_query_WHERE, where)
 
     update_query = sql.SQL("UPDATE {tbl} SET {col_vals} {where}").format(
         tbl=sql.Identifier(table),
         col_vals=sql.SQL(', ').join(sql.SQL("{}={}").format(
             sql.Identifier(column),  sql.Placeholder()) for column in columns),
         where=where_query)
+
     if where_values is not None:
         values = (*values, *where_values)
+    cursor.execute(update_query, values)
+
+
+@db_connection.connection_handler
+def update_increment_query(cursor, table, column, value, where=None):
+
+    where_query, where_values = evaluate_optionals(evaluate_query_WHERE, where)
+
+    update_query = sql.SQL("UPDATE {tbl} SET {col}={col}+({val}) {where}").format(
+        tbl=sql.Identifier(table),
+        col=sql.Identifier(column),
+        val=sql.Placeholder(),
+        where=where_query)
+
+    if where_values is not None:
+        values = (value, *where_values)
     cursor.execute(update_query, values)
 # ########################################################################
 
@@ -356,12 +375,9 @@ def insert_into_query(cursor, table, columns, values):
 # SQL DELETE query
 # ########################################################################
 @db_connection.connection_handler
-def delete_query(cursor, table, wheres=None):
+def delete_query(cursor, table, where=None):
 
-    if wheres is not None:
-        where_query, where_values = construct_query_WHERE(*wheres)
-    else:
-        where_query, where_values = (sql.SQL(''), None)
+    where_query, where_values = evaluate_optionals(evaluate_query_WHERE, where)
 
     query = sql.SQL("DELETE FROM {tbl} {where}").format(
         tbl=sql.Identifier(table),
@@ -372,83 +388,3 @@ def delete_query(cursor, table, wheres=None):
     else:
         cursor.execute(query)
 # ########################################################################
-
-
-@db_connection.connection_handler
-def show_all_questions_with_counter(cursor):
-    cursor.execute("""
-                    SELECT question.*, COUNT(answer.id) as answers_number
-                    FROM question
-                    LEFT JOIN answer ON question.id=question_id
-                    GROUP BY question.id;
-                    """)
-    data = cursor.fetchall()
-    return data
-
-
-@db_connection.connection_handler
-def get_comments_for_answers_and_questions(cursor, qstn_id, answers_ids):
-    if answers_ids:
-        query = sql.SQL('SELECT * FROM comment WHERE {} IN ({}) OR {}={}').format(
-            sql.Identifier('answer_id'),
-            sql.SQL(', ').join(sql.Placeholder()*len(answers_ids)),
-            sql.Identifier('question_id'),
-            sql.Literal(qstn_id)
-        )
-        cursor.execute(query, answers_ids)
-        data = cursor.fetchall()
-    else:
-        data = select_query(CMNT_TABLE, '*', ('question_id', '=', (qstn_id,)))
-    return(data)
-
-
-@db_connection.connection_handler
-def update_vote_number(cursor, table, column, value, where=None):
-
-    where_query = construct_query_where(where)
-
-    query = sql.SQL('UPDATE {tbl} SET {column} = {column}+{value} {where}').format(
-        tbl=sql.Identifier(table),
-        column=sql.Identifier(column),
-        value=sql.Literal(value),
-        where=where_query
-    )
-    if where is not None:
-        values = where[2]
-    cursor.execute(query, values)
-
-
-
-if __name__ == "__main__":
-
-    import datetime
-    def test():
-        # wheres = [
-        #     (('question', 'view_number'), '>=', (0,)),
-        #     (('question', 'submission_time'), 'between', (datetime.datetime(2017,4,29), datetime.datetime.now()))
-        # ]
-        orders = [
-            ('answers_number', 'DESC'),
-            (('question', 'id'), 'ASC')
-        ]
-        groups = [('question', 'id')]
-        on_cols = (('question', 'id'), 'question_id')
-        cols = (('question', 'id'),
-                ('question', 'submission_time'),
-                ('question', 'view_number'),
-                ('question', 'vote_number'),
-                ('COUNT', ('answer', 'id'), 'answers_number')
-        )
-        # data = select_query(
-        #     table='question',
-        #     columns=cols,
-        #     orders=orders,
-        #     join=('answer', on_cols, 'LEFT'),
-        #     groups=groups,
-        #     limit=2
-        # )
-        data = select_query('answer', '*')
-        return data
-
-    import ui
-    ui.print_table(test())
