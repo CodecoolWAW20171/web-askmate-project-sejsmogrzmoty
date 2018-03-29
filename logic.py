@@ -65,16 +65,10 @@ def get_answers_to_question(qstn_id):
     return answers
 
 
-# def get_comments_to_question(qstn_id):
-#     comments = persistence.select_query(CMNT_TABLE, '*', ('question_id', '=', (qstn_id,)), 'submission_time', DESC)
-#     convert_time_to_string(comments)
-#     return comments
-
-
-# def get_comments_to_answer(answ_id):
-#     comments = persistence.select_query(CMNT_TABLE, '*', ('question_id', '=', (answ_id,)), 'submission_time', DESC)
-#     convert_time_to_string(comments)
-#     return comments
+def get_comment(cmnt_id):
+    comment = persistence.select_query(CMNT_TABLE, '*', ('id', '=', (cmnt_id,)))
+    convert_time_to_string(comment)
+    return comment
 
 
 # Add functions
@@ -151,12 +145,8 @@ def delete_answer(answ_id):
     persistence.delete_from_table(ANSW_TABLE, ('id', '=', (answ_id)))
 
 
-def delete_comment_of_question(qstn_id):
-    persistence.delete_from_table(CMNT_TABLE, ('question_id', '=', (qstn_id,)))
-
-
-def delete_comment_of_answer(answ_id):
-    persistence.delete_from_table(CMNT_TABLE, ('answer_id', '=', (answ_id,)))
+def delete_comment(id_):
+    persistence.delete_from_table(CMNT_TABLE, ('id', '=', (id_,)))
 
 
 # Voting

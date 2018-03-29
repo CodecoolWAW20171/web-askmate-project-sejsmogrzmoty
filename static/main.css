@@ -38,6 +38,11 @@
         color: inherit;
     }
 
+    .submission {
+        font-size: 7pt;
+        float: right;
+    }
+
     body, input, select, textarea {
         font-family: "Open Sans", "sans-serif";
         font-size: 13pt;
@@ -362,6 +367,14 @@
         vertical-align: middle;
     }
 
+    .action-btn-comment {
+        background-color: transparent;
+        border: none;
+        padding: 0 0.3em;
+        vertical-align: middle;
+        display: inline;
+    }
+
     .vote {
         background-color: transparent;
         font-size: 1.5em;
@@ -402,6 +415,10 @@
 
     button.form-sub, button.delete {
         float: right;
+    }
+
+    button.form-sub-comment {
+        width: 10em;
     }
 
     @media (max-width: 600px) {

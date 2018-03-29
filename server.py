@@ -244,16 +244,16 @@ def modify_comment_to_question(id_=None):
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
-@app.route('/answer/<int:answ_id>/new-comment', methods=['POST'])
-def modify_comment_to_answer(qstn_id, answ_id=None):
+@app.route('/answer/new-comment', methods=['POST'])
+def modify_comment_to_answer(id_=None):
 
     comment = request.form
-    if answ_id is None:
+    if id_ is None:
         logic.add_new_comment(comment)
     else:
-        logic.modify_comment_of_answer(answ_id, comment)
+        logic.modify_comment_of_answer(id_, comment)
 
-    return redirect(url_for('show_question', qstn_id=qstn_id))
+    return redirect(url_for('list_questions'))
 
 
 @app.route('/question/<int:qstn_id>/new-comment')
@@ -267,8 +267,43 @@ def post_comment_to_question(qstn_id):
         abort(404)
     comment = logic.CMNT_DEFAULTS
 
-    return render_template('cmnt_form.html', form_type='new', comment=comment, question=question)
+    return render_template('cmnt_q_form.html', form_type='new', comment=comment, question=question)
 
+
+@app.route('/answer/<int:answ_id>/new-comment')
+def post_comment_to_answer(answ_id):
+
+    # Displays a page with a question and form to be filled with
+    # the new comment
+
+    answer = logic.get_answer(answ_id)
+    if answer is None:
+        abort(404)
+    comment = logic.CMNT_DEFAULTS
+
+    return render_template('cmnt_a_form.html', form_type='new', comment=comment, answer=answer)
+
+
+@app.route('/question/<int:qstn_id>/edit-comment')
+def edit_question_comment(qstn_id, cmnt_id):
+
+    question = logic.get_question(qstn_id)
+    comment = logic.get_comment(cmnt_id)
+    if question is None or comment is None:
+        abort(404)
+    
+    return render_template('cmnt_q_form.html', form_type='edit', comment=comment, question=question)
+
+
+@app.route('/answer/<int:answ_id>/edit-comment')
+def edit_answer_comment(answ_id, cmnt_id):
+
+    answer = logic.get_answer(answ_id)
+    comment = logic.get_comment(cmnt_id)
+    if question is None or comment is None:
+        abort(404)
+    
+    return render_template('cmnt_a_form.html', form_type='edit', comment=comment, answer=answer)
 
 # Run server
 # ########################################################################
