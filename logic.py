@@ -85,9 +85,16 @@ def get_answers_to_question(qstn_id):
 
 
 def get_comment(cmnt_id):
-    comment = persistence.select_query(CMNT_TABLE, '*', ('id', '=', (cmnt_id,)))
-    convert_time_to_string(comment)
-    return comment
+    comment = persistence.select_query(
+        CMNT_TABLE, '*',
+        where=(CMNT_ID, '=', (cmnt_id,)))
+    util.convert_time_to_string(comment, CMNT_STIME)
+    util.switch_null_to_default(comment, CMNT_DEFAULTS, (CMNT_ANSW_ID, CMNT_QSTN_ID))
+    if comment:
+        return comment[0]
+    return None
+
+
 def get_comments_to_question_and_answers(qstn_id, answ_ids):
     if answ_ids:
         where = [
@@ -149,12 +156,8 @@ def modify_answer(answ_id, modified_answer):
     modify(ANSW_TABLE, ANSW_ID, answ_id, modified_answer)
 
 
-def modify_comment_of_question(qstn_id, modified_comment):
-    modify(CMNT_TABLE, QSTN_ID, qstn_id, modified_comment)
-
-
-def modify_comment_of_answer(answ_id, modified_comment):
-    modify(CMNT_TABLE, ANSW_ID, answ_id, modified_comment)
+def modify_comment(cmnt_id, modified_comment):
+    modify(CMNT_TABLE, CMNT_ID, cmnt_id, modified_comment)
 
 
 # Delete from database
@@ -167,16 +170,8 @@ def delete_answer(answ_id):
     persistence.delete_query(ANSW_TABLE, where=(ANSW_ID, '=', (answ_id,)))
 
 
-def delete_comment(id_):
-    persistence.delete_from_table(CMNT_TABLE, ('id', '=', (id_,)))
-
-
-def delete_comment_of_question(qstn_id):
-    persistence.delete_query(CMNT_TABLE, where=(QSTN_ID, '=', (qstn_id,)))
-
-
-def delete_comment_of_answer(answ_id):
-    persistence.delete_query(CMNT_TABLE, where=(ANSW_ID, '=', (answ_id,)))
+def delete_comment(cmnt_id):
+    persistence.delete_query(CMNT_TABLE, where=(CMNT_ID, '=', (cmnt_id,)))
 
 
 # Voting

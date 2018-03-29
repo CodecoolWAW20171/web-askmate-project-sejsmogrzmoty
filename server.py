@@ -233,29 +233,32 @@ def vote_answer(answ_id):
 
 # Modify comment database
 # ########################################################################
-@app.route('/question/save-comment', methods=['POST'])
-def modify_comment_to_question(id_=None):
+@app.route('/question/save-comment/<int:cmnt_id>', methods=['POST'])
+def modify_comment_to_question(cmnt_id=None):
 
     comment = request.form
     qstn_id = int(comment['question_id'])
-    if id_ is None:
+    if cmnt_id is None:
         logic.add_new_comment(comment)
     else:
-        logic.modify_comment_of_question(id_, comment)
+        logic.modify_comment(cmnt_id, comment)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
-@app.route('/answer/new-comment', methods=['POST'])
-def modify_comment_to_answer(id_=None):
+@app.route('/answer/save-comment/<int:cmnt_id>', methods=['POST'])
+def modify_comment_to_answer(cmnt_id=None):
 
     comment = request.form
-    if id_ is None:
+    answ_id = comment['answer_id']
+    answer = logic.get_answer(answ_id)
+    qstn_id = answer['question_id']
+    if cmnt_id is None:
         logic.add_new_comment(comment)
     else:
-        logic.modify_comment_of_answer(id_, comment)
+        logic.modify_comment(cmnt_id, comment)
 
-    return redirect(url_for('list_questions'))
+    return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
 @app.route('/question/<int:qstn_id>/new-comment')
@@ -286,9 +289,10 @@ def post_comment_to_answer(answ_id):
     return render_template('cmnt_a_form.html', form_type='new', comment=comment, answer=answer)
 
 
-@app.route('/question/<int:qstn_id>/<int:cmnt_id>/edit-comment')
-def edit_question_comment(qstn_id, cmnt_id):
+@app.route('/question/<int:qstn_id>/edit-comment', methods=['POST'])
+def edit_question_comment(qstn_id):
 
+    cmnt_id = request.form['id']
     question = logic.get_question(qstn_id)
     comment = logic.get_comment(cmnt_id)
     if question is None or comment is None:
@@ -297,15 +301,33 @@ def edit_question_comment(qstn_id, cmnt_id):
     return render_template('cmnt_q_form.html', form_type='edit', comment=comment, question=question)
 
 
-@app.route('/answer/<int:answ_id>/edit-comment')
-def edit_answer_comment(answ_id, cmnt_id):
+@app.route('/answer/<int:answ_id>/edit-comment', methods=['POST'])
+def edit_answer_comment(answ_id):
 
+    cmnt_id = request.form['id']
     answer = logic.get_answer(answ_id)
     comment = logic.get_comment(cmnt_id)
-    if question is None or comment is None:
+    if answer is None or comment is None:
         abort(404)
     
     return render_template('cmnt_a_form.html', form_type='edit', comment=comment, answer=answer)
+
+
+@app.route('/<int:cmnt_id>/delete-comment')
+def delete_comment(cmnt_id):
+
+    # if logic.get_comment(cmnt_id)['answer_id'] is not None:
+    #     comment = logic.get_comment(cmnt_id)
+    #     qstn_id = comment['question_id']
+    # else:
+    #     comment = logic.get_comment(cmnt_id)
+    #     answ_id = comment['answer_id']
+    #     answer = logic.get_answer(answ_id)
+    #     qstn_id = answer['question_id']
+    logic.delete_comment(cmnt_id)
+
+    return redirect(url_for('list_questions'))
+
 
 # Run server
 # ########################################################################
