@@ -7,7 +7,7 @@
 {% elif form_type == "edit" %}
     {% set active_page = "edit_comment" %}
     {% set title = "Edit a comment: id " + comment.id|string %}
-    {% set query = url_for('modify_comment_to_question', id_=comment.id) %}
+    {% set query = url_for('modify_comment_to_question', cmnt_id=comment.id) %}
 {% endif %}
 
 {% block title %}
@@ -76,8 +76,8 @@
         <!-- Delete button -->
         <div class="">
             <div class="row">
-                <form action="{{ url_for('delete_comment') }}" method="post">
-                    <input type="hidden" id="id" name="id" value="{{ comment.id }}">
+                <form action="{{ url_for('delete_comment_question', cmnt_id=comment.id) }}" method="post">
+                    <input type="hidden" id="question_id" name="question_id" value="{{ comment.question_id }}">
                     <button type="submit" name="id" value="{{ comment.id }}"
                     class="confirm delete" onclick="return confirmation();">
                         <i class="fas fa-trash"></i><span> Delete</span>

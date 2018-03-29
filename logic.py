@@ -52,15 +52,11 @@ def get_all_questions(limit=None, order_by=None):
 
 
 def get_question(qstn_id):
-    question = persistence.select_query(
-        QSTN_TABLE, '*',
-        where=(QSTN_ID, '=', (qstn_id,)))
-    util.convert_time_to_string(question, QSTN_STIME)
-    util.switch_null_to_default(question, QSTN_DEFAULTS)
-    if question:
-        return question[0]
-    return None
-
+    questions = get_all_questions()
+    for i in questions:
+        if i['id'] == qstn_id:
+            question = questions[questions.index(i)]
+            return question
 
 def get_answer(answ_id):
     answer = persistence.select_query(
@@ -88,9 +84,11 @@ def get_comment(cmnt_id):
     comment = persistence.select_query(
         CMNT_TABLE, '*',
         where=(CMNT_ID, '=', (cmnt_id,)))
-    util.convert_time_to_string(comments, CMNT_STIME)
-    util.switch_null_to_default(comments, CMNT_DEFAULTS, (CMNT_ANSW_ID, CMNT_QSTN_ID))
-    return comment
+    util.convert_time_to_string(comment, CMNT_STIME)
+    util.switch_null_to_default(comment, CMNT_DEFAULTS, (CMNT_ANSW_ID, CMNT_QSTN_ID))
+    if comment:
+        return comment[0]
+    return None
 
 
 def get_comments_to_question_and_answers(qstn_id, answ_ids):
@@ -209,14 +207,6 @@ def increase_view_counter(qstn_id):
         column=QSTN_VIEWN,
         value=1,
         where=(QSTN_ID, '=', (qstn_id,)))
-
-
-# Edits
-# ########################################################################
-def comment_edited(cmnt_id):
-    persistence.update_increment_query(
-        tab
-    )
 
 
 # Get top questions
