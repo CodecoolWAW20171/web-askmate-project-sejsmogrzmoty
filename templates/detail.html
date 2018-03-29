@@ -19,7 +19,7 @@
         <p>{{ line|e }}</p>
         {% endfor %}
         {% if question.image %}
-        <img src="{{ question.image }}" id="myImg" width="200px" alt="">
+        <img src="{{ question.image }}" class="post-image" alt="">
         {% endif %}
         <br>
         <form action="{{ url_for('post_comment_to_question', qstn_id=question.id) }}">
@@ -82,6 +82,9 @@
             {% for line in answer.message.splitlines() %}
             <p>{{ line|e }}</p>
             {% endfor %}
+            {% if question.image %}
+            <img src="{{ answer.image }}" class="post-image" alt="">
+            {% endif %}
             <br>
             <form action="{{ url_for('post_comment_to_answer', answ_id=answer.id) }}">
                 <button type="submit" class="form-sub-comment"><span>Add a comment &nbsp;</span><i class="fas fa-comment"></i></button>

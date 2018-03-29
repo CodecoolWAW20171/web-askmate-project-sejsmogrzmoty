@@ -13,7 +13,7 @@ def route_index():
 
     # Display home page
 
-    top_question_data = logic.get_all_questions(5)
+    top_question_data = logic.get_most_recent_questions()
 
     return render_template('index.html', top_questions=top_question_data)
 
@@ -26,7 +26,6 @@ def list_questions():
     # Display a page with questions list
 
     questions = logic.get_all_questions()
-    # questions = persistence.show_all_questions_with_counter()
 
     return render_template('list.html', questions=questions)
 
@@ -299,7 +298,7 @@ def edit_question_comment(qstn_id):
     comment = logic.get_comment(cmnt_id)
     if question is None or comment is None:
         abort(404)
-    
+
     return render_template('cmnt_q_form.html', form_type='edit', comment=comment, question=question)
 
 
@@ -311,7 +310,7 @@ def edit_answer_comment(answ_id):
     comment = logic.get_comment(cmnt_id)
     if answer is None or comment is None:
         abort(404)
-    
+
     return render_template('cmnt_a_form.html', form_type='edit', comment=comment, answer=answer)
 
 

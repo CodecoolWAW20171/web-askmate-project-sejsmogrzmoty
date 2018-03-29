@@ -270,6 +270,10 @@
         margin: 0.5em;
     }
 
+    img.post-image {
+        max-width: 100%;
+        height: auto;
+    }
     
     .comment {
         font-size: 0.8em;

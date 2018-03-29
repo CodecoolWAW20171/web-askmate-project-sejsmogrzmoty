@@ -212,7 +212,9 @@ def increase_view_counter(qstn_id):
 # Get top questions
 # ########################################################################
 def get_most_recent_questions():
-    return get_all_questions(5)
+    questions = get_all_questions(5)
+    util.hide_long_string(questions, QSTN_MSG)
+    return questions
 
 
 def get_most_voted_question():

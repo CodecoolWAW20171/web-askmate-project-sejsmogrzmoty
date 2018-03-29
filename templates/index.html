@@ -29,6 +29,9 @@
             <p>{{ line|e }}</p>
             {% endfor %}
             {% endif %}
+            <form action="{{ url_for('show_question', qstn_id=question.id) }}" method="get">
+                <button type="submit">Read more...</button>
+            </form>
         </div>
         <div class="side-right">
             <p class="label">asked</p>
