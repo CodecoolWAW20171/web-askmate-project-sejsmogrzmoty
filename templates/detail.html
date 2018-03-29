@@ -23,7 +23,7 @@
         {% endif %}
         <br>
         <form action="{{ url_for('post_comment_to_question', qstn_id=question.id) }}">
-            <button type="submit" class="form-sub-comment"><span>Post comment </span><i class="fas fa-comment"></i></button>
+            <button type="submit" class="form-sub-comment"><span>Add a comment </span><i class="fas fa-comment"></i></button>
         </form>
         <hr>
         {% for comment in comments %}
