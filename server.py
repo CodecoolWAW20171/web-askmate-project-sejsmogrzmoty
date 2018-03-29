@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, abort
 
 import logic
-import persistence
 
 
 app = Flask(__name__)
@@ -31,14 +30,16 @@ def list_questions():
 
     return render_template('list.html', questions=questions)
 
-# search
+
+# Search
 # ########################################################################
 @app.route('/search')
 def list_searched_questions():
 
-    search_phrase=request.args.get('search')
-    questions = persistence.show_searched_questions(search_phrase)
-    return render_template('list_searched.html',search_phrase=search_phrase, questions=questions)
+    search_phrase = request.args.get('search')
+    questions = logic.show_searched_questions(search_phrase)
+    return render_template('list_searched.html', search_phrase=search_phrase, questions=questions)
+
 
 # View question
 # ########################################################################

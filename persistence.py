@@ -393,14 +393,15 @@ def delete_query(cursor, table, where=None):
 # Other queries
 # ########################################################################
 @db_connection.connection_handler
-def show_searched_questions(cursor, search_string):
+def search_questions(cursor, search_phrase):
+    search_string = '%'+search_phrase+'%'
     query = sql.SQL("""
                     SELECT DISTINCT question.*
                     FROM question LEFT JOIN answer
                     ON question.id=question_id
                     WHERE question.message ILIKE {x}
                     OR question.title ILIKE {x}
-                    OR answer.message ILIKE {x}""").format(x=sql.Literal('%'+search_string+'%'))
-    cursor.execute(query)
+                    OR answer.message ILIKE {x}""").format(x=sql.Placeholder())
+    cursor.execute(query, (search_string,)*3)
     data = cursor.fetchall()
     return data

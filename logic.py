@@ -201,3 +201,10 @@ def get_most_voted_question():
 
 def get_most_viewed_question():
     return get_all_questions(1, [(QSTN_VIEWN, DESC)])
+
+
+# Search questions
+# ########################################################################
+def show_searched_questions(search_phrase):
+    questions = persistence.search_questions(search_phrase)
+    return questions
