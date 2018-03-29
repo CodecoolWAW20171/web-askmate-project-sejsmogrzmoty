@@ -52,15 +52,11 @@ def get_all_questions(limit=None, order_by=None):
 
 
 def get_question(qstn_id):
-    question = persistence.select_query(
-        QSTN_TABLE, '*',
-        where=(QSTN_ID, '=', (qstn_id,)))
-    util.convert_time_to_string(question, QSTN_STIME)
-    util.switch_null_to_default(question, QSTN_DEFAULTS)
-    if question:
-        return question[0]
-    return None
-
+    questions = get_all_questions()
+    for i in questions:
+        if i['id'] == qstn_id:
+            question = questions[questions.index(i)]
+            return question
 
 def get_answer(answ_id):
     answer = persistence.select_query(
