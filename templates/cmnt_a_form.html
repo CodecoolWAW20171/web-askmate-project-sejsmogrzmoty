@@ -73,8 +73,8 @@
         <!-- Delete button -->
         <div class="">
             <div class="row">
-                <form action="{{ url_for('delete_comment', cmnt_id=comment.id) }}">
-                    <input type="hidden" id="id" name="id" value="{{ comment.id }}">
+                <form action="{{ url_for('delete_comment_answer', cmnt_id=comment.id) }}" method="post">
+                    <input type="hidden" id="answer_id" name="answer_id" value="{{ comment.answer_id }}">
                     <button type="submit" name="id" value="{{ comment.id }}"
                     class="confirm delete" onclick="return confirmation();">
                         <i class="fas fa-trash"></i><span> Delete</span>

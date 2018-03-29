@@ -315,20 +315,24 @@ def edit_answer_comment(answ_id):
     return render_template('cmnt_a_form.html', form_type='edit', comment=comment, answer=answer)
 
 
-@app.route('/<int:cmnt_id>/delete-comment')
-def delete_comment(cmnt_id):
+@app.route('/<int:cmnt_id>/delete-comment-answer', methods=['POST'])
+def delete_comment_answer(cmnt_id):
 
-    # if logic.get_comment(cmnt_id)['answer_id'] is not None:
-    #     comment = logic.get_comment(cmnt_id)
-    #     qstn_id = comment['question_id']
-    # else:
-    #     comment = logic.get_comment(cmnt_id)
-    #     answ_id = comment['answer_id']
-    #     answer = logic.get_answer(answ_id)
-    #     qstn_id = answer['question_id']
+    answ_id = request.form['answer_id']
+    answer = logic.get_answer(answ_id)
+    qstn_id = answer['question_id']
     logic.delete_comment(cmnt_id)
 
-    return redirect(url_for('list_questions'))
+    return redirect(url_for('show_question', qstn_id=qstn_id))
+
+
+@app.route('/<int:cmnt_id>/delete-comment-question', methods=['POST'])
+def delete_comment_question(cmnt_id):
+
+    qstn_id = request.form['question_id']
+    logic.delete_comment(cmnt_id)
+
+    return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
 # Run server
