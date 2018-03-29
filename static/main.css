@@ -15,7 +15,7 @@
     hr {
         border: 0;
         border-top: 1px solid #0A203A;
-        margin: 1em 0;
+        margin: 0.5em 0;
     }
 
 
@@ -222,8 +222,9 @@
     }
 
     .side-left {
-        max-width: 3em;
-        padding: 0.8em;
+        max-width: 5em;
+        padding: 0.5em;
+        text-align: center;
     }
     
     .side-right {
@@ -238,7 +239,6 @@
     }
 
     .vote-num {
-        text-align: center;
         color: #2774CC;
     }
 
@@ -270,17 +270,34 @@
         margin: 0.5em;
     }
 
-    .submission {
-        font-size: 7pt;
-        float: right;
-    }
-
+    
     .comment {
         font-size: 0.8em;
+        display: flex;
+    }
+
+    .submission {
+        color: #a6a6a6;
+        display: inline;
+    }
+
+    .small-edit {
+        display: inline;        
+    }
+
+    .comment-data {
+        margin-left: 2em;
     }
 
     .comment p {
         margin: 0.2em 0;
+        color: #606060;
+        flex: 80%;
+    }
+
+    hr.less {
+        border: 0;
+        border-top: 1px solid #a6a6a6;
     }
 
 /* ------------------------------ Table ------------------------------ */
@@ -427,6 +444,9 @@
 
     button.form-sub-comment {
         width: 10em;
+        background-color: transparent;
+        font-size: 0.8em;
+        color: #a6a6a6;
     }
 
     @media (max-width: 600px) {
@@ -623,6 +643,10 @@
 
     .col-33 i {
         margin: 0 0.5em;
+    }
+
+    .form-sub-comment i {
+        color: #a6a6a6;
     }
 
 /* Footer */

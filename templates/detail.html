@@ -23,18 +23,20 @@
         {% endif %}
         <br>
         <form action="{{ url_for('post_comment_to_question', qstn_id=question.id) }}">
-            <button type="submit" class="form-sub-comment"><span>Add a comment </span><i class="fas fa-comment"></i></button>
+            <button type="submit" class="form-sub-comment"><span>Add a comment &nbsp;</span><i class="fas fa-comment"></i></button>
         </form>
-        <hr>
         {% for comment in comments %}
             {% if comment.question_id == question.id %}
+            <hr class="less">
             <div class="comment">
-                <p>{{ comment.message|e }}<span class="submission">{{ comment.submission_time|e }}</span>
-                    <form action="{{ url_for('edit_question_comment', qstn_id=question.id) }}" method="post">
+                <p>{{ comment.message|e }}</p>
+                <div class="comment-data">
+                    <p class="submission">{{- comment.submission_time|e -}}</p>
+                    <form action="{{ url_for('edit_question_comment', qstn_id=question.id) }}" method="post" class="small-edit">
                         <input type="hidden" name="id" value="{{ comment.id }}">
                         <button type="submit" class="action-btn-comment"><i class="fas fa-edit"></i></button>
                     </form>
-                </p>
+                </div>
             </div>
             {% endif %}
         {% endfor %}
@@ -80,19 +82,23 @@
             {% for line in answer.message.splitlines() %}
             <p>{{ line|e }}</p>
             {% endfor %}
-            <form action="{{ url_for('post_comment_to_answer', answ_id=answer.id) }}">
-                <button type="submit" class="form-sub-comment"><span>Add a comment </span><i class="fas fa-comment"></i></button>
-            </form>
             <br>
+            <form action="{{ url_for('post_comment_to_answer', answ_id=answer.id) }}">
+                <button type="submit" class="form-sub-comment"><span>Add a comment &nbsp;</span><i class="fas fa-comment"></i></button>
+            </form>
             {% for comment in comments %}
                 {% if comment.answer_id == answer.id %}
-                    <p>{{ comment.message|e }}<span class="submission">{{ comment.submission_time|e }}</span>
-                        <form action="{{ url_for('edit_answer_comment', answ_id=answer.id) }}" method="post">
+                <hr class="less">
+                <div class="comment">
+                    <p>{{ comment.message|e }}</p>
+                    <div class="comment-data">
+                        <p class="submission">{{- comment.submission_time|e -}}</p>
+                        <form action="{{ url_for('edit_answer_comment', answ_id=answer.id) }}" method="post" class="small-edit">
                             <input type="hidden" name="id" value="{{ comment.id }}">
                             <button type="submit" class="action-btn-comment"><i class="fas fa-edit"></i></button>
                         </form>
-                    </p>
-                    <hr>
+                    </div>
+                </div>
                 {% endif %}
             {% endfor %}
         </div>
