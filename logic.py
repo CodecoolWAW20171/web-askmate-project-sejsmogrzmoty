@@ -169,6 +169,8 @@ def delete_answer(answ_id):
 
 def delete_comment(id_):
     persistence.delete_from_table(CMNT_TABLE, ('id', '=', (id_,)))
+
+
 def delete_comment_of_question(qstn_id):
     persistence.delete_query(CMNT_TABLE, where=(QSTN_ID, '=', (qstn_id,)))
 

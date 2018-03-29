@@ -286,7 +286,7 @@ def post_comment_to_answer(answ_id):
     return render_template('cmnt_a_form.html', form_type='new', comment=comment, answer=answer)
 
 
-@app.route('/question/<int:qstn_id>/edit-comment')
+@app.route('/question/<int:qstn_id>/<int:cmnt_id>/edit-comment')
 def edit_question_comment(qstn_id, cmnt_id):
 
     question = logic.get_question(qstn_id)
