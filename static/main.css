@@ -38,11 +38,6 @@
         color: inherit;
     }
 
-    .submission {
-        font-size: 7pt;
-        float: right;
-    }
-
     body, input, select, textarea {
         font-family: "Open Sans", "sans-serif";
         font-size: 13pt;
@@ -273,6 +268,19 @@
 
     .mid img {
         margin: 0.5em;
+    }
+
+    .submission {
+        font-size: 7pt;
+        float: right;
+    }
+
+    .comment {
+        font-size: 0.8em;
+    }
+
+    .comment p {
+        margin: 0.2em 0;
     }
 
 /* ------------------------------ Table ------------------------------ */
@@ -559,7 +567,40 @@
     }
 
 
+    /* ---------- Collapsible button -------------- */
+    .collapsible {
+        background-color: #777;
+        color: white;
+        cursor: pointer;
+        width: 10em;
+        border: none;
+        text-align: left;
+        outline: none;
+    }
 
+    .collapsible-active, .collapsible:hover {
+        background-color: #555;
+    }
+
+    .collapsible:after {
+        content: '\002B';
+        color: white;
+        font-weight: bold;
+        float: right;
+        margin-left: 5px;
+    }
+
+    .collapsible-active:after {
+        content: "\2212";
+    }
+
+    .collapsible-content {
+        padding: 0 18px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.2s ease-out;
+        background-color: #f1f1f1;
+    }
 
 
 /* Icons */
