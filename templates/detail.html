@@ -30,11 +30,13 @@
         <hr>
         {% for comment in comments %}
             {% if comment.question_id == question.id %}
+            <div class="comment">
                 <p>{{ comment.message|e }}<span class="submission">{{ comment.submission_time|e }}</span>
                     <form action="{{ url_for('edit_question_comment', qstn_id=question.id, cmnt_id=comment.question_id) }}">
                         <button type="submit" class="action-btn-comment"><i class="fas fa-edit"></i></button>
                     </form>
                 </p>
+            </div>
             {% endif %}
         {% endfor %}
     </div>

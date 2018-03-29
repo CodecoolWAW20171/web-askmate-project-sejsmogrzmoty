@@ -154,12 +154,19 @@ def modify_answer(answ_id, modified_answer):
     modify(ANSW_TABLE, ANSW_ID, answ_id, modified_answer)
 
 
-def modify_comment_of_question(qstn_id, modified_comment):
-    modify(CMNT_TABLE, QSTN_ID, qstn_id, modified_comment)
-
-
-def modify_comment_of_answer(answ_id, modified_comment):
-    modify(CMNT_TABLE, ANSW_ID, answ_id, modified_comment)
+def modify_comment(cmnt_id, modified_input):
+    modified = {key: (value if value else None) for key, value in modified_input.items()}
+    modified[CMNT_STIME] = util.get_current_time()
+    persistence.update_query(
+        table=CMNT_TABLE,
+        columns=modified.keys(),
+        values=modified.values(),
+        where=(CMNT_ID, '=', (cmnt_id,)))
+    persistence.update_increment_query(
+        table=CMNT_TABLE,
+        column=CMNT_EDIT_COUNT,
+        value=1,
+        where=(CMNT_ID, '=', (cmnt_id,)))
 
 
 # Delete from database
@@ -202,6 +209,14 @@ def increase_view_counter(qstn_id):
         column=QSTN_VIEWN,
         value=1,
         where=(QSTN_ID, '=', (qstn_id,)))
+
+
+# Edits
+# ########################################################################
+def comment_edited(cmnt_id):
+    persistence.update_increment_query(
+        tab
+    )
 
 
 # Get top questions
