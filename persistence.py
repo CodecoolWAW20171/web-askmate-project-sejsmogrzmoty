@@ -359,19 +359,6 @@ def update_increment_query(cursor, table, column, value, where=None):
     cursor.execute(update_query, values)
 # ########################################################################
 
-@connection_handler
-def show_searched_questions(cursor,search_string):
-    query = sql.SQL("""
-                    SELECT DISTINCT question.* 
-                    FROM question LEFT JOIN answer 
-                    ON question.id=question_id 
-                    WHERE question.message ILIKE {x} 
-                    OR question.title ILIKE {x} 
-                    OR answer.message ILIKE {x}""").format(x=sql.Literal('%'+search_string+'%'))
-    cursor.execute(query)
-    data = cursor.fetchall()
-    return data
-
 
 # SQL INSERT query
 # ########################################################################
@@ -401,3 +388,19 @@ def delete_query(cursor, table, where=None):
     else:
         cursor.execute(query)
 # ########################################################################
+
+
+# Other queries
+# ########################################################################
+@db_connection.connection_handler
+def show_searched_questions(cursor, search_string):
+    query = sql.SQL("""
+                    SELECT DISTINCT question.*
+                    FROM question LEFT JOIN answer
+                    ON question.id=question_id
+                    WHERE question.message ILIKE {x}
+                    OR question.title ILIKE {x}
+                    OR answer.message ILIKE {x}""").format(x=sql.Literal('%'+search_string+'%'))
+    cursor.execute(query)
+    data = cursor.fetchall()
+    return data
