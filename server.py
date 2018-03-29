@@ -233,21 +233,22 @@ def vote_answer(answ_id):
 
 # Modify comment database
 # ########################################################################
-@app.route('/question/save-comment', methods=['POST'])
+@app.route('/question/save-comment')
+@app.route('/question/save-comment/<int:cmnt_id>', methods=['POST'])
 def modify_comment_to_question(cmnt_id=None):
 
     comment = request.form
-    qstn_id = int(comment['question_id'])
+    qstn_id = comment['question_id']
     if cmnt_id is None:
         logic.add_new_comment(comment)
     else:
-        cmnt_id = comment['id']
         logic.modify_comment(cmnt_id, comment)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
-@app.route('/answer/save-comment', methods=['POST'])
+@app.route('/answer/save-comment')
+@app.route('/answer/save-comment/<int:cmnt_id>', methods=['POST'])
 def modify_comment_to_answer(cmnt_id=None):
 
     comment = request.form
@@ -257,7 +258,6 @@ def modify_comment_to_answer(cmnt_id=None):
     if cmnt_id is None:
         logic.add_new_comment(comment)
     else:
-        cmnt_id = comment['id']
         logic.modify_comment(cmnt_id, comment)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))

@@ -79,7 +79,7 @@
             <p>{{ line|e }}</p>
             {% endfor %}
             <form action="{{ url_for('post_comment_to_answer', answ_id=answer.id) }}">
-                <button type="submit" class="form-sub-comment"><span>Post comment </span><i class="fas fa-comment"></i></button>
+                <button type="submit" class="form-sub-comment"><span>Add a comment </span><i class="fas fa-comment"></i></button>
             </form>
             <br>
             {% for comment in comments %}
