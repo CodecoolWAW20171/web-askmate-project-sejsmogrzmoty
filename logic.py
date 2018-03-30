@@ -218,11 +218,15 @@ def get_most_recent_questions():
 
 
 def get_most_voted_question():
-    return get_all_questions(1, [(QSTN_VOTEN, DESC)])
+    questions = get_all_questions(1, [(QSTN_VOTEN, DESC)])
+    util.hide_long_string(questions, QSTN_MSG)
+    return questions
 
 
 def get_most_viewed_question():
-    return get_all_questions(1, [(QSTN_VIEWN, DESC)])
+    questions = get_all_questions(1, [(QSTN_VIEWN, DESC)])
+    util.hide_long_string(questions, QSTN_MSG)
+    return questions
 
 
 # Search questions
