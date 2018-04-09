@@ -20,9 +20,9 @@ ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = ANSW_HEADERS
 CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT = CMNT_HEADERS
 
 # ----- Default values -----------
-QSTN_DEFAULTS = {"title": "", "message": "", "image": ""}
-ANSW_DEFAULTS = {"message": "", "image": ""}
-CMNT_DEFAULTS = {"message": ""}
+QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0}
+ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": 0}
+CMNT_DEFAULTS = {"message": "", "mate_id": 0}
 
 # ----- Constants ----------------
 ASC = 'ASC'
