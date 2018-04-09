@@ -13,9 +13,15 @@ def route_index():
 
     # Display home page
 
-    top_question_data = logic.get_most_recent_questions()
+    top_question_titles = ("The most recent questions",
+                           "The most viewed question",
+                           "The top voted question")
+    most_recent = logic.get_most_recent_questions()
+    most_viewed = logic.get_most_viewed_question()
+    top_voted = logic.get_most_voted_question()
+    top_questions = list(zip(top_question_titles, (most_recent, most_viewed, top_voted)))
 
-    return render_template('index.html', top_questions=top_question_data)
+    return render_template('index.html', top_questions=top_questions)
 
 
 # List
