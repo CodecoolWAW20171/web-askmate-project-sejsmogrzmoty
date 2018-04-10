@@ -6,6 +6,7 @@ import util
 QSTN_TABLE = 'question'
 ANSW_TABLE = 'answer'
 CMNT_TABLE = 'comment'
+USR_TABLE = 'mate'
 TAG_TABLE = 'tag'
 QSTN_TAG_TABLE = 'question_tag'
 
@@ -13,16 +14,19 @@ QSTN_TAG_TABLE = 'question_tag'
 QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image")
 ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image")
 CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count")
+USR_HEADERS = ("id", "username", "registration_time", "profile_pic", "reputation")
 
 # ----- Column name variables ----
 QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG = QSTN_HEADERS
 ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = ANSW_HEADERS
 CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT = CMNT_HEADERS
+USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = USR_HEADERS
 
 # ----- Default values -----------
 QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0}
 ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": 0}
 CMNT_DEFAULTS = {"message": "", "mate_id": 0}
+USR_DEFAULTS = {"profile_pic": "", "reputation": ""}
 
 # ----- Constants ----------------
 ASC = 'ASC'
@@ -109,6 +113,22 @@ def get_comments_to_question_and_answers(qstn_id, answ_ids):
     util.convert_time_to_string(comments, CMNT_STIME)
     util.switch_null_to_default(comments, CMNT_DEFAULTS, (CMNT_ANSW_ID, CMNT_QSTN_ID))
     return comments
+
+
+def get_users():
+    users = persistence.select_query(
+        USR_TABLE, '*')
+    util.convert_time_to_string(users, USR_STIME)
+    return users
+
+
+def get_user(usr_id):
+    user = persistence.select_query(
+        USR_TABLE, '*',
+        where=(USR_ID, '=', (usr_id,)))
+    util.convert_time_to_string(user, USR_STIME)
+    util.switch_null_to_default(user, USR_DEFAULTS)
+    return user
 
 
 # Add functions
