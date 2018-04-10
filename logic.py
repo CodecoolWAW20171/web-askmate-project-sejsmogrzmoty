@@ -127,6 +127,9 @@ def get_comments_to_question_and_answers(qstn_id, answ_ids):
     util.switch_null_to_default(comments, CMNT_DEFAULTS, (CMNT_ANSW_ID, CMNT_QSTN_ID))
     return comments
 
+def get_all_mates():
+    return persistence.get_all_mates()
+    
 
 def get_users():
     users = persistence.select_query(

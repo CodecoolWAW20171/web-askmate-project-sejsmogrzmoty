@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% set active_page = "list_mates" %}
+
+{% block title %}Askmate - List of Mates{% endblock %}
+
+{% block body %}
+    <h2>Mates :</h2>
+    
+
+        <div class="data-table">
+            <table id="dataTable">
+                <tr>
+                    <th >Name</th>
+                    <th style="width: 10%">Registered</th>
+                    <th style="width: 10%">Reputation</th>
+                </tr>
+                {% for mate in mates %}
+                    <tr>
+                        <td class="mate_name">
+                            <a href="{{ url_for('list_questions') }}"> <!-- 'show_mate', mate_id=mate.id -->
+                                    {{- mate.username }}
+                            </a>
+                            
+                        </td>
+                        <td>
+                            {{- mate.registration_time }}
+                        </td>
+                        <td class="number">
+                            {{- mate.reputation }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    
+                </tr>
+            </table>
+        </div>
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
