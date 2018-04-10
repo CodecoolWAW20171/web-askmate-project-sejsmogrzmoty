@@ -453,3 +453,19 @@ def get_user_comments(cursor, usr_id):
     cursor.execute(query,)
     data = cursor.fetchall()
     return data
+
+
+@db_connection.connection_handler
+def get_users_rep(cursor):
+    query = sql.SQL("""
+                    SELECT mate.*,
+                    SUM(question.reputation + answer.reputation) AS rep                    
+                    FROM mate
+                    LEFT JOIN question ON question.mate_id=mate.id
+                    LEFT JOIN answer ON answer.mate_id=mate.id
+                    GROUP BY mate.id, mate.username
+                    """)
+    
+    cursor.execute(query)
+    data = cursor.fetchall()
+    return data
