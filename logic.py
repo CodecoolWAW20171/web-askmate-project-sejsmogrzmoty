@@ -24,10 +24,10 @@ CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT, CMNT
 USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = USR_HEADERS
 
 # ----- Default values -----------
-QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0, "username": "Anonymous"}
-ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": 0, "username": "Anonymous"}
-CMNT_DEFAULTS = {"message": "", "question_id": "", "answer_id": "", "mate_id": 0, "username": "Anonymous"}
-USR_DEFAULTS = {"profile_pic": "", "reputation": ""}
+QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": None, "username": "Anonymous"}
+ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": None, "username": "Anonymous"}
+CMNT_DEFAULTS = {"message": "", "question_id": "", "answer_id": "", "mate_id": None, "username": "Anonymous"}
+USR_DEFAULTS = {"profile_pic": "", "reputation": 0}
 
 # ----- Constants ----------------
 ASC = 'ASC'
@@ -133,7 +133,7 @@ def get_comments_to_question_and_answers(qstn_id, answ_ids):
                 ]
     else:
         where = (CMNT_QSTN_ID, '=', (qstn_id,))
-    
+
     comments = persistence.select_query(
         table=CMNT_TABLE,
         columns=cols,
@@ -146,14 +146,17 @@ def get_comments_to_question_and_answers(qstn_id, answ_ids):
     util.switch_null_to_default(comments, CMNT_DEFAULTS)
     return comments
 
-def get_all_mates():
-    return persistence.get_all_mates()
-    
 
 def get_users():
     users = persistence.select_query(
         USR_TABLE, '*')
     util.convert_time_to_string(users, USR_STIME)
+    return users
+
+
+def get_users_ids():
+    users = persistence.select_query(
+        USR_TABLE, (USR_ID, USR_NAME))
     return users
 
 

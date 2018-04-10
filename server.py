@@ -125,8 +125,9 @@ def edit_question():
 
     qstn_id = int(request.form['id'])
     question = logic.get_question(qstn_id)
+    mates = logic.get_users_ids()
 
-    return render_template('q_form.html', form_type="edit", question=question)
+    return render_template('q_form.html', form_type="edit", question=question, mates=mates)
 
 
 # Delete question
@@ -173,8 +174,10 @@ def edit_answer():
     qstn_id = int(request.form['question_id'])
     answer = logic.get_answer(answ_id)
     question = logic.get_question(qstn_id)
-
-    return render_template('ans_form.html', form_type="edit", answer=answer, question=question)
+    mates = logic.get_users_ids()
+    print(mates)
+    print(answer)
+    return render_template('ans_form.html', form_type="edit", answer=answer, question=question, mates=mates)
 
 
 # Delete answer
