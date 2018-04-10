@@ -20,9 +20,9 @@ ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = ANSW_HEADERS
 CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT = CMNT_HEADERS
 
 # ----- Default values -----------
-QSTN_DEFAULTS = {"title": "", "message": "", "image": ""}
-ANSW_DEFAULTS = {"message": "", "image": ""}
-CMNT_DEFAULTS = {"message": ""}
+QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0}
+ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": 0}
+CMNT_DEFAULTS = {"message": "", "mate_id": 0}
 
 # ----- Constants ----------------
 ASC = 'ASC'
@@ -219,11 +219,15 @@ def get_most_recent_questions():
 
 
 def get_most_voted_question():
-    return get_all_questions(1, [(QSTN_VOTEN, DESC)])
+    questions = get_all_questions(1, [(QSTN_VOTEN, DESC)])
+    util.hide_long_string(questions, QSTN_MSG)
+    return questions
 
 
 def get_most_viewed_question():
-    return get_all_questions(1, [(QSTN_VIEWN, DESC)])
+    questions = get_all_questions(1, [(QSTN_VIEWN, DESC)])
+    util.hide_long_string(questions, QSTN_MSG)
+    return questions
 
 
 # Search questions
