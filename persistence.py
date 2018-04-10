@@ -408,14 +408,47 @@ def search_questions(cursor, search_phrase):
     data = cursor.fetchall()
     return data
 
-@db_connection.connection_handler
-def get_all_mates(cursor):
 
-    query ="""
-    SELECT username, registration_time , profile_pic, reputation, id
-    FROM mate
-    ORDER BY username
-    """
+@db_connection.connection_handler
+def get_user_questions(cursor, usr_id):
+    query = """
+    SELECT question.*, COUNT(answer.id) AS answers_number
+    FROM question
+    JOIN answer ON answer.question_id=question.id
+    WHERE question.mate_id={usr_id}
+    GROUP BY question.id
+    """.format(usr_id=usr_id)
+
+    cursor.execute(query,)
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_user_answers(cursor, usr_id):
+    query = """
+    SELECT question.*, COUNT(answer.id) AS answers_number
+    FROM question
+    JOIN answer ON answer.question_id=question.id
+    WHERE answer.mate_id={usr_id}
+    GROUP BY question.id
+    """.format(usr_id=usr_id)
+
+    cursor.execute(query,)
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_user_comments(cursor, usr_id):
+    query = """
+    SELECT question.*, COUNT(answer.id) AS answers_number
+    FROM question
+    JOIN answer ON answer.question_id=question.id
+    JOIN comment ON answer.question_id=question.id
+    WHERE comment.mate_id={usr_id}
+    GROUP BY question.id
+    """.format(usr_id=usr_id)
 
     cursor.execute(query,)
     data = cursor.fetchall()
