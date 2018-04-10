@@ -262,6 +262,18 @@ def post_comment_to_question(qstn_id):
     return render_template('cmnt_form.html', form_type='new', comment=comment, question=question)
 
 
+# User database
+# ########################################################################
+@app.route('/mates, methods=['POST'])
+def mates_list():
+    pass
+
+
+@app.route('/mates/<int:mate_id>', methods=['POST'])
+def show_mate(mate_id):
+    pass
+
+
 # Run server
 # ########################################################################
 if __name__ == '__main__':
