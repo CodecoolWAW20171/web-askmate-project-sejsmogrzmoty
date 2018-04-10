@@ -127,9 +127,10 @@ def get_comments_to_question_and_answers(qstn_id, answ_ids):
     util.switch_null_to_default(comments, CMNT_DEFAULTS, (CMNT_ANSW_ID, CMNT_QSTN_ID))
     return comments
 
+
 def get_all_mates():
     return persistence.get_all_mates()
-    
+
 
 def get_users():
     users = persistence.select_query(
@@ -144,7 +145,25 @@ def get_user(usr_id):
         where=(USR_ID, '=', (usr_id,)))
     util.convert_time_to_string(user, USR_STIME)
     util.switch_null_to_default(user, USR_DEFAULTS)
-    return user
+    return user[0]
+
+
+def get_user_questions(usr_id):
+    questions = persistence.get_user_questions(usr_id)
+
+    return questions
+
+
+def get_user_answers(usr_id):
+    answers = persistence.get_user_answers(usr_id)
+
+    return answers
+
+
+def get_user_comments(usr_id):
+    comments = persistence.get_user_comments(usr_id)
+
+    return comments
 
 
 # Add functions
