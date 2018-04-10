@@ -35,7 +35,7 @@
                         <input type="hidden" name="id" value="{{ comment.id }}">
                         <button type="submit" class="action-btn-comment"><i class="fas fa-edit"></i></button>
                     </form>
-                    <p class="submission">Edited: {{ comment.edited_count|e }} | {{ comment.submission_time|e }} {{ comment.mate_id|e if comment.mate_id else "Anonymous" }}</p>
+                    <p class="submission">Edited: {{ comment.edited_count|e }} | {{ comment.submission_time|e }} {{ comment.username }}</p>
                 </div>
             </div>
             {% endif %}
