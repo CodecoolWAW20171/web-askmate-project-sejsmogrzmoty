@@ -8,16 +8,17 @@ ANSW_TABLE = 'answer'
 CMNT_TABLE = 'comment'
 TAG_TABLE = 'tag'
 QSTN_TAG_TABLE = 'question_tag'
+MATE_TABLE = 'mate'
 
 # ----- Column names -------------
-QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image")
-ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image")
-CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count")
+QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id")
+ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id")
+CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count", "mate_id")
 
 # ----- Column name variables ----
-QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG = QSTN_HEADERS
-ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = ANSW_HEADERS
-CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT = CMNT_HEADERS
+QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG, MATE_ID = QSTN_HEADERS
+ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG, MATE_ID = ANSW_HEADERS
+CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT, MATE_ID = CMNT_HEADERS
 
 # ----- Default values -----------
 QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0}
