@@ -12,27 +12,16 @@ QSTN_TAG_TABLE = 'question_tag'
 MATE_TABLE = 'mate'
 
 # ----- Column names -------------
-<<<<<<< HEAD
-QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image")
-ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image")
-CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count")
-USR_HEADERS = ("id", "username", "registration_time", "profile_pic", "reputation")
-
-# ----- Column name variables ----
-QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG = QSTN_HEADERS
-ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = ANSW_HEADERS
-CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT = CMNT_HEADERS
-USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = USR_HEADERS
-=======
 QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id")
 ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id")
 CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count", "mate_id")
+USR_HEADERS = ("id", "username", "registration_time", "profile_pic", "reputation")
 
 # ----- Column name variables ----
-QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG, MATE_ID = QSTN_HEADERS
-ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG, MATE_ID = ANSW_HEADERS
-CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT, MATE_ID = CMNT_HEADERS
->>>>>>> 1228d22cc380e891138a71ea37087466159c0e54
+QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG, QSTN_MATE = QSTN_HEADERS
+ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG, ANSW_MATE = ANSW_HEADERS
+CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT, CMNT_MATE = CMNT_HEADERS
+USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = USR_HEADERS
 
 # ----- Default values -----------
 QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0}
@@ -68,11 +57,23 @@ def get_all_questions(limit=None, order_by=None):
 
 
 def get_question(qstn_id):
-    questions = get_all_questions()
-    for i in questions:
-        if i['id'] == qstn_id:
-            question = questions[questions.index(i)]
-            return question
+    cols = [(QSTN_TABLE, header) for header in QSTN_HEADERS]
+    cols.append(('COUNT', (ANSW_TABLE, ANSW_QSTN_ID), 'answers_number'))
+    join_on_cols = [(QSTN_TABLE, QSTN_ID), ANSW_QSTN_ID]
+    group_by = [(QSTN_TABLE, QSTN_ID)]
+    where = ((QSTN_TABLE, QSTN_ID), '=', (qstn_id,))
+    question = persistence.select_query(
+        table=QSTN_TABLE,
+        columns=cols,
+        where=where,
+        join_params=(ANSW_TABLE, join_on_cols, 'LEFT'),
+        groups=group_by
+    )
+    util.convert_time_to_string(question, QSTN_STIME)
+    util.switch_null_to_default(question, QSTN_DEFAULTS)
+    if question:
+        return question[0]
+    return None
 
 
 def get_answer(answ_id):
