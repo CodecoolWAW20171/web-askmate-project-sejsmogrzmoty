@@ -224,6 +224,7 @@ def vote_question(qstn_id):
 
     vote = request.form['vote']
     logic.vote_question(qstn_id, vote)
+    logic.change_rep_qstn(qstn_id, vote)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
@@ -235,6 +236,7 @@ def vote_answer(answ_id):
     answer = logic.get_answer(answ_id)
     qstn_id = answer['question_id']
     logic.vote_answer(answ_id, vote)
+    logic.change_rep_answ(answ_id, vote)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
 

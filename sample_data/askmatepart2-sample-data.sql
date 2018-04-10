@@ -34,7 +34,8 @@ CREATE TABLE question (
     title text,
     message text,
     image text,
-    mate_id integer
+    mate_id integer,
+    reputation integer DEFAULT 0
 );
 
 DROP TABLE IF EXISTS public.answer;
@@ -46,7 +47,8 @@ CREATE TABLE answer (
     question_id integer,
     message text,
     image text,
-    mate_id integer
+    mate_id integer,
+    reputation integer DEFAULT 0
 
 );
 
@@ -60,6 +62,7 @@ CREATE TABLE comment (
     submission_time timestamp without time zone,
     edited_count integer DEFAULT 0,
     mate_id integer
+
 );
 
 
