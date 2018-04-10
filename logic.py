@@ -166,7 +166,25 @@ def get_user(usr_id):
         where=(USR_ID, '=', (usr_id,)))
     util.convert_time_to_string(user, USR_STIME)
     util.switch_null_to_default(user, USR_DEFAULTS)
-    return user
+    return user[0]
+
+
+def get_user_questions(usr_id):
+    questions = persistence.get_user_questions(usr_id)
+
+    return questions
+
+
+def get_user_answers(usr_id):
+    answers = persistence.get_user_answers(usr_id)
+
+    return answers
+
+
+def get_user_comments(usr_id):
+    comments = persistence.get_user_comments(usr_id)
+
+    return comments
 
 
 # Add functions

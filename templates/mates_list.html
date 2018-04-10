@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% set active_page = "list_mates" %}
+{% set active_page = "mates" %}
 
 {% block title %}Askmate - List of Mates{% endblock %}
 
@@ -9,9 +9,9 @@
     
 
         <div class="data-table">
-            <table id="dataTable">
+            <table>
                 <tr>
-                    <th >Name</th>
+                    <th>Name</th>
                     <th style="width: 10%">Registered</th>
                     <th style="width: 10%">Reputation</th>
                 </tr>
@@ -31,9 +31,7 @@
                         </td>
                     </tr>
                 {% endfor %}
-                <tr>
-                    
-                </tr>
+                <tr></tr>
             </table>
         </div>
 

@@ -341,7 +341,7 @@ def delete_comment_question(cmnt_id):
     logic.delete_comment(cmnt_id)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
-    
+
 
 # <------------------------------ ____ --------------------------------------->
 
@@ -351,14 +351,22 @@ def delete_comment_question(cmnt_id):
 @app.route('/mates')
 def mates_list():
     mates = logic.get_users()
-    return render_template('mates_list.html', mates = mates)
+
+    return render_template('mates_list.html', mates=mates)
 
 
 @app.route('/mates/<int:mate_id>')
-def show_mate(mate_id=0):
-    mate = logic.get_user(mate_id)[0]
-    print(mate)
-    return render_template('mate.html', mate=mate)
+def show_mate(mate_id):
+    mate = logic.get_user(mate_id)
+    questions = logic.get_user_questions(mate_id)
+    answers = logic.get_user_answers(mate_id)
+    comments = logic.get_user_comments(mate_id)
+
+    return render_template('mate.html',
+                           mate=mate,
+                           questions=questions,
+                           answers=answers,
+                           comments=comments)
 
 
 # Run server
