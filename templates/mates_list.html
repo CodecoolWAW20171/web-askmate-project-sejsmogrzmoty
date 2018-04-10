@@ -18,7 +18,7 @@
                 {% for mate in mates %}
                     <tr>
                         <td class="mate_name">
-                            <a href="{{ url_for('list_questions') }}"> <!-- 'show_mate', mate_id=mate.id -->
+                            <a href="{{ url_for('show_mate', mate_id=mate.id) }}"> <!-- 'show_mate', mate_id=mate.id -->
                                     {{- mate.username }}
                             </a>
                             

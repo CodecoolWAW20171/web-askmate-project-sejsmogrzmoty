@@ -412,7 +412,7 @@ def search_questions(cursor, search_phrase):
 def get_all_mates(cursor):
 
     query ="""
-    SELECT username, registration_time , profile_pic, reputation
+    SELECT username, registration_time , profile_pic, reputation, id
     FROM mate
     ORDER BY username
     """
