@@ -340,6 +340,18 @@ def delete_comment_question(cmnt_id):
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
+# User database
+# ########################################################################
+@app.route('/mates, methods=['POST'])
+def mates_list():
+    pass
+
+
+@app.route('/mates/<int:mate_id>', methods=['POST'])
+def show_mate(mate_id):
+    pass
+
+
 # Run server
 # ########################################################################
 if __name__ == '__main__':
