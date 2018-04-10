@@ -407,3 +407,16 @@ def search_questions(cursor, search_phrase):
     cursor.execute(query, (search_string,)*3)
     data = cursor.fetchall()
     return data
+
+@db_connection.connection_handler
+def get_all_mates(cursor):
+
+    query ="""
+    SELECT username, registration_time , profile_pic, reputation
+    FROM mate
+    ORDER BY username
+    """
+
+    cursor.execute(query,)
+    data = cursor.fetchall()
+    return data

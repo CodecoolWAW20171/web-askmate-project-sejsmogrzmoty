@@ -339,6 +339,11 @@ def delete_comment_question(cmnt_id):
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
+@app.route('/mates')
+def mates_list():
+    mates = logic.get_all_mates()
+    return render_template('mates_list.html', mates = mates)
+    
 
 # Run server
 # ########################################################################
