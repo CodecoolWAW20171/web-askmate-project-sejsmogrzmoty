@@ -340,6 +340,18 @@ def delete_comment_question(cmnt_id):
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
+# <------------------------------ ____ --------------------------------------->
+
+
+# Mate database
+# ########################################################################
+@app.route('/mates/<int:mate_id>')
+def show_mate(mate_id=0):
+    mate = logic.get_user(mate_id)[0]
+    print(mate)
+    return render_template('mate.html', mate=mate)
+
+
 # Run server
 # ########################################################################
 if __name__ == '__main__':
