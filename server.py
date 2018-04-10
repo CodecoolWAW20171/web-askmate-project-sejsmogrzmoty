@@ -307,8 +307,9 @@ def edit_question_comment(qstn_id):
     comment = logic.get_comment(cmnt_id)
     if question is None or comment is None:
         abort(404)
+    mates = logic.get_users_ids()
 
-    return render_template('cmnt_q_form.html', form_type='edit', comment=comment, question=question)
+    return render_template('cmnt_q_form.html', form_type='edit', comment=comment, question=question, mates=mates)
 
 
 @app.route('/answer/<int:answ_id>/edit-comment', methods=['POST'])
@@ -319,8 +320,9 @@ def edit_answer_comment(answ_id):
     comment = logic.get_comment(cmnt_id)
     if answer is None or comment is None:
         abort(404)
+    mates = logic.get_users_ids()
 
-    return render_template('cmnt_a_form.html', form_type='edit', comment=comment, answer=answer)
+    return render_template('cmnt_a_form.html', form_type='edit', comment=comment, answer=answer, mates=mates)
 
 
 @app.route('/<int:cmnt_id>/delete-comment-answer', methods=['POST'])
