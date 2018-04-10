@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, abort
 
 import logic
-import persistence
 
 
 app = Flask(__name__)
@@ -14,9 +13,15 @@ def route_index():
 
     # Display home page
 
-    top_question_data = logic.get_all_questions(5)
+    top_question_titles = ("The most recent questions",
+                           "The most viewed question",
+                           "The top voted question")
+    most_recent = logic.get_most_recent_questions()
+    most_viewed = logic.get_most_viewed_question()
+    top_voted = logic.get_most_voted_question()
+    top_questions = list(zip(top_question_titles, (most_recent, most_viewed, top_voted)))
 
-    return render_template('index.html', top_questions=top_question_data)
+    return render_template('index.html', top_questions=top_questions)
 
 
 # List
@@ -27,9 +32,18 @@ def list_questions():
     # Display a page with questions list
 
     questions = logic.get_all_questions()
-    # questions = persistence.show_all_questions_with_counter()
 
     return render_template('list.html', questions=questions)
+
+
+# Search
+# ########################################################################
+@app.route('/search')
+def list_searched_questions():
+
+    search_phrase = request.args.get('search')
+    questions = logic.show_searched_questions(search_phrase)
+    return render_template('list_searched.html', search_phrase=search_phrase, questions=questions)
 
 
 # View question
@@ -39,6 +53,7 @@ def show_question(qstn_id):
 
     # Display a page with a single question
 
+    logic.increase_view_counter(qstn_id)
     question = logic.get_question(qstn_id)
     if question is None:
         abort(404)
@@ -224,26 +239,31 @@ def vote_answer(answ_id):
 # Modify comment database
 # ########################################################################
 @app.route('/question/save-comment', methods=['POST'])
-def modify_comment_to_question(id_=None):
+@app.route('/question/save-comment/<int:cmnt_id>', methods=['POST'])
+def modify_comment_to_question(cmnt_id=None):
 
     comment = request.form
-    qstn_id = int(comment['question_id'])
-    if id_ is None:
+    qstn_id = comment['question_id']
+    if cmnt_id is None:
         logic.add_new_comment(comment)
     else:
-        logic.modify_comment_of_question(id_, comment)
+        logic.modify_comment(cmnt_id, comment)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
-@app.route('/answer/<int:answ_id>/new-comment', methods=['POST'])
-def modify_comment_to_answer(qstn_id, answ_id=None):
+@app.route('/answer/save-comment', methods=['POST'])
+@app.route('/answer/save-comment/<int:cmnt_id>', methods=['POST'])
+def modify_comment_to_answer(cmnt_id=None):
 
     comment = request.form
-    if answ_id is None:
+    answ_id = comment['answer_id']
+    answer = logic.get_answer(answ_id)
+    qstn_id = answer['question_id']
+    if cmnt_id is None:
         logic.add_new_comment(comment)
     else:
-        logic.modify_comment_of_answer(answ_id, comment)
+        logic.modify_comment(cmnt_id, comment)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
@@ -259,7 +279,77 @@ def post_comment_to_question(qstn_id):
         abort(404)
     comment = logic.CMNT_DEFAULTS
 
-    return render_template('cmnt_form.html', form_type='new', comment=comment, question=question)
+    return render_template('cmnt_q_form.html', form_type='new', comment=comment, question=question)
+
+
+@app.route('/answer/<int:answ_id>/new-comment')
+def post_comment_to_answer(answ_id):
+
+    # Displays a page with a question and form to be filled with
+    # the new comment
+
+    answer = logic.get_answer(answ_id)
+    if answer is None:
+        abort(404)
+    comment = logic.CMNT_DEFAULTS
+
+    return render_template('cmnt_a_form.html', form_type='new', comment=comment, answer=answer)
+
+
+@app.route('/question/<int:qstn_id>/edit-comment', methods=['POST'])
+def edit_question_comment(qstn_id):
+
+    cmnt_id = request.form['id']
+    question = logic.get_question(qstn_id)
+    comment = logic.get_comment(cmnt_id)
+    if question is None or comment is None:
+        abort(404)
+
+    return render_template('cmnt_q_form.html', form_type='edit', comment=comment, question=question)
+
+
+@app.route('/answer/<int:answ_id>/edit-comment', methods=['POST'])
+def edit_answer_comment(answ_id):
+
+    cmnt_id = request.form['id']
+    answer = logic.get_answer(answ_id)
+    comment = logic.get_comment(cmnt_id)
+    if answer is None or comment is None:
+        abort(404)
+
+    return render_template('cmnt_a_form.html', form_type='edit', comment=comment, answer=answer)
+
+
+@app.route('/<int:cmnt_id>/delete-comment-answer', methods=['POST'])
+def delete_comment_answer(cmnt_id):
+
+    answ_id = request.form['answer_id']
+    answer = logic.get_answer(answ_id)
+    qstn_id = answer['question_id']
+    logic.delete_comment(cmnt_id)
+
+    return redirect(url_for('show_question', qstn_id=qstn_id))
+
+
+@app.route('/<int:cmnt_id>/delete-comment-question', methods=['POST'])
+def delete_comment_question(cmnt_id):
+
+    qstn_id = request.form['question_id']
+    logic.delete_comment(cmnt_id)
+
+    return redirect(url_for('show_question', qstn_id=qstn_id))
+
+
+# User database
+# ########################################################################
+@app.route('/mates', methods=['POST'])
+def mates_list():
+    pass
+
+
+@app.route('/mates/<int:mate_id>', methods=['POST'])
+def show_mate(mate_id):
+    pass
 
 
 # Run server

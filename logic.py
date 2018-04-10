@@ -6,23 +6,28 @@ import util
 QSTN_TABLE = 'question'
 ANSW_TABLE = 'answer'
 CMNT_TABLE = 'comment'
+USR_TABLE = 'mate'
 TAG_TABLE = 'tag'
 QSTN_TAG_TABLE = 'question_tag'
+MATE_TABLE = 'mate'
 
 # ----- Column names -------------
 QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image")
 ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image")
 CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count")
+USR_HEADERS = ("id", "username", "registration_time", "profile_pic", "reputation")
 
 # ----- Column name variables ----
 QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG = QSTN_HEADERS
 ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = ANSW_HEADERS
 CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT = CMNT_HEADERS
+USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = USR_HEADERS
 
 # ----- Default values -----------
-QSTN_DEFAULTS = {"title": "", "message": "", "image": ""}
-ANSW_DEFAULTS = {"message": "", "image": ""}
-CMNT_DEFAULTS = {"message": ""}
+QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0}
+ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": 0}
+CMNT_DEFAULTS = {"message": "", "mate_id": 0}
+USR_DEFAULTS = {"profile_pic": "", "reputation": ""}
 
 # ----- Constants ----------------
 ASC = 'ASC'
@@ -52,14 +57,11 @@ def get_all_questions(limit=None, order_by=None):
 
 
 def get_question(qstn_id):
-    question = persistence.select_query(
-        QSTN_TABLE, '*',
-        where=(QSTN_ID, '=', (qstn_id,)))
-    util.convert_time_to_string(question, QSTN_STIME)
-    util.switch_null_to_default(question, QSTN_DEFAULTS)
-    if question:
-        return question[0]
-    return None
+    questions = get_all_questions()
+    for i in questions:
+        if i['id'] == qstn_id:
+            question = questions[questions.index(i)]
+            return question
 
 
 def get_answer(answ_id):
@@ -84,6 +86,17 @@ def get_answers_to_question(qstn_id):
     return answers
 
 
+def get_comment(cmnt_id):
+    comment = persistence.select_query(
+        CMNT_TABLE, '*',
+        where=(CMNT_ID, '=', (cmnt_id,)))
+    util.convert_time_to_string(comment, CMNT_STIME)
+    util.switch_null_to_default(comment, CMNT_DEFAULTS, (CMNT_ANSW_ID, CMNT_QSTN_ID))
+    if comment:
+        return comment[0]
+    return None
+
+
 def get_comments_to_question_and_answers(qstn_id, answ_ids):
     if answ_ids:
         where = [
@@ -101,6 +114,22 @@ def get_comments_to_question_and_answers(qstn_id, answ_ids):
     util.convert_time_to_string(comments, CMNT_STIME)
     util.switch_null_to_default(comments, CMNT_DEFAULTS, (CMNT_ANSW_ID, CMNT_QSTN_ID))
     return comments
+
+
+def get_users():
+    users = persistence.select_query(
+        USR_TABLE, '*')
+    util.convert_time_to_string(users, USR_STIME)
+    return users
+
+
+def get_user(usr_id):
+    user = persistence.select_query(
+        USR_TABLE, '*',
+        where=(USR_ID, '=', (usr_id,)))
+    util.convert_time_to_string(user, USR_STIME)
+    util.switch_null_to_default(user, USR_DEFAULTS)
+    return user
 
 
 # Add functions
@@ -145,12 +174,19 @@ def modify_answer(answ_id, modified_answer):
     modify(ANSW_TABLE, ANSW_ID, answ_id, modified_answer)
 
 
-def modify_comment_of_question(qstn_id, modified_comment):
-    modify(CMNT_TABLE, QSTN_ID, qstn_id, modified_comment)
-
-
-def modify_comment_of_answer(answ_id, modified_comment):
-    modify(CMNT_TABLE, ANSW_ID, answ_id, modified_comment)
+def modify_comment(cmnt_id, modified_input):
+    modified = {key: (value if value else None) for key, value in modified_input.items()}
+    modified[CMNT_STIME] = util.get_current_time()
+    persistence.update_query(
+        table=CMNT_TABLE,
+        columns=modified.keys(),
+        values=modified.values(),
+        where=(CMNT_ID, '=', (cmnt_id,)))
+    persistence.update_increment_query(
+        table=CMNT_TABLE,
+        column=CMNT_EDIT_COUNT,
+        value=1,
+        where=(CMNT_ID, '=', (cmnt_id,)))
 
 
 # Delete from database
@@ -163,12 +199,8 @@ def delete_answer(answ_id):
     persistence.delete_query(ANSW_TABLE, where=(ANSW_ID, '=', (answ_id,)))
 
 
-def delete_comment_of_question(qstn_id):
-    persistence.delete_query(CMNT_TABLE, where=(QSTN_ID, '=', (qstn_id,)))
-
-
-def delete_comment_of_answer(answ_id):
-    persistence.delete_query(CMNT_TABLE, where=(ANSW_ID, '=', (answ_id,)))
+def delete_comment(cmnt_id):
+    persistence.delete_query(CMNT_TABLE, where=(CMNT_ID, '=', (cmnt_id,)))
 
 
 # Voting
@@ -189,15 +221,38 @@ def vote_answer(answ_id, up_or_down):
         where=(ANSW_ID, '=', (answ_id,)))
 
 
+# Views
+# ########################################################################
+def increase_view_counter(qstn_id):
+    persistence.update_increment_query(
+        table=QSTN_TABLE,
+        column=QSTN_VIEWN,
+        value=1,
+        where=(QSTN_ID, '=', (qstn_id,)))
+
+
 # Get top questions
 # ########################################################################
 def get_most_recent_questions():
-    return get_all_questions(5)
+    questions = get_all_questions(5)
+    util.hide_long_string(questions, QSTN_MSG)
+    return questions
 
 
 def get_most_voted_question():
-    return get_all_questions(1, [(QSTN_VOTEN, DESC)])
+    questions = get_all_questions(1, [(QSTN_VOTEN, DESC)])
+    util.hide_long_string(questions, QSTN_MSG)
+    return questions
 
 
 def get_most_viewed_question():
-    return get_all_questions(1, [(QSTN_VIEWN, DESC)])
+    questions = get_all_questions(1, [(QSTN_VIEWN, DESC)])
+    util.hide_long_string(questions, QSTN_MSG)
+    return questions
+
+
+# Search questions
+# ########################################################################
+def show_searched_questions(search_phrase):
+    questions = persistence.search_questions(search_phrase)
+    return questions

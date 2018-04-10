@@ -9,6 +9,30 @@ SQL_FUNCTIONS = ('COUNT', 'SUM', 'AVG', '')
 ORDER_TYPES = ('ASC', 'DESC')
 JOIN_TYPES = ('LEFT', 'RIGHT', 'FULL', '')
 
+# ----- Table names --------------
+QSTN_TABLE = 'question'
+ANSW_TABLE = 'answer'
+CMNT_TABLE = 'comment'
+USR_TABLE = 'mate'
+TAG_TABLE = 'tag'
+QSTN_TAG_TABLE = 'question_tag'
+
+# ----- Column names -------------
+QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id")
+ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id")
+CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count", "mate_id")
+USR_HEADERS = ("id", "username", "registration_time", "profile_pic", "reputation")
+
+# ----- Column name variables ----
+QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG, QSTN_USR_ID = (
+    sql.SQL('.').join(list(map(sql.Identifier, (QSTN_TABLE, header)))) for header in QSTN_HEADERS)
+ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG, ANSW_USR_ID = (
+    sql.SQL('.').join(list(map(sql.Identifier, (ANSW_TABLE, header)))) for header in ANSW_HEADERS)
+CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT, CMNT_USR_ID = (
+    sql.SQL('.').join(list(map(sql.Identifier, (CMNT_TABLE, header)))) for header in CMNT_HEADERS)
+USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = (
+    sql.SQL('.').join(list(map(sql.Identifier, (USR_TABLE, header)))) for header in USR_HEADERS)
+
 
 # SQL column query construction
 # ########################################################################
@@ -388,3 +412,124 @@ def delete_query(cursor, table, where=None):
     else:
         cursor.execute(query)
 # ########################################################################
+
+
+# Other queries
+# ########################################################################
+@db_connection.connection_handler
+def search_questions(cursor, search_phrase):
+    search_string = '%'+search_phrase+'%'
+    query = sql.SQL("""
+                    SELECT DISTINCT question.*, COUNT(answer.id) as answers_number
+                    FROM question LEFT JOIN answer
+                    ON question.id=question_id
+                    WHERE question.message ILIKE {x}
+                    OR question.title ILIKE {x}
+                    OR answer.message ILIKE {x}
+                    GROUP BY question.id
+                    ORDER BY question.submission_time DESC""").format(x=sql.Placeholder())
+    cursor.execute(query, (search_string,)*3)
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_questions_list(cursor):
+    query = sql.SQL("""
+        SELECT {columns}, COUNT({answ_id}) AS answers_number, {usr_name}
+        FROM {qstn_table}
+        LEFT JOIN {answ_table} ON {qstn_id}={answ_id}
+        LEFT JOIN {usr_table} ON {qstn_usr_id}={qstn_id}
+        GROUP BY {qstn_id}, {usr_name}
+        ORDER BY {qstn_stime} DESC
+    """).format(
+        qstn_table=sql.Identifier(QSTN_TABLE),
+        answ_table=sql.Identifier(ANSW_TABLE),
+        usr_table=sql.Identifier(USR_TABLE),
+        columns=sql.SQL(', ').join([QSTN_ID, QSTN_VIEWN, QSTN_VOTEN, QSTN_STIME, QSTN_TITLE]),
+        qstn_id=QSTN_ID,
+        answ_id=ANSW_ID,
+        qstn_usr_id=QSTN_USR_ID,
+        qstn_stime=QSTN_STIME,
+        usr_name=USR_NAME,
+    )
+    print(query.as_string(cursor))
+    cursor.execute(query)
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_question(cursor, qstn_id):
+    query = sql.SQL("""
+        SELECT {qstn_table}.*, COUNT({answ_id}) AS answers_number, {usr_name}
+        FROM {qstn_table}
+        LEFT JOIN {answ_table} ON {qstn_id}={answ_id}
+        LEFT JOIN {usr_table} ON {qstn_usr_id}={usr_id}
+        WHERE {qstn_id}=%s
+        GROUP BY {qstn_id}, {usr_name}
+    """).format(
+        qstn_table=sql.Identifier(QSTN_TABLE),
+        answ_table=sql.Identifier(ANSW_TABLE),
+        usr_table=sql.Identifier(USR_TABLE),
+        qstn_id=QSTN_ID,
+        answ_id=ANSW_ID,
+        usr_id=USR_ID,
+        qstn_usr_id=QSTN_USR_ID,
+        usr_name=USR_NAME,
+    )
+    print(query.as_string(cursor))
+    cursor.execute(query, (qstn_id,))
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_answer(cursor, answ_id):
+    query = sql.SQL("""
+        SELECT {answ_table}.*, {usr_name}
+        FROM {answ_table}
+        LEFT JOIN {usr_table} ON {answ_usr_id}={usr_id}
+        WHERE {answ_id}=%s
+    """).format(
+        answ_table=sql.Identifier(ANSW_TABLE),
+        usr_table=sql.Identifier(USR_TABLE),
+        answ_id=ANSW_ID,
+        answ_usr_id=ANSW_USR_ID,
+        usr_id=USR_ID,
+        usr_name=USR_NAME,
+    )
+    print(query.as_string(cursor))
+    cursor.execute(query, (answ_id,))
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_answers_to_question(cursor, qstn_id):
+    query = sql.SQL("""
+        SELECT {answ_table}.*, {usr_name}
+        FROM {answ_table}
+        LEFT JOIN {usr_table} ON {answ_usr_id}={usr_id}
+        WHERE {answ_qstn_id}=%s
+    """).format(
+        answ_table=sql.Identifier(ANSW_TABLE),
+        usr_table=sql.Identifier(USR_TABLE),
+        answ_id=ANSW_ID,
+        answ_usr_id=ANSW_USR_ID,
+        usr_id=USR_ID,
+        usr_name=USR_NAME,
+    )
+    print(query.as_string(cursor))
+    cursor.execute(query, (qstn_id,))
+    data = cursor.fetchall()
+    return data
+
+
+
+if __name__ == "__main__":
+    import ui
+    questions = get_question(1)
+    ui.print_table(questions)
+    print(questions)
+    pass
