@@ -71,8 +71,9 @@ def ask_question():
     # Displays a page with a form to be filled with the new question
 
     question = logic.QSTN_DEFAULTS
+    mates = logic.get_users_ids()
 
-    return render_template('q_form.html', form_type="new", question=question)
+    return render_template('q_form.html', form_type="new", question=question, mates=mates)
 
 
 # Post answer
@@ -87,8 +88,9 @@ def post_answer(qstn_id):
     if question is None:
         abort(404)
     answer = logic.ANSW_DEFAULTS
+    mates = logic.get_users_ids()
 
-    return render_template('ans_form.html', form_type='new', answer=answer, question=question)
+    return render_template('ans_form.html', form_type='new', answer=answer, question=question, mates=mates)
 
 
 # About
@@ -175,8 +177,7 @@ def edit_answer():
     answer = logic.get_answer(answ_id)
     question = logic.get_question(qstn_id)
     mates = logic.get_users_ids()
-    print(mates)
-    print(answer)
+
     return render_template('ans_form.html', form_type="edit", answer=answer, question=question, mates=mates)
 
 
@@ -283,8 +284,9 @@ def post_comment_to_question(qstn_id):
     if question is None:
         abort(404)
     comment = logic.CMNT_DEFAULTS
+    mates = logic.get_users_ids()
 
-    return render_template('cmnt_q_form.html', form_type='new', comment=comment, question=question)
+    return render_template('cmnt_q_form.html', form_type='new', comment=comment, question=question, mates=mates)
 
 
 @app.route('/answer/<int:answ_id>/new-comment')
@@ -297,8 +299,9 @@ def post_comment_to_answer(answ_id):
     if answer is None:
         abort(404)
     comment = logic.CMNT_DEFAULTS
+    mates = logic.get_users_ids()
 
-    return render_template('cmnt_a_form.html', form_type='new', comment=comment, answer=answer)
+    return render_template('cmnt_a_form.html', form_type='new', comment=comment, answer=answer, mates=mates)
 
 
 @app.route('/question/<int:qstn_id>/edit-comment', methods=['POST'])
