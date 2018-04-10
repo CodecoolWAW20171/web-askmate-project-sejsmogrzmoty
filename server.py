@@ -347,8 +347,7 @@ def delete_comment_question(cmnt_id):
 # ########################################################################
 @app.route('/mates')
 def mates_list():
-    mates = logic.get_all_mates()
-    print(mates)
+    mates = logic.get_users()
     return render_template('mates_list.html', mates = mates)
 
 
