@@ -58,6 +58,7 @@ def get_question(qstn_id):
             question = questions[questions.index(i)]
             return question
 
+
 def get_answer(answ_id):
     answer = persistence.select_query(
         ANSW_TABLE, '*',
