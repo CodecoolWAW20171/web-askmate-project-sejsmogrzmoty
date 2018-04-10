@@ -24,9 +24,9 @@ CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT, CMNT
 USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = USR_HEADERS
 
 # ----- Default values -----------
-QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0}
-ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": 0}
-CMNT_DEFAULTS = {"message": "", "mate_id": 0}
+QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0, "username": "Anonymous"}
+ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": 0, "username": "Anonymous"}
+CMNT_DEFAULTS = {"message": "", "question_id": "", "answer_id": "", "mate_id": 0, "username": "Anonymous"}
 USR_DEFAULTS = {"profile_pic": "", "reputation": ""}
 
 # ----- Constants ----------------
@@ -58,15 +58,15 @@ def get_all_questions(limit=None, order_by=None):
 
 def get_question(qstn_id):
     cols = [(QSTN_TABLE, header) for header in QSTN_HEADERS]
-    cols.append(('COUNT', (ANSW_TABLE, ANSW_QSTN_ID), 'answers_number'))
-    join_on_cols = [(QSTN_TABLE, QSTN_ID), ANSW_QSTN_ID]
-    group_by = [(QSTN_TABLE, QSTN_ID)]
+    cols.append('username')
+    join_on_cols = [(QSTN_TABLE, QSTN_MATE), (USR_TABLE, USR_ID)]
+    group_by = [(QSTN_TABLE, QSTN_ID), (USR_TABLE, USR_ID)]
     where = ((QSTN_TABLE, QSTN_ID), '=', (qstn_id,))
     question = persistence.select_query(
         table=QSTN_TABLE,
         columns=cols,
+        join_params=(USR_TABLE, join_on_cols, 'LEFT'),
         where=where,
-        join_params=(ANSW_TABLE, join_on_cols, 'LEFT'),
         groups=group_by
     )
     util.convert_time_to_string(question, QSTN_STIME)
@@ -88,13 +88,23 @@ def get_answer(answ_id):
 
 
 def get_answers_to_question(qstn_id):
+    cols = [(ANSW_TABLE, header) for header in ANSW_HEADERS]
+    cols.append('username')
+    cols.append(('COUNT', (ANSW_TABLE, ANSW_QSTN_ID), 'answers_number'))
+    join_on_cols = [(ANSW_TABLE, ANSW_MATE), (USR_TABLE, USR_ID)]
+    group_by = [(ANSW_TABLE, ANSW_ID), 'username']
     answers = persistence.select_query(
-        ANSW_TABLE, '*',
+        table=ANSW_TABLE,
+        columns=cols,
+        join_params=(USR_TABLE, join_on_cols, 'LEFT'),
         where=(ANSW_QSTN_ID, '=', (qstn_id,)),
+        groups=group_by,
         orders=[(ANSW_STIME, DESC)]
     )
     util.convert_time_to_string(answers, ANSW_STIME)
     util.switch_null_to_default(answers, ANSW_DEFAULTS)
+    if answers:
+        answers[0]['answers_number'] = len(answers)
     return answers
 
 
@@ -110,6 +120,11 @@ def get_comment(cmnt_id):
 
 
 def get_comments_to_question_and_answers(qstn_id, answ_ids):
+    cols = [(CMNT_TABLE, header) for header in CMNT_HEADERS]
+    cols.append('username')
+    join_on_cols = [(CMNT_TABLE, CMNT_MATE), (USR_TABLE, USR_ID)]
+    group_by = [(CMNT_TABLE, CMNT_ID), (USR_TABLE, USR_ID)]
+
     if answ_ids:
         where = [
                  [(CMNT_QSTN_ID, '=', (qstn_id,)),
@@ -118,13 +133,17 @@ def get_comments_to_question_and_answers(qstn_id, answ_ids):
                 ]
     else:
         where = (CMNT_QSTN_ID, '=', (qstn_id,))
-
+    
     comments = persistence.select_query(
-        CMNT_TABLE, '*',
+        table=CMNT_TABLE,
+        columns=cols,
+        join_params=(USR_TABLE, join_on_cols, 'LEFT'),
         where=where,
-        orders=[(CMNT_STIME, DESC)])
+        groups=group_by,
+        orders=[(CMNT_STIME, DESC)]
+    )
     util.convert_time_to_string(comments, CMNT_STIME)
-    util.switch_null_to_default(comments, CMNT_DEFAULTS, (CMNT_ANSW_ID, CMNT_QSTN_ID))
+    util.switch_null_to_default(comments, CMNT_DEFAULTS)
     return comments
 
 
