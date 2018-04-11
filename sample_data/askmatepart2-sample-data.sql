@@ -19,9 +19,7 @@ ALTER TABLE IF EXISTS ONLY public.question DROP CONSTRAINT IF EXISTS fk_mate_id 
 ALTER TABLE IF EXISTS ONLY public.answer DROP CONSTRAINT IF EXISTS fk_mate_id CASCADE;
 ALTER TABLE IF EXISTS ONLY public.comment DROP CONSTRAINT IF EXISTS fk_mate_id CASCADE;
 ALTER TABLE IF EXISTS ONLY public.mate DROP CONSTRAINT IF EXISTS pk_mate_id CASCADE;
-
-
-
+ALTER TABLE IF EXISTS ONLY public.question DROP CONSTRAINT IF EXISTS fk_accepted_answer_id CASCADE;
 
 
 DROP TABLE IF EXISTS public.question;
@@ -35,7 +33,8 @@ CREATE TABLE question (
     message text,
     image text,
     mate_id integer,
-    reputation integer DEFAULT 0
+    reputation integer DEFAULT 0,
+    accepted_answer_id integer
 );
 
 DROP TABLE IF EXISTS public.answer;
@@ -110,6 +109,7 @@ ALTER TABLE ONLY tag
 ALTER TABLE ONLY mate
     ADD CONSTRAINT pk_mate_id PRIMARY KEY (id);
 
+
 ALTER TABLE public.comment
   ADD CONSTRAINT fk_answer_id FOREIGN KEY (answer_id)
       REFERENCES public.answer (id) MATCH SIMPLE
@@ -119,7 +119,6 @@ ALTER TABLE public.answer
   ADD CONSTRAINT pk_question_id FOREIGN KEY (question_id)
       REFERENCES public.question (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE CASCADE;
-
 
 ALTER TABLE public.question_tag
   ADD CONSTRAINT fk_question_id FOREIGN KEY (question_id)
@@ -136,7 +135,6 @@ ALTER TABLE public.question_tag
       REFERENCES public.tag (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE CASCADE;
 
-
 ALTER TABLE public.answer
   ADD CONSTRAINT pk_mate_id FOREIGN KEY (mate_id)
       REFERENCES public.mate (id) MATCH SIMPLE
@@ -151,6 +149,13 @@ ALTER TABLE public.comment
   ADD CONSTRAINT pk_mate_id FOREIGN KEY (mate_id)
       REFERENCES public.mate (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE CASCADE;
+
+ALTER TABLE public.question
+  ADD CONSTRAINT pk_accepted_answer_id FOREIGN KEY (accepted_answer_id)
+      REFERENCES public.answer (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE;
+
+
 
 
 GRANT INSERT, SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO askmate_user;
