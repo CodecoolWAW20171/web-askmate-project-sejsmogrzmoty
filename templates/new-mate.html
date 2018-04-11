@@ -1,25 +1,41 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-    <head>
-        <meta charset="utf-8">
-        <title>Create New Mate, Mate: </title>
-    </head>
+{% set title = "New Mate" %}
 
+{% block title %}
+    {{ "Askmate " + title }}
+{% endblock %}
 
-    <body>
+{% block body %}
+<div class="form-container">
+<h2>	Create New Mate, Mate: </h2>
+<form action='/registration',  method="post">
 
-	       <h3>	Create New Mate, Mate: </h3>
-         <form action='/registration',  method="post">
-	          <h7>What's Your name mate? </h7><br/>
-		        <input type="text" id="username" name="username" required><br/><br/>
-		        
-		        <h7>Image URL: </h7><br/r>
-		        <input type="text" id="image" name="image"><br/><br/>
-          <!-->  <input type="hidden" id="submisson_time" name=submisson_time value=datetime><br/><br/> </-->
-	          <button type="submit">Create</button>
-        </form>
-	</pre>
+<div class="row">
+        <div class="col-25">
+            <label for="username">What's Your name mate?</label>
+        </div>
+        <div class="col-75">
+            <input type="text" id="username" name="username" class="full-width"
+            placeholder="Name..." required>
+        </div>
+    </div>
 
-    </body>
-</html>
+    <!-- Image -->
+    <div class="row">
+        <div class="col-25">
+            <label for="image">Image path</label>
+        </div>
+        <div class="col-75">
+            <input type="text" id="image" name="image" class="full-width"
+            placeholder="Image path...">
+        </div>
+    </div>
+    
+    <div class="row">
+
+    <button type="submit" class="confirm form-sub"><i class="fas fa-check"></i>Create</button>
+    </div>
+</form>
+</div>
+{% endblock %}
