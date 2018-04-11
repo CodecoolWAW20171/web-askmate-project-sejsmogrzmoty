@@ -357,6 +357,15 @@ def show_mate(mate_id=0):
     print(mate)
     return render_template('mate.html', mate=mate)
 
+@app.route('/registration')
+def register():
+    return render_template('new-mate.html')
+
+@app.route('/registration', methods=['POST'])
+def add_new_mate():
+    mate = request.form
+    logic.add_new_mate(mate)
+    return redirect(url_for('mates_list'))
 
 # Run server
 # ########################################################################

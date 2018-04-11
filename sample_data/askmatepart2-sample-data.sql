@@ -81,8 +81,8 @@ DROP SEQUENCE IF EXISTS public.mate_id_seq;
 CREATE TABLE mate (
     id serial NOT NULL,
     username text,
-    registration_time timestamp without time zone,
-    profile_pic text,
+    submisson_time timestamp without time zone,
+    image text,
     reputation integer DEFAULT 0
 );
 
@@ -157,6 +157,7 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO askmate_user;
 INSERT INTO mate VALUES (0, 'piczka','2017-03-27 07:00:13', NULL, 0);
 INSERT INTO mate VALUES (1, 'pipka','2016-03-27 07:00:13', NULL, 0);
 
+SELECT pg_catalog.setval('mate_id_seq', 1, true);
 
 INSERT INTO question VALUES (0, '2017-04-28 08:29:00', 29, 7, 'How to make lists in Python?', 'I am totally new to this, any hints?', NULL, 0);
 INSERT INTO question VALUES (1, '2017-04-29 09:19:00', 15, 9, 'Wordpress loading multiple jQuery Versions', 'I developed a plugin that uses the jquery booklet plugin (http://builtbywill.com/booklet/#/) this plugin binds a function to $ so I cann call $(".myBook").booklet();
