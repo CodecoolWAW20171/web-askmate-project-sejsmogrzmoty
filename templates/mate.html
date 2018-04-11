@@ -17,5 +17,116 @@
             Reputation: {{ mate.reputation }}
         </p>
     </div>
+    
+    <hr>
+    <h1>Asked questions</h1>
+    <div class="data-table">
+    <table>
+            <tr>
+                <th style="width: 6%">Votes</th>
+                <th style="width: 6%">Answers</th>
+                <th style="width: 6%">Views</th>
+                <th>Question</th>
+                <th style="width: 15%">Asked</th>
+            </tr>
+            {% for question in questions %}
+                <tr>
+                    <td class="number">
+                        {{- question.vote_number }}<br>
+                        <span class="num-caption">votes</span>
+                    </td>
+                    <td class="number">
+                        {{- question.answers_number }}<br>
+                        <span class="num-caption">answers</span>
+                    </td>
+                    <td class="number">
+                        {{- question.view_number }}<br>
+                        <span class="num-caption">views</span>
+                    </td>
+                    <td class="question">
+                        <a href="{{ url_for('show_question', qstn_id=question.id) }}">
+                            {{- question.title|e -}}
+                        </a>
+                    </td>
+                    <td>{{ question.submission_time }}</td>
+                </tr>
+            {% endfor %}
+            <tr></tr>
+        </table>
+    </div>
+    
+    <hr>
+    <h1>Answered questions</h1>
+    <div class="data-table">
+    <table>
+            <tr>
+                <th style="width: 6%">Votes</th>
+                <th style="width: 6%">Answers</th>
+                <th style="width: 6%">Views</th>
+                <th>Question</th>
+                <th style="width: 15%">Asked</th>
+            </tr>
+            {% for question in answers %}
+                <tr>
+                    <td class="number">
+                        {{- question.vote_number }}<br>
+                        <span class="num-caption">votes</span>
+                    </td>
+                    <td class="number">
+                        {{- question.answers_number }}<br>
+                        <span class="num-caption">answers</span>
+                    </td>
+                    <td class="number">
+                        {{- question.view_number }}<br>
+                        <span class="num-caption">views</span>
+                    </td>
+                    <td class="question">
+                        <a href="{{ url_for('show_question', qstn_id=question.id) }}">
+                            {{- question.title|e -}}
+                        </a>
+                    </td>
+                    <td>{{ question.submission_time }}</td>
+                </tr>
+            {% endfor %}
+            <tr></tr>
+        </table>
+    </div>
+
+    <hr>
+    <h1>Commented questions</h1>
+    <div class="data-table">
+    <table>
+            <tr>
+                <th style="width: 6%">Votes</th>
+                <th style="width: 6%">Answers</th>
+                <th style="width: 6%">Views</th>
+                <th>Question</th>
+                <th style="width: 15%">Asked</th>
+            </tr>
+            {% for question in comments %}
+                <tr>
+                    <td class="number">
+                        {{- question.vote_number }}<br>
+                        <span class="num-caption">votes</span>
+                    </td>
+                    <td class="number">
+                        {{- question.answers_number }}<br>
+                        <span class="num-caption">answers</span>
+                    </td>
+                    <td class="number">
+                        {{- question.view_number }}<br>
+                        <span class="num-caption">views</span>
+                    </td>
+                    <td class="question">
+                        <a href="{{ url_for('show_question', qstn_id=question.id) }}">
+                            {{- question.title|e -}}
+                        </a>
+                    </td>
+                    <td>{{ question.submission_time }}</td>
+                </tr>
+            {% endfor %}
+            <tr></tr>
+        </table>
+    </div>
 </div>
 {% endblock %}

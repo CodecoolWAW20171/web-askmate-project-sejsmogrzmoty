@@ -12,14 +12,14 @@ QSTN_TAG_TABLE = 'question_tag'
 MATE_TABLE = 'mate'
 
 # ----- Column names -------------
-QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id")
-ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id")
+QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id", "reputation")
+ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id",  "reputation")
 CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count", "mate_id")
 USR_HEADERS = ("id", "username", "submisson_time", "image", "reputation")
 
 # ----- Column name variables ----
-QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG, QSTN_MATE = QSTN_HEADERS
-ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG, ANSW_MATE = ANSW_HEADERS
+QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG, QSTN_MATE, QSTN_REP = QSTN_HEADERS
+ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG, ANSW_MATE, ANSW_REP = ANSW_HEADERS
 CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT, CMNT_MATE = CMNT_HEADERS
 USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = USR_HEADERS
 
@@ -256,7 +256,33 @@ def vote_answer(answ_id, up_or_down):
         where=(ANSW_ID, '=', (answ_id,)))
 
 
-# Views
+def change_rep_qstn(qstn_id, rep_val):
+    if int(rep_val) > 0:
+        rep_val = int(rep_val)*5
+    else:
+        rep_val = int(rep_val)*-2
+    
+    persistence.update_increment_query(
+        table=QSTN_TABLE,
+        column=QSTN_REP,
+        value=rep_val,
+        where=(QSTN_ID, '=', (qstn_id,)))
+
+
+def change_rep_answ(answ_id, rep_val):
+    if int(rep_val) > 0:
+        rep_val = int(rep_val)*10
+    else:
+        rep_val = int(rep_val)*-2
+    
+    persistence.update_increment_query(
+        table=ANSW_TABLE,
+        column=ANSW_REP,
+        value=rep_val,
+        where=(ANSW_ID, '=', (answ_id,)))
+
+
+# Views & Rep
 # ########################################################################
 def increase_view_counter(qstn_id):
     persistence.update_increment_query(
@@ -291,3 +317,8 @@ def get_most_viewed_question():
 def show_searched_questions(search_phrase):
     questions = persistence.search_questions(search_phrase)
     return questions
+
+
+def get_users_with_rep():
+    users = persistence.get_users_rep()
+    return users

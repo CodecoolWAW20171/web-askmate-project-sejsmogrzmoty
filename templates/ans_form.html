@@ -27,13 +27,15 @@
         <div class="side-right">
             <p class="label">asked</p>
             <p class="data">{{ question.submission_time }}</p>
+
+            <p class="label">user</p>
+            <p class="data">{{ question.username|e }}</p>
             
             <p class="label">views</p>
             <p class="data">{{ question.view_number }}</p>
 
             <p class="label">votes</p>
             <p class="data">{{ question.vote_number }}</p>
-    
         </div>
     </div>
     <hr>
@@ -74,6 +76,24 @@
                     placeholder="Image path..." value="{{ answer.image }}">
                 </div>
             </div>
+
+            <!-- User -->
+            <div class="row">
+                    <div class="col-25">
+                        <label for="mate_id">User name</label>
+                    </div>
+                    <div class="col-75">
+                        <select id="mate_id" name="mate_id" class="narrow">
+                            <option value {%- if answer.mate_id is none %} selected{% endif %}>Anonymous</option>
+                            {% for user in mates %}
+                            <option value="{{ user.id }}"
+                            {%- if user.id == answer.mate_id %} selected{% endif %}>
+                                {{- user.username -}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
 
             <!-- Submit button -->
             <div class="row">
