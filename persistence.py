@@ -414,7 +414,7 @@ def get_user_questions(cursor, usr_id):
     query = sql.SQL("""
                     SELECT question.*, COUNT(answer.id) AS answers_number
                     FROM question
-                    JOIN answer ON answer.question_id=question.id
+                    LEFT JOIN answer ON answer.question_id=question.id
                     WHERE question.mate_id=%s
                     GROUP BY question.id
                     """)
@@ -455,14 +455,19 @@ def get_user_comments(cursor, usr_id):
 @db_connection.connection_handler
 def get_users_rep(cursor):
     query = sql.SQL("""
-                    SELECT mate.*,
-                    (CASE WHEN SUM(qstn_rep) IS NULL THEN 0 ELSE SUM(qstn_rep) END +
-                     CASE WHEN SUM(answ_rep) IS NULL THEN 0 ELSE SUM(answ_rep) END) AS rep
-                    FROM mate
-                    LEFT JOIN question ON question.mate_id=mate.id
-                    LEFT JOIN answer ON answer.mate_id=mate.id
-                    GROUP BY mate.id
-                    ORDER BY mate.username
+                    SELECT id, username, submission_time, SUM(rep) AS rep FROM 
+                        (SELECT mate.*,
+                        SUM(qstn_rep) AS rep
+                        FROM mate
+                        LEFT JOIN question ON question.mate_id=mate.id
+                        GROUP BY username, mate.id
+                    UNION
+                        SELECT mate.*,
+                        SUM(answ_rep) AS rep
+                        FROM mate
+                        LEFT JOIN answer ON answer.mate_id=mate.id
+                        GROUP BY mate.id) AS tan
+                        GROUP BY username, id, submission_time;
                     """)
     cursor.execute(query)
     data = cursor.fetchall()
