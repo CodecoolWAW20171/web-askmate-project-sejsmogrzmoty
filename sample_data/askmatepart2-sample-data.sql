@@ -33,7 +33,7 @@ CREATE TABLE question (
     message text,
     image text,
     mate_id integer,
-    reputation integer DEFAULT 0,
+    qstn_rep integer DEFAULT 0,
     accepted_answer_id integer
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE answer (
     message text,
     image text,
     mate_id integer,
-    reputation integer DEFAULT 0
+    answ_rep integer DEFAULT 0
 
 );
 
