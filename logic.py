@@ -15,19 +15,19 @@ MATE_TABLE = 'mate'
 QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id", "qstn_rep")
 ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id",  "answ_rep")
 CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count", "mate_id")
-USR_HEADERS = ("id", "username", "submisson_time", "image", "reputation")
+USR_HEADERS = ("id", "username", "registration_time", "profile_pic")
 
 # ----- Column name variables ----
 QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG, QSTN_MATE, QSTN_REP = QSTN_HEADERS
 ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG, ANSW_MATE, ANSW_REP = ANSW_HEADERS
 CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT, CMNT_MATE = CMNT_HEADERS
-USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = USR_HEADERS
+USR_ID, USR_NAME, USR_STIME, USR_PIC = USR_HEADERS
 
 # ----- Default values -----------
-QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0, "username": "Anonymous"}
-ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": 0, "username": "Anonymous"}
-CMNT_DEFAULTS = {"message": "", "question_id": "", "answer_id": "", "mate_id": 0, "username": "Anonymous"}
-USR_DEFAULTS = {"image": "", "reputation": ""}
+QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": None, "username": "Anonymous"}
+ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": None, "username": "Anonymous"}
+CMNT_DEFAULTS = {"message": "", "question_id": "", "answer_id": "", "mate_id": None, "username": "Anonymous"}
+USR_DEFAULTS = {"username": "", "profile_pic": ""}
 
 # ----- Constants ----------------
 ASC = 'ASC'
