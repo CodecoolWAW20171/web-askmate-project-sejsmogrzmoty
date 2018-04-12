@@ -83,7 +83,7 @@ DROP SEQUENCE IF EXISTS public.mate_id_seq;
 CREATE TABLE mate (
     id serial NOT NULL,
     username text,
-    submisson_time timestamp without time zone,
+    submission_time timestamp without time zone,
     image text,
     reputation integer DEFAULT 0
 );
