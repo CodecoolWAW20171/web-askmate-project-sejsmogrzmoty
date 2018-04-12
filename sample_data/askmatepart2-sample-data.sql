@@ -82,7 +82,7 @@ DROP TABLE IF EXISTS public.mate;
 DROP SEQUENCE IF EXISTS public.mate_id_seq;
 CREATE TABLE mate (
     id serial NOT NULL,
-    username text,
+    username text UNIQUE,
     submission_time timestamp without time zone,
     image text,
     reputation integer DEFAULT 0
@@ -108,6 +108,7 @@ ALTER TABLE ONLY tag
 
 ALTER TABLE ONLY mate
     ADD CONSTRAINT pk_mate_id PRIMARY KEY (id);
+
 
 
 ALTER TABLE public.comment

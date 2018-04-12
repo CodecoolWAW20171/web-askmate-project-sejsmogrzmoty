@@ -2,6 +2,8 @@
 
 {% set title = "New Mate" %}
 
+{% set active_page = "register" %}
+
 {% block title %}
     {{ "Askmate " + title }}
 {% endblock %}
@@ -9,6 +11,9 @@
 {% block body %}
 <div class="form-container">
 <h2>	Create New Mate, Mate: </h2>
+{% if err %}
+<p>Mate name already in use, please try a different one.</p>
+{% endif %}
 <form action='/registration',  method="post">
 
 <div class="row">

@@ -387,14 +387,21 @@ def show_mate(mate_id):
                            answers=answers,
                            comments=comments)
 
+
 @app.route('/registration')
 def register():
     return render_template('new-mate.html')
 
+
 @app.route('/registration', methods=['POST'])
 def add_new_mate():
     mate = request.form
-    logic.add_new_mate(mate)
+    if mate['username'] == "Anonymous":
+        return render_template('new-mate.html', err=True)
+    try:
+        logic.add_new_mate(mate)
+    except logic.persistence.db_connection.psycopg2.IntegrityError:
+        return render_template('new-mate.html', err=True)
     return redirect(url_for('mates_list'))
 
 # Run server
