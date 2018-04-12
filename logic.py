@@ -15,7 +15,7 @@ MATE_TABLE = 'mate'
 QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id", "qstn_rep")
 ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id",  "answ_rep")
 CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count", "mate_id")
-USR_HEADERS = ("id", "username", "registration_time", "profile_pic")
+USR_HEADERS = ("id", "username", "submission_time", "image")
 
 # ----- Column name variables ----
 QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG, QSTN_MATE, QSTN_REP = QSTN_HEADERS
@@ -27,7 +27,7 @@ USR_ID, USR_NAME, USR_STIME, USR_PIC = USR_HEADERS
 QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": None, "username": "Anonymous"}
 ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": None, "username": "Anonymous"}
 CMNT_DEFAULTS = {"message": "", "question_id": "", "answer_id": "", "mate_id": None, "username": "Anonymous"}
-USR_DEFAULTS = {"username": "", "profile_pic": ""}
+USR_DEFAULTS = {"username": "", "image": ""}
 
 # ----- Constants ----------------
 ASC = 'ASC'
