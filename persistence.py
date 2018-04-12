@@ -459,11 +459,12 @@ def get_user_comments(cursor, usr_id):
 def get_users_rep(cursor):
     query = sql.SQL("""
                     SELECT mate.*,
-                    SUM(question.reputation + answer.reputation) AS rep                    
+                    (CASE WHEN SUM(qstn_rep) IS NULL THEN 0 ELSE SUM(qstn_rep) END +
+                     CASE WHEN SUM(answ_rep) IS NULL THEN 0 ELSE SUM(answ_rep) END) AS rep                   
                     FROM mate
                     LEFT JOIN question ON question.mate_id=mate.id
                     LEFT JOIN answer ON answer.mate_id=mate.id
-                    GROUP BY mate.id, mate.username
+                    GROUP BY mate.id
                     """)
     
     cursor.execute(query)

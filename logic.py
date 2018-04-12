@@ -12,8 +12,8 @@ QSTN_TAG_TABLE = 'question_tag'
 MATE_TABLE = 'mate'
 
 # ----- Column names -------------
-QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id", "reputation")
-ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id",  "reputation")
+QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id", "qstn_rep")
+ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id",  "answ_rep")
 CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count", "mate_id")
 USR_HEADERS = ("id", "username", "registration_time", "profile_pic")
 
