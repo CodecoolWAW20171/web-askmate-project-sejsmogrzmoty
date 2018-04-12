@@ -422,6 +422,24 @@
         padding: 0;
     }
 
+    .accepted {
+        margin-top: 0.5em;
+    }
+    
+    .accepted i {
+        color: #6B9023;
+    }
+    
+    .to-accept {
+        margin-top: 0.5em;
+        opacity: 0.1;
+        transition: 0.3s;
+    }
+
+    .to-accept:hover {
+        opacity: 0.8;
+    }
+
     /* ---------- Confirm button ---------- */
     button.confirm {
         width: 10em;

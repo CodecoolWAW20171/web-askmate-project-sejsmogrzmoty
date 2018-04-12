@@ -85,6 +85,10 @@
                 <div class="vote-num">{{ answer.vote_number }}</div>
                 <button class="vote" name="vote" value="-1"><i class="fas fa-chevron-down"></i></button>
             </form>
+            <form action="{{ url_for('mark_accepted', qstn_id=question.id ) }}" method="post">
+                <button class="vote{% if answer.id == question.accepted_answer_id %} accepted{% else %} to-accept{% endif %}"
+                name="accepted_answer_id" value="{{ answer.id }}"><i class="fas fa-check"></i></button>
+            </form>
         </div>
         <div class="mid">
             {% for line in answer.message.splitlines() %}

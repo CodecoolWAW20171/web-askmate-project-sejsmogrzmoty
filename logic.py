@@ -153,23 +153,11 @@ def get_answer(answ_id):
 
 
 def get_answers_to_question(qstn_id):
-    cols = [(ANSW_TABLE, header) for header in ANSW_HEADERS]
-    cols.append('username')
-    cols.append(('COUNT', (ANSW_TABLE, ANSW_QSTN_ID), 'answers_number'))
-    join_on_cols = [(ANSW_TABLE, ANSW_MATE), (USR_TABLE, USR_ID)]
-    group_by = [(ANSW_TABLE, ANSW_ID), 'username']
-    answers = persistence.select_query(
-        table=ANSW_TABLE,
-        columns=cols,
-        join_params=(USR_TABLE, join_on_cols, 'LEFT'),
-        where=(ANSW_QSTN_ID, '=', (qstn_id,)),
-        groups=group_by,
-        orders=[(ANSW_STIME, DESC)]
-    )
-    util.convert_time_to_string(answers, ANSW_STIME)
-    util.switch_null_to_default(answers, ANSW_DEFAULTS, (ANSW_MATE,))
+    answers = persistence.get_answers_to_question(qstn_id)
     if answers:
         answers[0]['answers_number'] = len(answers)
+    util.convert_time_to_string(answers, ANSW_STIME)
+    util.switch_null_to_default(answers, ANSW_DEFAULTS, (ANSW_MATE,))
     return answers
 
 
@@ -369,6 +357,14 @@ def change_rep_answ(answ_id, rep_val):
         column=ANSW_REP,
         value=rep_val,
         where=(ANSW_ID, '=', (answ_id,)))
+
+
+def mark_accepted_answer(qstn_id, accepted_answer_id):
+    persistence.update_query(
+        table=QSTN_TABLE,
+        columns=(QSTN_A_ANSW,),
+        values=(accepted_answer_id,),
+        where=(QSTN_ID, '=', (qstn_id,)))
 
 
 # Views & Rep
