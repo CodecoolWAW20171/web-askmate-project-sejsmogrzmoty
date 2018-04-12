@@ -477,16 +477,23 @@ def get_users_rep(cursor):
 @db_connection.connection_handler
 def get_user_with_rep(cursor, usr_id):
     query = sql.SQL("""
-                    SELECT mate.*,
-                    (CASE WHEN SUM(qstn_rep) IS NULL THEN 0 ELSE SUM(qstn_rep) END +
-                     CASE WHEN SUM(answ_rep) IS NULL THEN 0 ELSE SUM(answ_rep) END) AS rep
-                    FROM mate
-                    LEFT JOIN question ON question.mate_id=mate.id
-                    LEFT JOIN answer ON answer.mate_id=mate.id
-                    WHERE mate.id = %s
-                    GROUP BY mate.id
+                    SELECT id, username, submission_time, image, SUM(rep) AS rep FROM 
+                        (SELECT mate.*,
+                        SUM(qstn_rep) AS rep
+                        FROM mate
+                        LEFT JOIN question ON question.mate_id=mate.id
+                        WHERE mate.id = %s
+                        GROUP BY username, mate.id
+                    UNION
+                        SELECT mate.*,
+                        SUM(answ_rep) AS rep
+                        FROM mate
+                        LEFT JOIN answer ON answer.mate_id=mate.id
+                        WHERE mate.id = %s
+                        GROUP BY mate.id) AS tan
+                        GROUP BY username, id, submission_time, image;
                     """)
-    cursor.execute(query, (usr_id,))
+    cursor.execute(query, (usr_id, usr_id))
     data = cursor.fetchall()
     return data
 
