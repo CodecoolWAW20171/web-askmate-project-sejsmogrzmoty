@@ -46,8 +46,14 @@
         <p class="data">{{ question.submission_time }}</p>
 
         <p class="label">user</p>
+        {% if question.mate_id != None %}
+        <a class=mate_name href="{{ url_for('show_mate', mate_id=question.mate_id) }}">
+            {{ question.username|e }}
+        </a>
+        {% else %}
         <p class="data">{{ question.username|e }}</p>
-        
+        {% endif %}
+
         <p class="label">views</p>
         <p class="data">{{ question.view_number }}</p>
         <br>
