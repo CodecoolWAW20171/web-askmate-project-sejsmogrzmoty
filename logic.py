@@ -367,6 +367,14 @@ def mark_accepted_answer(qstn_id, accepted_answer_id):
         where=(QSTN_ID, '=', (qstn_id,)))
 
 
+def change_rep_acc_answ(answ_id):
+    persistence.update_increment_query(
+        table=ANSW_TABLE,
+        column=ANSW_REP,
+        value=15,
+        where=(ANSW_ID, '=', (answ_id,)))
+
+
 # Views & Rep
 # ########################################################################
 def increase_view_counter(qstn_id):

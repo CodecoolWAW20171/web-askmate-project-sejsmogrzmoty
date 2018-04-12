@@ -249,10 +249,9 @@ def mark_accepted(qstn_id):
 
     accepted_answer_id = request.form['accepted_answer_id']
     logic.mark_accepted_answer(qstn_id, accepted_answer_id)
-    logic.change_rep_answ(accepted_answer_id, 15)
+    logic.change_rep_acc_answ(accepted_answer_id)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
-
 
 
 # Modify comment database
