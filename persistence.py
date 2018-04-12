@@ -465,6 +465,7 @@ def get_users_rep(cursor):
                     LEFT JOIN question ON question.mate_id=mate.id
                     LEFT JOIN answer ON answer.mate_id=mate.id
                     GROUP BY mate.id
+                    ORDER BY mate.username
                     """)
     
     cursor.execute(query)
