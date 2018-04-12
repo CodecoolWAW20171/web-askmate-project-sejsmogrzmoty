@@ -344,7 +344,7 @@
     }
 
     /* ---------- Title cell --------------------------- */
-    .data-table .question a {
+    .data-table .question a, .mate_name {
         color: #2774CC;
         font-size: 1.1em;
         font-weight: 600;
