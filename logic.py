@@ -133,7 +133,7 @@ def get_comments_to_question_and_answers(qstn_id, answ_ids):
                 ]
     else:
         where = (CMNT_QSTN_ID, '=', (qstn_id,))
-    
+
     comments = persistence.select_query(
         table=CMNT_TABLE,
         columns=cols,
@@ -146,9 +146,10 @@ def get_comments_to_question_and_answers(qstn_id, answ_ids):
     util.switch_null_to_default(comments, CMNT_DEFAULTS)
     return comments
 
+
 def get_all_mates():
     return persistence.get_all_mates()
-    
+
 
 def get_users():
     users = persistence.select_query(
@@ -164,6 +165,18 @@ def get_user(usr_id):
     util.convert_time_to_string(user, USR_STIME)
     util.switch_null_to_default(user, USR_DEFAULTS)
     return user
+
+
+def get_user_questions(usr_id):
+    return persistence.get_user_questions(usr_id)
+
+
+def get_user_answers(usr_id):
+    return persistence.get_user_answers(usr_id)
+
+
+def get_user_comments(usr_id):
+    return persistence.get_user_comments(usr_id)
 
 
 # Add functions
@@ -260,7 +273,7 @@ def change_rep_qstn(qstn_id, rep_val):
         rep_val = int(rep_val)*5
     else:
         rep_val = int(rep_val)*-2
-    
+
     persistence.update_increment_query(
         table=QSTN_TABLE,
         column=QSTN_REP,
@@ -273,7 +286,7 @@ def change_rep_answ(answ_id, rep_val):
         rep_val = int(rep_val)*10
     else:
         rep_val = int(rep_val)*-2
-    
+
     persistence.update_increment_query(
         table=ANSW_TABLE,
         column=ANSW_REP,
