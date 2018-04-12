@@ -718,3 +718,10 @@
         margin: 0;
         padding: 0.5em;
     }
+
+/* ------------------------------ Mate page ------------------------------- */
+
+    .profile_img img {
+        height: 250px;
+        width: 250px;
+    }
