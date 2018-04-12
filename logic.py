@@ -117,7 +117,7 @@ def get_all_questions(limit=None, order_by=None):
         limit=limit
     )
     util.convert_time_to_string(questions, QSTN_STIME)
-    util.switch_null_to_default(questions, QSTN_DEFAULTS, (QSTN_MATE, QSTN_A_ANSW))
+    util.switch_null_to_default(questions, QSTN_DEFAULTS, (QSTN_MATE, QSTN_A_ANSW, QSTN_REP))
     return questions
 
 
@@ -135,7 +135,7 @@ def get_question(qstn_id):
         groups=group_by
     )
     util.convert_time_to_string(question, QSTN_STIME)
-    util.switch_null_to_default(question, QSTN_DEFAULTS, (QSTN_MATE, QSTN_A_ANSW))
+    util.switch_null_to_default(question, QSTN_DEFAULTS, (QSTN_MATE, QSTN_A_ANSW, QSTN_REP))
     if question:
         return question[0]
     return None
@@ -146,7 +146,7 @@ def get_answer(answ_id):
         ANSW_TABLE, '*',
         where=(ANSW_ID, '=', (answ_id,)))
     util.convert_time_to_string(answer, ANSW_STIME)
-    util.switch_null_to_default(answer, ANSW_DEFAULTS, (ANSW_MATE,))
+    util.switch_null_to_default(answer, ANSW_DEFAULTS, (ANSW_MATE, ANSW_REP))
     if answer:
         return answer[0]
     return None
