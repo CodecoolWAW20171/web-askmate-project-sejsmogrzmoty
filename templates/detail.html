@@ -35,7 +35,7 @@
                         <input type="hidden" name="id" value="{{ comment.id }}">
                         <button type="submit" class="action-btn-comment"><i class="fas fa-edit"></i></button>
                     </form>
-                    <p class="submission">Edited: {{ comment.edited_count|e }} | {{ comment.submission_time|e }}</p>
+                    <p class="submission">Edited: {{ comment.edited_count|e }} | {{ comment.submission_time|e }} | {{ comment.username|e }}</p>
                 </div>
             </div>
             {% endif %}
@@ -44,10 +44,12 @@
     <div class="side-right">
         <p class="label">asked</p>
         <p class="data">{{ question.submission_time }}</p>
+
+        <p class="label">user</p>
+        <p class="data">{{ question.username|e }}</p>
         
         <p class="label">views</p>
         <p class="data">{{ question.view_number }}</p>
-
         <br>
         <form action="{{ url_for('edit_question') }}" method="post">
             <button type="submit" name="id" value="{{ question.id }}">
@@ -59,7 +61,7 @@
 <hr>
 <div class="container">
     <div class="mid2">
-        <h3>{{ question.answers_number|default(0) }} Answers</h3>
+        <h3>{{ answers[0].answers_number|default(0) if answers[0] else 0 }} Answers</h3>
     </div>
     <div class="side-right">
         <form action="{{ url_for('post_answer', qstn_id=question.id) }}">
@@ -82,7 +84,7 @@
             {% for line in answer.message.splitlines() %}
             <p>{{ line|e }}</p>
             {% endfor %}
-            {% if question.image %}
+            {% if answer.image %}
             <img src="{{ answer.image }}" class="post-image" alt="">
             {% endif %}
             <br>
@@ -99,7 +101,7 @@
                             <input type="hidden" name="id" value="{{ comment.id }}">
                             <button type="submit" class="action-btn-comment"><i class="fas fa-edit"></i></button>
                         </form>
-                        <p class="submission">Edited: {{ comment.edited_count|e }} | {{ comment.submission_time|e }}</p>
+                        <p class="submission">Edited:{{ comment.edited_count|e }} | {{ comment.submission_time|e }} | {{ comment.username|e }}</p>
                     </div>
                 </div>
                 {% endif %}
@@ -107,8 +109,11 @@
         </div>
         <div class="side-right">
             <p class="label">answered</p>
-            <p class="data">{{ answer.submission_time }}</p>
+            <p class="data">{{ answer.submission_time|e }}</p>
             
+            <p class="label">user</p>
+            <p class="data">{{ answer.username|e }}</p>
+
             <br>
             <form action="{{ url_for('edit_answer') }}" method="post">
                 <input type="hidden" name="question_id" value="{{ question.id }}">

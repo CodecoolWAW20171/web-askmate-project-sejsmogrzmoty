@@ -346,6 +346,13 @@
         font-weight: 600;
     }
 
+    .data-table .mate_name {
+        color: #2774CC;
+        font-size: 1.1em;
+        font-weight: 600;
+        text-align: left;
+        padding-left: 2em;
+    }
     /* ---------- Actions cell ------------------------- */
     .data-table .actions {
         text-align: center;

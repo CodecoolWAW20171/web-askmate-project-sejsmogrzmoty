@@ -71,8 +71,9 @@ def ask_question():
     # Displays a page with a form to be filled with the new question
 
     question = logic.QSTN_DEFAULTS
+    mates = logic.get_users_ids()
 
-    return render_template('q_form.html', form_type="new", question=question)
+    return render_template('q_form.html', form_type="new", question=question, mates=mates)
 
 
 # Post answer
@@ -87,8 +88,9 @@ def post_answer(qstn_id):
     if question is None:
         abort(404)
     answer = logic.ANSW_DEFAULTS
+    mates = logic.get_users_ids()
 
-    return render_template('ans_form.html', form_type='new', answer=answer, question=question)
+    return render_template('ans_form.html', form_type='new', answer=answer, question=question, mates=mates)
 
 
 # About
@@ -125,8 +127,9 @@ def edit_question():
 
     qstn_id = int(request.form['id'])
     question = logic.get_question(qstn_id)
+    mates = logic.get_users_ids()
 
-    return render_template('q_form.html', form_type="edit", question=question)
+    return render_template('q_form.html', form_type="edit", question=question, mates=mates)
 
 
 # Delete question
@@ -173,8 +176,9 @@ def edit_answer():
     qstn_id = int(request.form['question_id'])
     answer = logic.get_answer(answ_id)
     question = logic.get_question(qstn_id)
+    mates = logic.get_users_ids()
 
-    return render_template('ans_form.html', form_type="edit", answer=answer, question=question)
+    return render_template('ans_form.html', form_type="edit", answer=answer, question=question, mates=mates)
 
 
 # Delete answer
@@ -221,6 +225,7 @@ def vote_question(qstn_id):
 
     vote = request.form['vote']
     logic.vote_question(qstn_id, vote)
+    logic.change_rep_qstn(qstn_id, vote)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
@@ -232,6 +237,7 @@ def vote_answer(answ_id):
     answer = logic.get_answer(answ_id)
     qstn_id = answer['question_id']
     logic.vote_answer(answ_id, vote)
+    logic.change_rep_answ(answ_id, vote)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
@@ -278,8 +284,9 @@ def post_comment_to_question(qstn_id):
     if question is None:
         abort(404)
     comment = logic.CMNT_DEFAULTS
+    mates = logic.get_users_ids()
 
-    return render_template('cmnt_q_form.html', form_type='new', comment=comment, question=question)
+    return render_template('cmnt_q_form.html', form_type='new', comment=comment, question=question, mates=mates)
 
 
 @app.route('/answer/<int:answ_id>/new-comment')
@@ -292,8 +299,9 @@ def post_comment_to_answer(answ_id):
     if answer is None:
         abort(404)
     comment = logic.CMNT_DEFAULTS
+    mates = logic.get_users_ids()
 
-    return render_template('cmnt_a_form.html', form_type='new', comment=comment, answer=answer)
+    return render_template('cmnt_a_form.html', form_type='new', comment=comment, answer=answer, mates=mates)
 
 
 @app.route('/question/<int:qstn_id>/edit-comment', methods=['POST'])
@@ -304,8 +312,9 @@ def edit_question_comment(qstn_id):
     comment = logic.get_comment(cmnt_id)
     if question is None or comment is None:
         abort(404)
+    mates = logic.get_users_ids()
 
-    return render_template('cmnt_q_form.html', form_type='edit', comment=comment, question=question)
+    return render_template('cmnt_q_form.html', form_type='edit', comment=comment, question=question, mates=mates)
 
 
 @app.route('/answer/<int:answ_id>/edit-comment', methods=['POST'])
@@ -316,8 +325,9 @@ def edit_answer_comment(answ_id):
     comment = logic.get_comment(cmnt_id)
     if answer is None or comment is None:
         abort(404)
+    mates = logic.get_users_ids()
 
-    return render_template('cmnt_a_form.html', form_type='edit', comment=comment, answer=answer)
+    return render_template('cmnt_a_form.html', form_type='edit', comment=comment, answer=answer, mates=mates)
 
 
 @app.route('/<int:cmnt_id>/delete-comment-answer', methods=['POST'])
@@ -340,16 +350,30 @@ def delete_comment_question(cmnt_id):
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
-# User database
+# <------------------------------ ____ --------------------------------------->
+
+
+# Mate database
 # ########################################################################
-@app.route('/mates', methods=['POST'])
+@app.route('/mates')
 def mates_list():
-    pass
+    mates = logic.get_users_with_rep()
+
+    return render_template('mates_list.html', mates=mates)
 
 
-@app.route('/mates/<int:mate_id>', methods=['POST'])
+@app.route('/mates/<int:mate_id>')
 def show_mate(mate_id):
-    pass
+    mate = logic.get_user(mate_id)
+    questions = logic.get_user_questions(mate_id)
+    answers = logic.get_user_answers(mate_id)
+    comments = logic.get_user_comments(mate_id)
+
+    return render_template('mate.html',
+                           mate=mate,
+                           questions=questions,
+                           answers=answers,
+                           comments=comments)
 
 
 # Run server

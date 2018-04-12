@@ -12,21 +12,21 @@ QSTN_TAG_TABLE = 'question_tag'
 MATE_TABLE = 'mate'
 
 # ----- Column names -------------
-QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image")
-ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image")
-CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count")
+QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id", "reputation")
+ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id",  "reputation")
+CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count", "mate_id")
 USR_HEADERS = ("id", "username", "registration_time", "profile_pic", "reputation")
 
 # ----- Column name variables ----
-QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG = QSTN_HEADERS
-ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG = ANSW_HEADERS
-CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT = CMNT_HEADERS
+QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG, QSTN_MATE, QSTN_REP = QSTN_HEADERS
+ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG, ANSW_MATE, ANSW_REP = ANSW_HEADERS
+CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT, CMNT_MATE = CMNT_HEADERS
 USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = USR_HEADERS
 
 # ----- Default values -----------
-QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0}
-ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": 0}
-CMNT_DEFAULTS = {"message": "", "mate_id": 0}
+QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0, "username": "Anonymous"}
+ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": 0, "username": "Anonymous"}
+CMNT_DEFAULTS = {"message": "", "question_id": "", "answer_id": "", "mate_id": 0, "username": "Anonymous"}
 USR_DEFAULTS = {"profile_pic": "", "reputation": ""}
 
 # ----- Constants ----------------
@@ -57,11 +57,23 @@ def get_all_questions(limit=None, order_by=None):
 
 
 def get_question(qstn_id):
-    questions = get_all_questions()
-    for i in questions:
-        if i['id'] == qstn_id:
-            question = questions[questions.index(i)]
-            return question
+    cols = [(QSTN_TABLE, header) for header in QSTN_HEADERS]
+    cols.append('username')
+    join_on_cols = [(QSTN_TABLE, QSTN_MATE), (USR_TABLE, USR_ID)]
+    group_by = [(QSTN_TABLE, QSTN_ID), (USR_TABLE, USR_ID)]
+    where = ((QSTN_TABLE, QSTN_ID), '=', (qstn_id,))
+    question = persistence.select_query(
+        table=QSTN_TABLE,
+        columns=cols,
+        join_params=(USR_TABLE, join_on_cols, 'LEFT'),
+        where=where,
+        groups=group_by
+    )
+    util.convert_time_to_string(question, QSTN_STIME)
+    util.switch_null_to_default(question, QSTN_DEFAULTS)
+    if question:
+        return question[0]
+    return None
 
 
 def get_answer(answ_id):
@@ -76,13 +88,23 @@ def get_answer(answ_id):
 
 
 def get_answers_to_question(qstn_id):
+    cols = [(ANSW_TABLE, header) for header in ANSW_HEADERS]
+    cols.append('username')
+    cols.append(('COUNT', (ANSW_TABLE, ANSW_QSTN_ID), 'answers_number'))
+    join_on_cols = [(ANSW_TABLE, ANSW_MATE), (USR_TABLE, USR_ID)]
+    group_by = [(ANSW_TABLE, ANSW_ID), 'username']
     answers = persistence.select_query(
-        ANSW_TABLE, '*',
+        table=ANSW_TABLE,
+        columns=cols,
+        join_params=(USR_TABLE, join_on_cols, 'LEFT'),
         where=(ANSW_QSTN_ID, '=', (qstn_id,)),
+        groups=group_by,
         orders=[(ANSW_STIME, DESC)]
     )
     util.convert_time_to_string(answers, ANSW_STIME)
     util.switch_null_to_default(answers, ANSW_DEFAULTS)
+    if answers:
+        answers[0]['answers_number'] = len(answers)
     return answers
 
 
@@ -98,6 +120,11 @@ def get_comment(cmnt_id):
 
 
 def get_comments_to_question_and_answers(qstn_id, answ_ids):
+    cols = [(CMNT_TABLE, header) for header in CMNT_HEADERS]
+    cols.append('username')
+    join_on_cols = [(CMNT_TABLE, CMNT_MATE), (USR_TABLE, USR_ID)]
+    group_by = [(CMNT_TABLE, CMNT_ID), (USR_TABLE, USR_ID)]
+
     if answ_ids:
         where = [
                  [(CMNT_QSTN_ID, '=', (qstn_id,)),
@@ -106,15 +133,22 @@ def get_comments_to_question_and_answers(qstn_id, answ_ids):
                 ]
     else:
         where = (CMNT_QSTN_ID, '=', (qstn_id,))
-
+    
     comments = persistence.select_query(
-        CMNT_TABLE, '*',
+        table=CMNT_TABLE,
+        columns=cols,
+        join_params=(USR_TABLE, join_on_cols, 'LEFT'),
         where=where,
-        orders=[(CMNT_STIME, DESC)])
+        groups=group_by,
+        orders=[(CMNT_STIME, DESC)]
+    )
     util.convert_time_to_string(comments, CMNT_STIME)
-    util.switch_null_to_default(comments, CMNT_DEFAULTS, (CMNT_ANSW_ID, CMNT_QSTN_ID))
+    util.switch_null_to_default(comments, CMNT_DEFAULTS)
     return comments
 
+def get_all_mates():
+    return persistence.get_all_mates()
+    
 
 def get_users():
     users = persistence.select_query(
@@ -221,7 +255,33 @@ def vote_answer(answ_id, up_or_down):
         where=(ANSW_ID, '=', (answ_id,)))
 
 
-# Views
+def change_rep_qstn(qstn_id, rep_val):
+    if int(rep_val) > 0:
+        rep_val = int(rep_val)*5
+    else:
+        rep_val = int(rep_val)*-2
+    
+    persistence.update_increment_query(
+        table=QSTN_TABLE,
+        column=QSTN_REP,
+        value=rep_val,
+        where=(QSTN_ID, '=', (qstn_id,)))
+
+
+def change_rep_answ(answ_id, rep_val):
+    if int(rep_val) > 0:
+        rep_val = int(rep_val)*10
+    else:
+        rep_val = int(rep_val)*-2
+    
+    persistence.update_increment_query(
+        table=ANSW_TABLE,
+        column=ANSW_REP,
+        value=rep_val,
+        where=(ANSW_ID, '=', (answ_id,)))
+
+
+# Views & Rep
 # ########################################################################
 def increase_view_counter(qstn_id):
     persistence.update_increment_query(
@@ -256,3 +316,8 @@ def get_most_viewed_question():
 def show_searched_questions(search_phrase):
     questions = persistence.search_questions(search_phrase)
     return questions
+
+
+def get_users_with_rep():
+    users = persistence.get_users_rep()
+    return users

@@ -441,7 +441,7 @@ def get_questions_list(cursor):
         LEFT JOIN {answ_table} ON {qstn_id}={answ_id}
         LEFT JOIN {usr_table} ON {qstn_usr_id}={qstn_id}
         GROUP BY {qstn_id}, {usr_name}
-        ORDER BY {qstn_stime} DESC
+        ORDER BY {qstn_stime} DESC;
     """).format(
         qstn_table=sql.Identifier(QSTN_TABLE),
         answ_table=sql.Identifier(ANSW_TABLE),
@@ -467,7 +467,7 @@ def get_question(cursor, qstn_id):
         LEFT JOIN {answ_table} ON {qstn_id}={answ_id}
         LEFT JOIN {usr_table} ON {qstn_usr_id}={usr_id}
         WHERE {qstn_id}=%s
-        GROUP BY {qstn_id}, {usr_name}
+        GROUP BY {qstn_id}, {usr_name};
     """).format(
         qstn_table=sql.Identifier(QSTN_TABLE),
         answ_table=sql.Identifier(ANSW_TABLE),
@@ -490,7 +490,7 @@ def get_answer(cursor, answ_id):
         SELECT {answ_table}.*, {usr_name}
         FROM {answ_table}
         LEFT JOIN {usr_table} ON {answ_usr_id}={usr_id}
-        WHERE {answ_id}=%s
+        WHERE {answ_id}=%s;
     """).format(
         answ_table=sql.Identifier(ANSW_TABLE),
         usr_table=sql.Identifier(USR_TABLE),
@@ -511,7 +511,7 @@ def get_answers_to_question(cursor, qstn_id):
         SELECT {answ_table}.*, {usr_name}
         FROM {answ_table}
         LEFT JOIN {usr_table} ON {answ_usr_id}={usr_id}
-        WHERE {answ_qstn_id}=%s
+        WHERE {answ_qstn_id}=%s;
     """).format(
         answ_table=sql.Identifier(ANSW_TABLE),
         usr_table=sql.Identifier(USR_TABLE),
@@ -526,10 +526,98 @@ def get_answers_to_question(cursor, qstn_id):
     return data
 
 
+@db_connection.connection_handler
+def get_comment(cursor, cmnt_id):
+    query = sql.SQL("""
+        SELECT {cmnt_table}.*, {usr_name}
+        FROM {cmnt_table}
+        LEFT JOIN {usr_table} ON {cmnt_usr_id}={usr_id}
+        WHERE {cmnt_id}=%s;
+    """).format(
+        cmnt_table=sql.Identifier(CMNT_TABLE),
+        usr_table=sql.Identifier(USR_TABLE),
+        cmnt_id=CMNT_ID,
+        cmnt_usr_id=CMNT_USR_ID,
+        usr_id=USR_ID,
+        usr_name=USR_NAME,
+    )
+    print(query.as_string(cursor))
+    cursor.execute(query, (cmnt_id,))
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_comments(cursor, qstn_id, answ_ids):
+    query = sql.SQL("""
+        SELECT {cmnt_table}.*, {usr_name}
+        FROM {cmnt_table}
+        LEFT JOIN {usr_table} ON {cmnt_usr_id}={usr_id}
+        WHERE ({cmnt_qstn_id}={qstn_id_val}) OR ({cmnt_answ_id} IN ({answ_ids_val}));
+    """).format(
+        cmnt_table=sql.Identifier(CMNT_TABLE),
+        usr_table=sql.Identifier(USR_TABLE),
+        cmnt_usr_id=CMNT_USR_ID,
+        usr_id=USR_ID,
+        usr_name=USR_NAME,
+        cmnt_qstn_id=CMNT_QSTN_ID,
+        cmnt_answ_id=CMNT_ANSW_ID,
+        qstn_id_val=sql.Placeholder(),
+        answ_ids_val=sql.SQL(', ').join(sql.Placeholder()*len(answ_ids)),
+    )
+    print(query.as_string(cursor))
+    cursor.execute(query, (qstn_id, *answ_ids))
+    data = cursor.fetchall()
+    return data
+
+
+
+
+def get_user_questions(cursor, usr_id):
+    query = """
+    SELECT question.*, COUNT(answer.id) AS answers_number
+    FROM question
+    JOIN answer ON answer.question_id=question.id
+    WHERE question.mate_id={usr_id}
+    GROUP BY question.id
+    """.format(usr_id=usr_id)
+
+
+def get_user_comments(cursor, usr_id):
+    query = """
+    SELECT question.*, COUNT(answer.id) AS answers_number
+    FROM question
+    JOIN answer ON answer.question_id=question.id
+    JOIN comment ON answer.question_id=question.id
+    WHERE comment.mate_id={usr_id}
+    GROUP BY question.id
+    """.format(usr_id=usr_id)
+
+
+def get_user_answers(cursor, usr_id):
+    query = """
+    SELECT question.*, COUNT(answer.id) AS answers_number
+    FROM question
+    JOIN answer ON answer.question_id=question.id
+    WHERE answer.mate_id={usr_id}
+    GROUP BY question.id
+    """.format(usr_id=usr_id)
+
+
+def get_users_rep(cursor):
+    query = sql.SQL("""
+                    SELECT mate.*,
+                    SUM(question.reputation + answer.reputation) AS rep
+                    FROM mate
+                    LEFT JOIN question ON question.mate_id=mate.id
+                    LEFT JOIN answer ON answer.mate_id=mate.id
+                    GROUP BY mate.id, mate.username
+                    """)
+
 
 if __name__ == "__main__":
     import ui
-    questions = get_question(1)
+    questions = get_comments(1, (1,2))
     ui.print_table(questions)
     print(questions)
     pass
