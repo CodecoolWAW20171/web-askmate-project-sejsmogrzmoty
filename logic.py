@@ -151,6 +151,12 @@ def get_all_mates():
     return persistence.get_all_mates()
 
 
+def get_users_ids():
+    users = persistence.select_query(
+        USR_TABLE, (USR_ID, USR_NAME))
+    return users
+
+
 def get_users():
     users = persistence.select_query(
         USR_TABLE, '*')
