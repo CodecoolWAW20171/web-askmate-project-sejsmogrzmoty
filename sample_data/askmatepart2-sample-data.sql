@@ -170,7 +170,7 @@ INSERT INTO mate VALUES (3, 'Pawelk4','2017-03-27 10:00:13', 'https://codecool.i
 
 SELECT pg_catalog.setval('mate_id_seq', 3, true);
 
-INSERT INTO question VALUES (0, '2017-04-28 08:29:00', 29, 7, 'How to make lists in Python?', 'I am totally new to this, any hints?', NULL, 0, NULL, NULL);
+INSERT INTO question VALUES (0, '2017-04-28 08:29:00', 29, 7, 'How to make lists in Python?', 'I am totally new to this, any hints?', NULL, 0);
 INSERT INTO question VALUES (1, '2017-04-29 09:19:00', 15, 9, 'Wordpress loading multiple jQuery Versions', 'I developed a plugin that uses the jquery booklet plugin (http://builtbywill.com/booklet/#/) this plugin binds a function to $ so I cann call $(".myBook").booklet();
 
 I could easy managing the loading order with wp_enqueue_script so first I load jquery then I load booklet so everything is fine.
@@ -179,13 +179,13 @@ BUT in my theme i also using jquery via webpack so the loading order is now foll
 
 jquery
 booklet
-app.js (bundled file with webpack, including jquery)', 'images/image1.png', NULL, 1, NULL);
+app.js (bundled file with webpack, including jquery)', 'images/image1.png', 1);
 INSERT INTO question VALUES (2, '2017-05-01 10:41:00', 1364, 57, 'Drawing canvas with an image picked with Cordova Camera Plugin', 'I''m getting an image from device and drawing a canvas with filters using Pixi JS. It works all well using computer to get an image. But when I''m on IOS, it throws errors such as cross origin issue, or that I''m trying to use an unknown format.
-', NULL, 2, NULL, NULL);
+', NULL, 2);
 
-INSERT INTO question VALUES (30, '2017-06-02 12:41:00', 201, -52, 'Is n-word offensive to all people with name begining with letter "n"?', '', NULL, 3, NULL, NULL);
-INSERT INTO question VALUES (31, '2017-06-04 05:41:00', 621, -200, 'if con is the opposite of pro, what is the opposite of progress', 'Regress', 'http://i0.kym-cdn.com/entries/icons/original/000/017/618/pepefroggie.jpg', NULL);
-INSERT INTO question VALUES (32, '2016-12-01 16:58:00', 1221, 80, 'Saying that the Easter Bunny does not orgasm with every egg laid is considered blasphemy and grounds for excommunication from the Church.', 'Weird fact: the Easter Bunny was the source of a significant amount of theological debate during the 1200''s, as Catholic philosophers debated why God would create a creature in a constant state of labor (and thus suffering). The Catholic Church ultimately resolved this question by declaring that the Easter Bunny orgasmed every time it laid it an egg (which it was doing constantly). This is now codified in Canon Law (the legal code of the Catholic Church and much of Europe in the pre-modern era) and saying that the Easter Bunny does not orgasm with every egg laid is considered blasphemy and grounds for excommunication from the Church.', NULL, 1, NULL, NULL);
+INSERT INTO question VALUES (30, '2017-06-02 12:41:00', 201, -52, 'Is n-word offensive to all people with name begining with letter "n"?', NULL, 3);
+INSERT INTO question VALUES (31, '2017-06-04 05:41:00', 621, -200, 'if con is the opposite of pro, what is the opposite of progress', 'Regress', 'http://i0.kym-cdn.com/entries/icons/original/000/017/618/pepefroggie.jpg', 0);
+INSERT INTO question VALUES (32, '2016-12-01 16:58:00', 1221, 80, 'Saying that the Easter Bunny does not orgasm with every egg laid is considered blasphemy and grounds for excommunication from the Church.', 'Weird fact: the Easter Bunny was the source of a significant amount of theological debate during the 1200''s, as Catholic philosophers debated why God would create a creature in a constant state of labor (and thus suffering). The Catholic Church ultimately resolved this question by declaring that the Easter Bunny orgasmed every time it laid it an egg (which it was doing constantly). This is now codified in Canon Law (the legal code of the Catholic Church and much of Europe in the pre-modern era) and saying that the Easter Bunny does not orgasm with every egg laid is considered blasphemy and grounds for excommunication from the Church.', NULL, 1);
 INSERT INTO question VALUES (33, '2016-02-01 06:14:00', 2201, 9, 'Daily Life', '-    wake up ☑
 -    check if rice dropped a new diss track ;) ☑
 -    he didnt ☑
@@ -193,21 +193,21 @@ INSERT INTO question VALUES (33, '2016-02-01 06:14:00', 2201, 9, 'Daily Life', '
 -    when my boy ricegum gon drop some h e a t ??? ☑
 -    play fortnite ☑
 -    get #1 victory and share it on sc story ☑
--    wait patiently for all the girls to reply to the story', NULL, 0, NULL, NULL);
+-    wait patiently for all the girls to reply to the story', NULL, 0);
 INSERT INTO question VALUES (34, '2014-10-21 12:54:00', 1846, 49, 'I commented on a logan paul video "So does Logan Paul have some kind of fetish for dead things﻿" And someone said shut up, and I replied with this', 'Wow, I mean wow, your comment has really enlightened me.
 The beautiful effort put into writing this comment is really expressed through the extremely subtle message that is hidden deep within it.
 After reading your comment, I immediately resigned from being a hater, and can proudly say I joined the logang. I can''t imagine the effort and countless hours you poured into that comment, and I must thank you for it, it has completely changed who I am as a person.
 I think you need to show your exquisite writing to Harvard because you could get a fully paid English scholarship with the Divine skill that you posses. I wish you luck with your wondrous career in English writing, and I hope to read multiple novels in the future written by none other than the person who turned my life around, karina ivonne riojas infante.
-Such a stupendous name as well m''lady. Well tips fedora thanks, and thanks again for helping me join the logang. #logangforlife﻿', NULL, 1, NULL, NULL);
+Such a stupendous name as well m''lady. Well tips fedora thanks, and thanks again for helping me join the logang. #logangforlife﻿', NULL, 1);
 INSERT INTO question VALUES (35, '2018-03-20 13:19:21', 63, 4, 'PyCharm doing a refactor on an ID not replacing it in associated CSS and JS files', 'I tried to perform a refactor on an element''s ID by highlighting it and right clicking to perform a refactor to rename it.
 However, all that PyCharm did was rename the element''s ID without searching for it in the other files associated in the project.
-Is there an option / plugin that I can use to be able to rename all times an ID is used in my JavaScript and CSS when I rename it in the HTML file with a refactor?', NULL, 2, NULL, NULL);
+Is there an option / plugin that I can use to be able to rename all times an ID is used in my JavaScript and CSS when I rename it in the HTML file with a refactor?', NULL, 2);
 INSERT INTO question VALUES (36, '2012-06-21 18:30:19', 25796, 69, 'Numpy: cartesian product of x and y array points into single array of 2D points', 'I have two numpy arrays that define the x and y axes of a grid. For example:
 x = numpy.array([1,2,3])
 y = numpy.array([4,5])
 I''d like to generate the Cartesian product of these arrays to generate:
 array([[1,4],[2,4],[3,4],[1,5],[2,5],[3,5]])
-In a way that''s not terribly inefficient since I need to do this many times in a loop. I''m assuming that converting them to a Python list and using itertools.product and back to a numpy array is not the most efficient form.', NULL, NULL);
+In a way that''s not terribly inefficient since I need to do this many times in a loop. I''m assuming that converting them to a Python list and using itertools.product and back to a numpy array is not the most efficient form.', NULL, 1);
 INSERT INTO question VALUES (37, '2018-03-27 10:05:45', 11085, 98, 'Remove ✅, 🔥, ✈ , ♛ and other such emojis/images/signs from Java string', 'I have some strings with all kinds of different emojis/images/signs in them. Not all the strings are in English. Some of them are in other non-Latin languages, for example:
 ▓ railway??
 → Cats and dogs
@@ -234,7 +234,7 @@ I tried to clean the signs using the EmojiParser library:
 String withoutEmojis = EmojiParser.removeAllEmojis(input);
 The problem is that EmojiParser is not able to removed the majority of the signs. The ♦ sign is the only one I found till now that it removed. Other signs such as ✪ ❉ ★ ✰ ❈ ❧ ✂ ❋ ⓡ ✿ ♛ 🔥 are not removed.
 
-Is there a way to remove all these signs from the input strings and keeping only the letters & punctuation in the different languages?', NULL, 3, NULL, NULL);
+Is there a way to remove all these signs from the input strings and keeping only the letters & punctuation in the different languages?', NULL, 3);
 INSERT INTO question VALUES (38, '2018-03-27 07:00:13', 1046, 16, 'Three lists zipped into list of dicts', 'Consider the following:
 >>> # list of length n
 >>> idx = [''a'', ''b'', ''c'', ''d'']
@@ -260,12 +260,12 @@ The closest I''ve got is something like this:
 Which if course has tuples as the values instead of dictionaries, and
 >>> dict(zip((''mkt_o'', ''mkt_c''), (1,2)))
 {''mkt_o'': 1, ''mkt_c'': 2}
-Which seems like it might be promising but again, fails to meet requirements.', NULL, 0, NULL, NULL);
+Which seems like it might be promising but again, fails to meet requirements.', NULL, 0);
 INSERT INTO question VALUES (39, '2018-03-24 21:37:00', 180, 12, 'Why is Haskell monadic bind left-associative?', 'The >>= and >> operators are both infixl 1. Why the left-associativity?
 In particular, I observe the equivalences:
 (do a; b; c ) == (a >> (b >> c))   -- Do desugaring
 (a >> b >> c) == ((a >> b) >> c)   -- Fixity definition
-So do is desugared differently to how the fixity definition naturally works, which is surprising.', NULL, 1, NULL, NULL);
+So do is desugared differently to how the fixity definition naturally works, which is surprising.', NULL, 1);
 INSERT INTO question VALUES (40, '2011-04-01 00:50:02', 297676, 472, 'Why is this program erroneously rejected by three C++ compilers?','I am having some difficulty compiling a C++ program that I''ve written.
 This program is very simple and, to the best of my knowledge, conforms to all the rules set forth in the C++ Standard. I''ve read over the entirety of ISO/IEC 14882:2003 twice to be sure.
 The program is as follows:
@@ -284,7 +284,7 @@ collect2: ld returned 1 exit status
 clang++: error: linker (via gcc) command failed with exit code 1 (use -v to see invocation)
 To be honest, I don''t really know what any of these error message mean.
 Many other C++ programs have source files with a .cpp extension, so I thought perhaps I needed to rename my file. I changed its name to helloworld.cpp, but that didn''t help. I think there is a very serious bug in Clang because when I tried using it to compile the renamed program, it flipped out, printed "84 warnings and 20 errors generated." and made my computer beep a lot!
-What have I done wrong here? Have I missed some critical part of the C++ Standard? Or are all three compilers really just so broken that they can''t compile this simple program?', 'https://i.stack.imgur.com/JQXWL.png', NULL);
+What have I done wrong here? Have I missed some critical part of the C++ Standard? Or are all three compilers really just so broken that they can''t compile this simple program?', 'https://i.stack.imgur.com/JQXWL.png', 1);
 
 SELECT pg_catalog.setval('question_id_seq', 40, true);
 
