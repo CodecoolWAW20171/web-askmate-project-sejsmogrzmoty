@@ -274,9 +274,11 @@ def add_new_answer(new_input):
 def add_new_comment(new_input):
     add_new(CMNT_TABLE, new_input, CMNT_STIME)
 
+
 def add_new_mate(new_input):
     add_new(MATE_TABLE, new_input, USR_STIME)
-    
+
+
 # Modify database
 # ########################################################################
 def modify(table, id_col_name, id_, modified_input):

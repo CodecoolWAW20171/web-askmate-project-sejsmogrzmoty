@@ -460,14 +460,14 @@ def get_users_rep(cursor):
     query = sql.SQL("""
                     SELECT mate.*,
                     (CASE WHEN SUM(qstn_rep) IS NULL THEN 0 ELSE SUM(qstn_rep) END +
-                     CASE WHEN SUM(answ_rep) IS NULL THEN 0 ELSE SUM(answ_rep) END) AS rep                   
+                     CASE WHEN SUM(answ_rep) IS NULL THEN 0 ELSE SUM(answ_rep) END) AS rep
                     FROM mate
                     LEFT JOIN question ON question.mate_id=mate.id
                     LEFT JOIN answer ON answer.mate_id=mate.id
                     GROUP BY mate.id
                     ORDER BY mate.username
                     """)
-    
+
     cursor.execute(query)
     data = cursor.fetchall()
     return data
@@ -478,7 +478,7 @@ def get_user_with_rep(cursor, usr_id):
     query = sql.SQL("""
                     SELECT mate.*,
                     (CASE WHEN SUM(qstn_rep) IS NULL THEN 0 ELSE SUM(qstn_rep) END +
-                     CASE WHEN SUM(answ_rep) IS NULL THEN 0 ELSE SUM(answ_rep) END) AS rep                   
+                     CASE WHEN SUM(answ_rep) IS NULL THEN 0 ELSE SUM(answ_rep) END) AS rep
                     FROM mate
                     LEFT JOIN question ON question.mate_id=mate.id
                     LEFT JOIN answer ON answer.mate_id=mate.id
