@@ -265,6 +265,11 @@
         font-size: 1em;
     }
 
+    .side-right a.mate_name {
+        color: #2774CC;
+        font-weight: 600;
+    }
+
     .mid2 {
         flex: 100%;
         padding: 0 0.5em;
@@ -344,7 +349,7 @@
     }
 
     /* ---------- Title cell --------------------------- */
-    .data-table .question a, .mate_name {
+    .data-table .question a {
         color: #2774CC;
         font-size: 1.1em;
         font-weight: 600;

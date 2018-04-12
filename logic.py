@@ -328,10 +328,11 @@ def vote_answer(answ_id, up_or_down):
 
 
 def change_rep_qstn(qstn_id, rep_val):
-    if int(rep_val) > 0:
-        rep_val = int(rep_val)*5
+    rep_val = int(rep_val)
+    if rep_val > 0:
+        rep_val *= 5
     else:
-        rep_val = int(rep_val)*-2
+        rep_val -= 2
 
     persistence.update_increment_query(
         table=QSTN_TABLE,
@@ -341,10 +342,11 @@ def change_rep_qstn(qstn_id, rep_val):
 
 
 def change_rep_answ(answ_id, rep_val):
-    if int(rep_val) > 0:
-        rep_val = int(rep_val)*10
+    rep_val = int(rep_val)
+    if rep_val > 0:
+        rep_val *= 10
     else:
-        rep_val = int(rep_val)*-2
+        rep_val -= 2
 
     persistence.update_increment_query(
         table=ANSW_TABLE,
