@@ -40,7 +40,8 @@ CMNT_HEADERS = ("id",
 USR_HEADERS = ("id",
                "username",
                "submission_time",
-               "image")
+               "image",
+               "rep")
 
 # ----- Column name variables ----
 (
@@ -78,7 +79,8 @@ USR_HEADERS = ("id",
     USR_ID,
     USR_NAME,
     USR_STIME,
-    USR_PIC
+    USR_PIC,
+    USR_REP
 ) = USR_HEADERS
 
 # ----- Default values -----------
@@ -92,7 +94,8 @@ ANSW_DEFAULTS = {ANSW_MSG: "",
 CMNT_DEFAULTS = {CMNT_MSG: "",
                  USR_NAME: "Anonymous"}
 USR_DEFAULTS = {USR_NAME: "",
-                USR_PIC: ""}
+                USR_PIC: "",
+                USR_REP: 0}
 
 # ----- Constants ----------------
 ASC = 'ASC'
@@ -359,7 +362,7 @@ def change_rep_acc_answ(answ_id):
     persistence.update_increment_query(
         table=ANSW_TABLE,
         column=ANSW_REP,
-        value=15,
+        value=int(15),
         where=(ANSW_ID, '=', (answ_id,)))
 
 
