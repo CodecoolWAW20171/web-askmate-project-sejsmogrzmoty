@@ -467,7 +467,8 @@ def get_users_rep(cursor):
                         FROM mate
                         LEFT JOIN answer ON answer.mate_id=mate.id
                         GROUP BY mate.id) AS tan
-                        GROUP BY username, id, submission_time;
+                        GROUP BY username, id, submission_time
+                        ORDER BY username;
                     """)
     cursor.execute(query)
     data = cursor.fetchall()
