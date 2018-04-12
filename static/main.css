@@ -344,7 +344,7 @@
     }
 
     /* ---------- Title cell --------------------------- */
-    .data-table .question a {
+    .data-table .question a, .mate_name {
         color: #2774CC;
         font-size: 1.1em;
         font-weight: 600;
@@ -420,6 +420,24 @@
         font-size: 1.5em;
         line-height: 1em;
         padding: 0;
+    }
+
+    .accepted {
+        margin-top: 0.5em;
+    }
+    
+    .accepted i {
+        color: #6B9023;
+    }
+    
+    .to-accept {
+        margin-top: 0.5em;
+        opacity: 0.1;
+        transition: 0.3s;
+    }
+
+    .to-accept:hover {
+        opacity: 0.8;
     }
 
     /* ---------- Confirm button ---------- */
