@@ -200,32 +200,10 @@ def get_comments_to_question_and_answers(qstn_id, answ_ids):
     return comments
 
 
-def get_all_mates():
-    return persistence.get_all_mates()
-
-
 def get_users_ids():
     users = persistence.select_query(
         USR_TABLE, (USR_ID, USR_NAME))
     return users
-
-
-def get_users():
-    users = persistence.select_query(
-        USR_TABLE, '*')
-    util.convert_time_to_string(users, USR_STIME)
-    return users
-
-
-def get_user(usr_id):
-    user = persistence.select_query(
-        USR_TABLE, '*',
-        where=(USR_ID, '=', (usr_id,)))
-    util.convert_time_to_string(user, USR_STIME)
-    util.switch_null_to_default(user, USR_DEFAULTS)
-    if user:
-        return user[0]
-    return None
 
 
 def get_user_questions(usr_id):
@@ -238,6 +216,20 @@ def get_user_answers(usr_id):
 
 def get_user_comments(usr_id):
     return persistence.get_user_comments(usr_id)
+
+
+def get_users_with_rep():
+    users = persistence.get_users_rep()
+    return users
+
+
+def get_user_with_rep(usr_id):
+    user = persistence.get_user_with_rep(usr_id)
+    util.convert_time_to_string(user, USR_STIME)
+    util.switch_null_to_default(user, USR_DEFAULTS)
+    if user:
+        return user[0]
+    return None
 
 
 # Add functions
@@ -325,6 +317,8 @@ def vote_question(qstn_id, up_or_down):
         where=(QSTN_ID, '=', (qstn_id,)))
 
 
+# Reputation
+# ########################################################################
 def vote_answer(answ_id, up_or_down):
     persistence.update_increment_query(
         table=ANSW_TABLE,
@@ -359,14 +353,6 @@ def change_rep_answ(answ_id, rep_val):
         where=(ANSW_ID, '=', (answ_id,)))
 
 
-def mark_accepted_answer(qstn_id, accepted_answer_id):
-    persistence.update_query(
-        table=QSTN_TABLE,
-        columns=(QSTN_A_ANSW,),
-        values=(accepted_answer_id,),
-        where=(QSTN_ID, '=', (qstn_id,)))
-
-
 def change_rep_acc_answ(answ_id):
     persistence.update_increment_query(
         table=ANSW_TABLE,
@@ -375,7 +361,17 @@ def change_rep_acc_answ(answ_id):
         where=(ANSW_ID, '=', (answ_id,)))
 
 
-# Views & Rep
+# Accepted answer
+# ########################################################################
+def mark_accepted_answer(qstn_id, accepted_answer_id):
+    persistence.update_query(
+        table=QSTN_TABLE,
+        columns=(QSTN_A_ANSW,),
+        values=(accepted_answer_id,),
+        where=(QSTN_ID, '=', (qstn_id,)))
+
+
+# Views
 # ########################################################################
 def increase_view_counter(qstn_id):
     persistence.update_increment_query(
@@ -410,15 +406,3 @@ def get_most_viewed_question():
 def show_searched_questions(search_phrase):
     questions = persistence.search_questions(search_phrase)
     return questions
-
-
-def get_users_with_rep():
-    users = persistence.get_users_rep()
-    return users
-
-
-def get_user_with_rep(usr_id):
-    user = persistence.get_user_with_rep(usr_id)
-    util.convert_time_to_string(user, USR_STIME)
-    util.switch_null_to_default(user, USR_DEFAULTS)
-    return user[0]
