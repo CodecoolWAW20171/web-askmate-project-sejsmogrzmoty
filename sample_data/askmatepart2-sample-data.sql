@@ -446,8 +446,8 @@ This International Standard does not specify
 — the mechanism by which C programs are invoked for use by a data-processing system;
 — the mechanism by which input data are transformed for use by a C program;
 So, again, the treatment of source files is something you need to find in your compilers documentation.', NULL, NULL);
-INSERT INTO answer VALUES (17, '2011-04-01 05:35:37', 576, 40, 'Originally from Overv @ reddit.', 'https://i.imgur.com/QlGpd.gif', NULL, 1);
-INSERT INTO answer VALUES (18, '2011-04-01 13:55:50', 320, 40, 'Try this way:', 'https://i.stack.imgur.com/OjB9Z.png', NULL, 2);
+INSERT INTO answer VALUES (17, '2011-04-01 05:35:37', 576, 40, 'Originally from Overv @ reddit.', 'https://i.imgur.com/QlGpd.gif', 1);
+INSERT INTO answer VALUES (18, '2011-04-01 13:55:50', 320, 40, 'Try this way:', 'https://i.stack.imgur.com/OjB9Z.png', 2);
 INSERT INTO answer VALUES (19, '2011-04-01 01:03:33', 212, 40, 'Your < and  >, ( and  ), { and  } don''t seem to match very well; Try drawing them better.', NULL, NULL);
 
 SELECT pg_catalog.setval('answer_id_seq', 19, true);
