@@ -442,8 +442,8 @@ def get_user_comments(cursor, usr_id):
     query = sql.SQL("""
                     SELECT question.*, COUNT(answer.id) AS answers_number
                     FROM question
-                    JOIN answer ON answer.question_id=question.id
-                    JOIN comment ON answer.question_id=question.id
+                    LEFT JOIN answer ON answer.question_id=question.id
+                    JOIN comment ON comment.question_id=question.id
                     WHERE comment.mate_id=%s
                     GROUP BY question.id
     """)
@@ -455,7 +455,7 @@ def get_user_comments(cursor, usr_id):
 @db_connection.connection_handler
 def get_users_rep(cursor):
     query = sql.SQL("""
-                    SELECT id, username, submission_time, SUM(rep) AS rep FROM 
+                    SELECT id, username, submission_time, SUM(rep) AS rep FROM
                         (SELECT mate.*,
                         SUM(qstn_rep) AS rep
                         FROM mate
@@ -477,7 +477,7 @@ def get_users_rep(cursor):
 @db_connection.connection_handler
 def get_user_with_rep(cursor, usr_id):
     query = sql.SQL("""
-                    SELECT id, username, submission_time, image, SUM(rep) AS rep FROM 
+                    SELECT id, username, submission_time, image, SUM(rep) AS rep FROM
                         (SELECT mate.*,
                         SUM(qstn_rep) AS rep
                         FROM mate
