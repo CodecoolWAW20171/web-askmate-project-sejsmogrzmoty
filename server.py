@@ -364,7 +364,7 @@ def mates_list():
 
 @app.route('/mates/<int:mate_id>')
 def show_mate(mate_id):
-    mate = logic.get_user(mate_id)
+    mate = logic.get_user_with_rep(mate_id)
     questions = logic.get_user_questions(mate_id)
     answers = logic.get_user_answers(mate_id)
     comments = logic.get_user_comments(mate_id)

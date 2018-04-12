@@ -341,3 +341,10 @@ def show_searched_questions(search_phrase):
 def get_users_with_rep():
     users = persistence.get_users_rep()
     return users
+
+
+def get_user_with_rep(usr_id):
+    user = persistence.get_user_with_rep(usr_id)
+    util.convert_time_to_string(user, USR_STIME)
+    util.switch_null_to_default(user, USR_DEFAULTS)
+    return user[0]

@@ -411,46 +411,46 @@ def search_questions(cursor, search_phrase):
 
 @db_connection.connection_handler
 def get_user_questions(cursor, usr_id):
-    query = """
-    SELECT question.*, COUNT(answer.id) AS answers_number
-    FROM question
-    JOIN answer ON answer.question_id=question.id
-    WHERE question.mate_id={usr_id}
-    GROUP BY question.id
-    """.format(usr_id=usr_id)
+    query = sql.SQL("""
+                    SELECT question.*, COUNT(answer.id) AS answers_number
+                    FROM question
+                    JOIN answer ON answer.question_id=question.id
+                    WHERE question.mate_id=%s
+                    GROUP BY question.id
+                    """)
 
-    cursor.execute(query,)
+    cursor.execute(query, (usr_id,))
     data = cursor.fetchall()
     return data
 
 
 @db_connection.connection_handler
 def get_user_answers(cursor, usr_id):
-    query = """
-    SELECT question.*, COUNT(answer.id) AS answers_number
-    FROM question
-    JOIN answer ON answer.question_id=question.id
-    WHERE answer.mate_id={usr_id}
-    GROUP BY question.id
-    """.format(usr_id=usr_id)
+    query = sql.SQL("""
+                    SELECT question.*, COUNT(answer.id) AS answers_number
+                    FROM question
+                    JOIN answer ON answer.question_id=question.id
+                    WHERE answer.mate_id=%s
+                    GROUP BY question.id
+                    """)
 
-    cursor.execute(query,)
+    cursor.execute(query, (usr_id,))
     data = cursor.fetchall()
     return data
 
 
 @db_connection.connection_handler
 def get_user_comments(cursor, usr_id):
-    query = """
-    SELECT question.*, COUNT(answer.id) AS answers_number
-    FROM question
-    JOIN answer ON answer.question_id=question.id
-    JOIN comment ON answer.question_id=question.id
-    WHERE comment.mate_id={usr_id}
-    GROUP BY question.id
-    """.format(usr_id=usr_id)
+    query = sql.SQL("""
+                    SELECT question.*, COUNT(answer.id) AS answers_number
+                    FROM question
+                    JOIN answer ON answer.question_id=question.id
+                    JOIN comment ON answer.question_id=question.id
+                    WHERE comment.mate_id=%s
+                    GROUP BY question.id
+    """)
 
-    cursor.execute(query,)
+    cursor.execute(query, (usr_id,))
     data = cursor.fetchall()
     return data
 
@@ -468,5 +468,22 @@ def get_users_rep(cursor):
                     """)
     
     cursor.execute(query)
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_user_with_rep(cursor, usr_id):
+    query = sql.SQL("""
+                    SELECT mate.*,
+                    (CASE WHEN SUM(qstn_rep) IS NULL THEN 0 ELSE SUM(qstn_rep) END +
+                     CASE WHEN SUM(answ_rep) IS NULL THEN 0 ELSE SUM(answ_rep) END) AS rep                   
+                    FROM mate
+                    LEFT JOIN question ON question.mate_id=mate.id
+                    LEFT JOIN answer ON answer.mate_id=mate.id
+                    WHERE mate.id = %s
+                    GROUP BY mate.id
+                    """)
+    cursor.execute(query, (usr_id,))
     data = cursor.fetchall()
     return data
