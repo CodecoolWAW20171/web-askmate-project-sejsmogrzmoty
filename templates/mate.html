@@ -5,15 +5,15 @@
     <h2>{{ mate.username }}</h2>
     <hr>
     <div class="profile_img">
-        {% if mate.profile_pic != '' %}
-            <img src="{{ mate.profile_pic }}">
+        {% if mate.image != '' %}
+            <img src="{{ mate.image }}">
         {% else %}
             <img src="{{ url_for('static', filename='images/profile.png') }}">
         {% endif %}
     </div>
     <div class="profile_data">
         <p>
-            Registration date: {{ mate.registration_time }}<br>
+            Registration date: {{ mate.submisson_time }}<br>
             Reputation: {{ mate.reputation }}
         </p>
     </div>

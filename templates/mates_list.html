@@ -24,16 +24,16 @@
                             
                         </td>
                         <td class="number">
-                            {{- mate.registration_time }}
+                            {{- mate.submisson_time }}
                         </td>
                         <td class="number">
-                            {{- mate.rep }}
+                            {{- mate.reputation }}
                         </td>
                     </tr>
                 {% endfor %}
                 <tr>
                     <td colspan="3" class="last-add">
-                        <a href="{{ url_for('ask_question') }}">
+                        <a href="{{ url_for('add_new_mate') }}">
                             <i class="fas fa-plus-circle"></i>
                         </a>
                     </td>

@@ -19,9 +19,7 @@ ALTER TABLE IF EXISTS ONLY public.question DROP CONSTRAINT IF EXISTS fk_mate_id 
 ALTER TABLE IF EXISTS ONLY public.answer DROP CONSTRAINT IF EXISTS fk_mate_id CASCADE;
 ALTER TABLE IF EXISTS ONLY public.comment DROP CONSTRAINT IF EXISTS fk_mate_id CASCADE;
 ALTER TABLE IF EXISTS ONLY public.mate DROP CONSTRAINT IF EXISTS pk_mate_id CASCADE;
-
-
-
+ALTER TABLE IF EXISTS ONLY public.question DROP CONSTRAINT IF EXISTS fk_accepted_answer_id CASCADE;
 
 
 DROP TABLE IF EXISTS public.question;
@@ -35,7 +33,8 @@ CREATE TABLE question (
     message text,
     image text,
     mate_id integer,
-    reputation integer DEFAULT 0
+    reputation integer DEFAULT 0,
+    accepted_answer_id integer
 );
 
 DROP TABLE IF EXISTS public.answer;
@@ -84,8 +83,8 @@ DROP SEQUENCE IF EXISTS public.mate_id_seq;
 CREATE TABLE mate (
     id serial NOT NULL,
     username text,
-    registration_time timestamp without time zone,
-    profile_pic text,
+    submisson_time timestamp without time zone,
+    image text,
     reputation integer DEFAULT 0
 );
 
@@ -110,6 +109,7 @@ ALTER TABLE ONLY tag
 ALTER TABLE ONLY mate
     ADD CONSTRAINT pk_mate_id PRIMARY KEY (id);
 
+
 ALTER TABLE public.comment
   ADD CONSTRAINT fk_answer_id FOREIGN KEY (answer_id)
       REFERENCES public.answer (id) MATCH SIMPLE
@@ -119,7 +119,6 @@ ALTER TABLE public.answer
   ADD CONSTRAINT pk_question_id FOREIGN KEY (question_id)
       REFERENCES public.question (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE CASCADE;
-
 
 ALTER TABLE public.question_tag
   ADD CONSTRAINT fk_question_id FOREIGN KEY (question_id)
@@ -136,7 +135,6 @@ ALTER TABLE public.question_tag
       REFERENCES public.tag (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE CASCADE;
 
-
 ALTER TABLE public.answer
   ADD CONSTRAINT pk_mate_id FOREIGN KEY (mate_id)
       REFERENCES public.mate (id) MATCH SIMPLE
@@ -152,6 +150,13 @@ ALTER TABLE public.comment
       REFERENCES public.mate (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE CASCADE;
 
+ALTER TABLE public.question
+  ADD CONSTRAINT pk_accepted_answer_id FOREIGN KEY (accepted_answer_id)
+      REFERENCES public.answer (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE;
+
+
+
 
 GRANT INSERT, SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO askmate_user;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO askmate_user;
@@ -160,6 +165,7 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO askmate_user;
 INSERT INTO mate VALUES (0, 'piczka','2017-03-27 07:00:13', NULL, 0);
 INSERT INTO mate VALUES (1, 'pipka','2016-03-27 07:00:13', NULL, 0);
 
+SELECT pg_catalog.setval('mate_id_seq', 1, true);
 
 INSERT INTO question VALUES (0, '2017-04-28 08:29:00', 29, 7, 'How to make lists in Python?', 'I am totally new to this, any hints?', NULL, NULL);
 INSERT INTO question VALUES (1, '2017-04-29 09:19:00', 15, 9, 'Wordpress loading multiple jQuery Versions', 'I developed a plugin that uses the jquery booklet plugin (http://builtbywill.com/booklet/#/) this plugin binds a function to $ so I cann call $(".myBook").booklet();
