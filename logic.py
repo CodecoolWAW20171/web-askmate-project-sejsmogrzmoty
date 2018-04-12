@@ -223,6 +223,7 @@ def get_user_comments(usr_id):
 
 def get_users_with_rep():
     users = persistence.get_users_rep()
+    util.switch_null_to_default(users, USR_DEFAULTS)
     return users
 
 

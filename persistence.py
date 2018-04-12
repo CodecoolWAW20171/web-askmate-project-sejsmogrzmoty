@@ -443,7 +443,7 @@ def get_user_comments(cursor, usr_id):
                     SELECT question.*, COUNT(answer.id) AS answers_number
                     FROM question
                     JOIN answer ON answer.question_id=question.id
-                    JOIN comment ON answer.question_id=question.id
+                    JOIN comment ON comment.question_id=question.id
                     WHERE comment.mate_id=%s
                     GROUP BY question.id
     """)
