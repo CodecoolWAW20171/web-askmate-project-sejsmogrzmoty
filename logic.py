@@ -24,9 +24,9 @@ CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT, CMNT
 USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = USR_HEADERS
 
 # ----- Default values -----------
-QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": 0, "username": "Anonymous"}
-ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": 0, "username": "Anonymous"}
-CMNT_DEFAULTS = {"message": "", "question_id": "", "answer_id": "", "mate_id": 0, "username": "Anonymous"}
+QSTN_DEFAULTS = {"title": "", "message": "", "image": "", "mate_id": None, "username": "Anonymous", "accepted_answer_id": None}
+ANSW_DEFAULTS = {"message": "", "image": "", "mate_id": None, "username": "Anonymous"}
+CMNT_DEFAULTS = {"message": "", "question_id": "", "answer_id": "", "mate_id": None, "username": "Anonymous"}
 USR_DEFAULTS = {"profile_pic": "", "reputation": ""}
 
 # ----- Constants ----------------
@@ -56,6 +56,13 @@ def get_all_questions(limit=None, order_by=None):
     return questions
 
 
+def get_questions_list():
+    questions = persistence.get_questions_list()
+    util.convert_time_to_string(questions, persistence.QSTN_STIME)
+    util.switch_null_to_default(questions, QSTN_DEFAULTS)
+    return questions
+
+
 def get_question(qstn_id):
     cols = [(QSTN_TABLE, header) for header in QSTN_HEADERS]
     cols.append('username')
@@ -69,6 +76,7 @@ def get_question(qstn_id):
         where=where,
         groups=group_by
     )
+    question = persistence.get_question(qstn_id)
     util.convert_time_to_string(question, QSTN_STIME)
     util.switch_null_to_default(question, QSTN_DEFAULTS)
     if question:

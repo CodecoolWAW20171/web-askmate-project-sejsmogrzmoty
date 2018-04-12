@@ -31,7 +31,7 @@ def list_questions():
 
     # Display a page with questions list
 
-    questions = logic.get_all_questions()
+    questions = logic.get_questions_list()
 
     return render_template('list.html', questions=questions)
 

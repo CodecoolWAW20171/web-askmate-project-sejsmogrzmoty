@@ -18,19 +18,19 @@ TAG_TABLE = 'tag'
 QSTN_TAG_TABLE = 'question_tag'
 
 # ----- Column names -------------
-QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id")
-ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id")
+QSTN_HEADERS = ("id", "submission_time", "view_number", "vote_number", "title", "message", "image", "mate_id", "reputation")
+ANSW_HEADERS = ("id", "submission_time", "vote_number", "question_id", "message", "image", "mate_id", "reputation")
 CMNT_HEADERS = ("id", "question_id", "answer_id", "message", "submission_time", "edited_count", "mate_id")
-USR_HEADERS = ("id", "username", "registration_time", "profile_pic", "reputation")
+USR_HEADERS = ("id", "username", "registration_time", "profile_pic")
 
 # ----- Column name variables ----
-QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG, QSTN_USR_ID = (
+QSTN_ID, QSTN_STIME, QSTN_VIEWN, QSTN_VOTEN, QSTN_TITLE, QSTN_MSG, QSTN_IMG, QSTN_USR_ID, QSTN_REP = (
     sql.SQL('.').join(list(map(sql.Identifier, (QSTN_TABLE, header)))) for header in QSTN_HEADERS)
-ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG, ANSW_USR_ID = (
+ANSW_ID, ANSW_STIME, ANSW_VOTEN, ANSW_QSTN_ID, ANSW_MSG, ANSW_IMG, ANSW_USR_ID, ANSW_REP = (
     sql.SQL('.').join(list(map(sql.Identifier, (ANSW_TABLE, header)))) for header in ANSW_HEADERS)
 CMNT_ID, CMNT_QSTN_ID, CMNT_ANSW_ID, CMNT_MSG, CMNT_STIME, CMNT_EDIT_COUNT, CMNT_USR_ID = (
     sql.SQL('.').join(list(map(sql.Identifier, (CMNT_TABLE, header)))) for header in CMNT_HEADERS)
-USR_ID, USR_NAME, USR_STIME, USR_PIC, USR_REP = (
+USR_ID, USR_NAME, USR_STIME, USR_PIC = (
     sql.SQL('.').join(list(map(sql.Identifier, (USR_TABLE, header)))) for header in USR_HEADERS)
 
 
@@ -438,7 +438,7 @@ def get_questions_list(cursor):
     query = sql.SQL("""
         SELECT {columns}, COUNT({answ_id}) AS answers_number, {usr_name}
         FROM {qstn_table}
-        LEFT JOIN {answ_table} ON {qstn_id}={answ_id}
+        LEFT JOIN {answ_table} ON {qstn_id}={answ_qstn_id}
         LEFT JOIN {usr_table} ON {qstn_usr_id}={qstn_id}
         GROUP BY {qstn_id}, {usr_name}
         ORDER BY {qstn_stime} DESC;
@@ -449,11 +449,11 @@ def get_questions_list(cursor):
         columns=sql.SQL(', ').join([QSTN_ID, QSTN_VIEWN, QSTN_VOTEN, QSTN_STIME, QSTN_TITLE]),
         qstn_id=QSTN_ID,
         answ_id=ANSW_ID,
+        answ_qstn_id=ANSW_QSTN_ID,
         qstn_usr_id=QSTN_USR_ID,
         qstn_stime=QSTN_STIME,
         usr_name=USR_NAME,
     )
-    print(query.as_string(cursor))
     cursor.execute(query)
     data = cursor.fetchall()
     return data
@@ -464,7 +464,7 @@ def get_question(cursor, qstn_id):
     query = sql.SQL("""
         SELECT {qstn_table}.*, COUNT({answ_id}) AS answers_number, {usr_name}
         FROM {qstn_table}
-        LEFT JOIN {answ_table} ON {qstn_id}={answ_id}
+        LEFT JOIN {answ_table} ON {qstn_id}={answ_qstn_id}
         LEFT JOIN {usr_table} ON {qstn_usr_id}={usr_id}
         WHERE {qstn_id}=%s
         GROUP BY {qstn_id}, {usr_name};
@@ -474,11 +474,11 @@ def get_question(cursor, qstn_id):
         usr_table=sql.Identifier(USR_TABLE),
         qstn_id=QSTN_ID,
         answ_id=ANSW_ID,
+        answ_qstn_id=ANSW_QSTN_ID,
         usr_id=USR_ID,
         qstn_usr_id=QSTN_USR_ID,
         usr_name=USR_NAME,
     )
-    print(query.as_string(cursor))
     cursor.execute(query, (qstn_id,))
     data = cursor.fetchall()
     return data
@@ -499,7 +499,6 @@ def get_answer(cursor, answ_id):
         usr_id=USR_ID,
         usr_name=USR_NAME,
     )
-    print(query.as_string(cursor))
     cursor.execute(query, (answ_id,))
     data = cursor.fetchall()
     return data
@@ -520,7 +519,6 @@ def get_answers_to_question(cursor, qstn_id):
         usr_id=USR_ID,
         usr_name=USR_NAME,
     )
-    print(query.as_string(cursor))
     cursor.execute(query, (qstn_id,))
     data = cursor.fetchall()
     return data
@@ -541,7 +539,6 @@ def get_comment(cursor, cmnt_id):
         usr_id=USR_ID,
         usr_name=USR_NAME,
     )
-    print(query.as_string(cursor))
     cursor.execute(query, (cmnt_id,))
     data = cursor.fetchall()
     return data
@@ -565,59 +562,167 @@ def get_comments(cursor, qstn_id, answ_ids):
         qstn_id_val=sql.Placeholder(),
         answ_ids_val=sql.SQL(', ').join(sql.Placeholder()*len(answ_ids)),
     )
-    print(query.as_string(cursor))
     cursor.execute(query, (qstn_id, *answ_ids))
     data = cursor.fetchall()
     return data
 
 
-
-
-def get_user_questions(cursor, usr_id):
-    query = """
-    SELECT question.*, COUNT(answer.id) AS answers_number
-    FROM question
-    JOIN answer ON answer.question_id=question.id
-    WHERE question.mate_id={usr_id}
-    GROUP BY question.id
-    """.format(usr_id=usr_id)
-
-
-def get_user_comments(cursor, usr_id):
-    query = """
-    SELECT question.*, COUNT(answer.id) AS answers_number
-    FROM question
-    JOIN answer ON answer.question_id=question.id
-    JOIN comment ON answer.question_id=question.id
-    WHERE comment.mate_id={usr_id}
-    GROUP BY question.id
-    """.format(usr_id=usr_id)
-
-
-def get_user_answers(cursor, usr_id):
-    query = """
-    SELECT question.*, COUNT(answer.id) AS answers_number
-    FROM question
-    JOIN answer ON answer.question_id=question.id
-    WHERE answer.mate_id={usr_id}
-    GROUP BY question.id
-    """.format(usr_id=usr_id)
-
-
-def get_users_rep(cursor):
+# Users
+# ########################################################################
+@db_connection.connection_handler
+def get_users_ids(cursor):
     query = sql.SQL("""
-                    SELECT mate.*,
-                    SUM(question.reputation + answer.reputation) AS rep
-                    FROM mate
-                    LEFT JOIN question ON question.mate_id=mate.id
-                    LEFT JOIN answer ON answer.mate_id=mate.id
-                    GROUP BY mate.id, mate.username
-                    """)
+        SELECT {usr_id}, {usr_name}
+        FROM {usr_table};
+    """).format(
+        usr_table=sql.Identifier(USR_TABLE),
+        usr_id=USR_ID,
+        usr_name=USR_NAME,
+    )
+    cursor.execute(query)
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_users(cursor):
+    query = sql.SQL("""
+        SELECT {usr_table}.*, SUM({qstn_rep}+{answ_rep}) AS reputation
+        FROM {usr_table}
+        LEFT JOIN {qstn_table} ON {usr_id}={qstn_usr_id}
+        LEFT JOIN {answ_table} ON {usr_id}={answ_usr_id}
+        GROUP BY {usr_id};
+    """).format(
+        qstn_table=sql.Identifier(QSTN_TABLE),
+        answ_table=sql.Identifier(ANSW_TABLE),
+        usr_table=sql.Identifier(USR_TABLE),
+        qstn_rep=QSTN_REP,
+        answ_rep=ANSW_REP,
+        usr_id=USR_ID,
+        qstn_usr_id=QSTN_USR_ID,
+        answ_usr_id=ANSW_USR_ID,
+    )
+    cursor.execute(query)
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_user(cursor, usr_id):
+    query = sql.SQL("""
+        SELECT {usr_table}.*
+        FROM {usr_table}
+        WHERE {usr_id}=%s;
+    """).format(
+        usr_table=sql.Identifier(USR_TABLE),
+        usr_id=USR_ID,
+    )
+    cursor.execute(query, (usr_id,))
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_user_questions(cursor, usr_id):
+    query = sql.SQL("""
+        SELECT {columns}, COUNT({answ_id}) AS answers_number
+        FROM {qstn_table}
+        LEFT JOIN {answ_table} ON {qstn_id}={answ_qstn_id}
+        WHERE {qstn_usr_id}=%s
+        GROUP BY {qstn_id}
+        ORDER BY {qstn_stime} DESC;
+    """).format(
+        qstn_table=sql.Identifier(QSTN_TABLE),
+        answ_table=sql.Identifier(ANSW_TABLE),
+        columns=sql.SQL(', ').join([QSTN_ID, QSTN_VIEWN, QSTN_VOTEN, QSTN_STIME, QSTN_TITLE]),
+        qstn_id=QSTN_ID,
+        answ_id=ANSW_ID,        
+        answ_qstn_id=ANSW_QSTN_ID,
+        qstn_usr_id=QSTN_USR_ID,
+        qstn_stime=QSTN_STIME,
+    )
+    cursor.execute(query, (usr_id,))
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_user_answers(cursor, usr_id):
+    query = sql.SQL("""
+        SELECT {columns}, COUNT({answ_id}) AS answers_number
+        FROM {qstn_table}
+        JOIN {answ_table} ON {qstn_id}={answ_qstn_id}
+        WHERE {answ_usr_id}=%s
+        GROUP BY {qstn_id}
+        ORDER BY {qstn_stime} DESC;
+    """).format(
+        qstn_table=sql.Identifier(QSTN_TABLE),
+        answ_table=sql.Identifier(ANSW_TABLE),
+        columns=sql.SQL(', ').join([QSTN_ID, QSTN_VIEWN, QSTN_VOTEN, QSTN_STIME, QSTN_TITLE]),
+        qstn_id=QSTN_ID,
+        answ_id=ANSW_ID,
+        answ_qstn_id=ANSW_QSTN_ID,
+        qstn_stime=QSTN_STIME,
+    )
+    cursor.execute(query, (usr_id,))
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_user_comments(cursor, usr_id):
+    query = sql.SQL("""
+        SELECT {columns}, COUNT({answ_id}) AS answers_number
+        FROM {qstn_table}
+        LEFT JOIN {answ_table} ON {qstn_id}={answ_qstn_id}
+        JOIN {cmnt_table} ON {qstn_id}={cmnt_qstn_id}
+        WHERE {cmnt_usr_id}=%s
+        GROUP BY {qstn_id}
+        ORDER BY {qstn_stime} DESC;
+    """).format(
+        qstn_table=sql.Identifier(QSTN_TABLE),
+        answ_table=sql.Identifier(ANSW_TABLE),
+        cmnt_table=sql.Identifier(CMNT_TABLE),
+        columns=sql.SQL(', ').join([QSTN_ID, QSTN_VIEWN, QSTN_VOTEN, QSTN_STIME, QSTN_TITLE]),
+        qstn_id=QSTN_ID,
+        answ_id=ANSW_ID,
+        answ_qstn_id=ANSW_QSTN_ID,
+        cmnt_qstn_id=CMNT_QSTN_ID,
+        cmnt_usr_id=CMNT_USR_ID,
+        qstn_stime=QSTN_STIME,
+    )
+    cursor.execute(query, (usr_id,))
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_user_rep(cursor, usr_id):
+    query = sql.SQL("""
+        SELECT {usr_id}, SUM({qstn_rep}+{answ_rep}) AS reputation
+        FROM {usr_table}
+        LEFT JOIN {qstn_table} ON {usr_id}={qstn_usr_id}
+        LEFT JOIN {answ_table} ON {usr_id}={answ_usr_id}
+        WHERE {usr_id}=%s
+        GROUP BY {usr_id};
+    """).format(
+        qstn_table=sql.Identifier(QSTN_TABLE),
+        answ_table=sql.Identifier(ANSW_TABLE),
+        usr_table=sql.Identifier(USR_TABLE),
+        qstn_rep=QSTN_REP,
+        answ_rep=ANSW_REP,
+        usr_id=USR_ID,
+        qstn_usr_id=QSTN_USR_ID,
+        answ_usr_id=ANSW_USR_ID,
+    )
+    cursor.execute(query, (usr_id,))
+    data = cursor.fetchall()
+    return data
 
 
 if __name__ == "__main__":
     import ui
-    questions = get_comments(1, (1,2))
+    questions = get_users()
     ui.print_table(questions)
     print(questions)
     pass
