@@ -371,7 +371,7 @@ def change_rep_acc_answ(answ_id):
     persistence.update_increment_query(
         table=ANSW_TABLE,
         column=ANSW_REP,
-        value=15,
+        value=int(15),
         where=(ANSW_ID, '=', (answ_id,)))
 
 
