@@ -418,7 +418,6 @@ def get_user_questions(cursor, usr_id):
                     WHERE question.mate_id=%s
                     GROUP BY question.id
                     """)
-
     cursor.execute(query, (usr_id,))
     data = cursor.fetchall()
     return data
@@ -433,7 +432,6 @@ def get_user_answers(cursor, usr_id):
                     WHERE answer.mate_id=%s
                     GROUP BY question.id
                     """)
-
     cursor.execute(query, (usr_id,))
     data = cursor.fetchall()
     return data
@@ -449,7 +447,6 @@ def get_user_comments(cursor, usr_id):
                     WHERE comment.mate_id=%s
                     GROUP BY question.id
     """)
-
     cursor.execute(query, (usr_id,))
     data = cursor.fetchall()
     return data
@@ -466,7 +463,6 @@ def get_users_rep(cursor):
                     LEFT JOIN answer ON answer.mate_id=mate.id
                     GROUP BY mate.id
                     """)
-    
     cursor.execute(query)
     data = cursor.fetchall()
     return data
@@ -485,5 +481,21 @@ def get_user_with_rep(cursor, usr_id):
                     GROUP BY mate.id
                     """)
     cursor.execute(query, (usr_id,))
+    data = cursor.fetchall()
+    return data
+
+
+@db_connection.connection_handler
+def get_answers_to_question(cursor, qstn_id):
+    query = sql.SQL("""
+        SELECT answer.*, mate.username
+        FROM answer
+        LEFT JOIN mate ON answer.mate_id=mate.id
+        LEFT JOIN question ON question.id=answer.question_id
+        WHERE answer.question_id = %s
+        GROUP BY answer.id, question.accepted_answer_id, mate.username
+        ORDER BY answer.id IN (question.accepted_answer_id) DESC, answer.vote_number DESC;
+    """)
+    cursor.execute(query, (qstn_id,))
     data = cursor.fetchall()
     return data

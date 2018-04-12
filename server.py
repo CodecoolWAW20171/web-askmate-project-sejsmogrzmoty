@@ -242,6 +242,18 @@ def vote_answer(answ_id):
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
+# Accepted answer
+# ########################################################################
+@app.route('/question/<int:qstn_id>/accepted', methods=['POST'])
+def mark_accepted(qstn_id):
+
+    accepted_answer_id = request.form['accepted_answer_id']
+    logic.mark_accepted_answer(qstn_id, accepted_answer_id)
+
+    return redirect(url_for('show_question', qstn_id=qstn_id))
+
+
+
 # Modify comment database
 # ########################################################################
 @app.route('/question/save-comment', methods=['POST'])
