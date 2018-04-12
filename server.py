@@ -24,7 +24,7 @@ def route_index():
     return render_template('index.html', top_questions=top_questions)
 
 
-# List
+# List questions
 # ########################################################################
 @app.route('/list')
 def list_questions():
@@ -43,6 +43,7 @@ def list_searched_questions():
 
     search_phrase = request.args.get('search')
     questions = logic.show_searched_questions(search_phrase)
+
     return render_template('list_searched.html', search_phrase=search_phrase, questions=questions)
 
 
@@ -60,6 +61,7 @@ def show_question(qstn_id):
     answers = logic.get_answers_to_question(qstn_id)
     answers_ids = [answer[logic.ANSW_ID] for answer in answers]
     comments = logic.get_comments_to_question_and_answers(qstn_id, answers_ids)
+
     return render_template('detail.html', question=question, answers=answers, comments=comments)
 
 
@@ -91,6 +93,38 @@ def post_answer(qstn_id):
     mates = logic.get_users_ids()
 
     return render_template('ans_form.html', form_type='new', answer=answer, question=question, mates=mates)
+
+
+# Post comments to answers & questions
+# ########################################################################
+@app.route('/question/<int:qstn_id>/new-comment')
+def post_comment_to_question(qstn_id):
+
+    # Displays a page with a question and a form to be filled with
+    # the new comment
+
+    question = logic.get_question(qstn_id)
+    if question is None:
+        abort(404)
+    comment = logic.CMNT_DEFAULTS
+    mates = logic.get_users_ids()
+
+    return render_template('cmnt_q_form.html', form_type='new', comment=comment, question=question, mates=mates)
+
+
+@app.route('/answer/<int:answ_id>/new-comment')
+def post_comment_to_answer(answ_id):
+
+    # Displays a page with a question and form to be filled with
+    # the new comment
+
+    answer = logic.get_answer(answ_id)
+    if answer is None:
+        abort(404)
+    comment = logic.CMNT_DEFAULTS
+    mates = logic.get_users_ids()
+
+    return render_template('cmnt_a_form.html', form_type='new', comment=comment, answer=answer, mates=mates)
 
 
 # About
@@ -286,36 +320,8 @@ def modify_comment_to_answer(cmnt_id=None):
     return redirect(url_for('show_question', qstn_id=qstn_id))
 
 
-@app.route('/question/<int:qstn_id>/new-comment')
-def post_comment_to_question(qstn_id):
-
-    # Displays a page with a question and a form to be filled with
-    # the new comment
-
-    question = logic.get_question(qstn_id)
-    if question is None:
-        abort(404)
-    comment = logic.CMNT_DEFAULTS
-    mates = logic.get_users_ids()
-
-    return render_template('cmnt_q_form.html', form_type='new', comment=comment, question=question, mates=mates)
-
-
-@app.route('/answer/<int:answ_id>/new-comment')
-def post_comment_to_answer(answ_id):
-
-    # Displays a page with a question and form to be filled with
-    # the new comment
-
-    answer = logic.get_answer(answ_id)
-    if answer is None:
-        abort(404)
-    comment = logic.CMNT_DEFAULTS
-    mates = logic.get_users_ids()
-
-    return render_template('cmnt_a_form.html', form_type='new', comment=comment, answer=answer, mates=mates)
-
-
+# Edit comments
+# ########################################################################
 @app.route('/question/<int:qstn_id>/edit-comment', methods=['POST'])
 def edit_question_comment(qstn_id):
 
@@ -342,6 +348,8 @@ def edit_answer_comment(answ_id):
     return render_template('cmnt_a_form.html', form_type='edit', comment=comment, answer=answer, mates=mates)
 
 
+# Delete comments
+# ########################################################################
 @app.route('/<int:cmnt_id>/delete-comment-answer', methods=['POST'])
 def delete_comment_answer(cmnt_id):
 
@@ -365,7 +373,7 @@ def delete_comment_question(cmnt_id):
 # <------------------------------ ____ --------------------------------------->
 
 
-# Mate database
+# Mates list
 # ########################################################################
 @app.route('/mates')
 def mates_list():
@@ -374,6 +382,8 @@ def mates_list():
     return render_template('mates_list.html', mates=mates)
 
 
+# Show single mate
+# ########################################################################
 @app.route('/mates/<int:mate_id>')
 def show_mate(mate_id):
     mate = logic.get_user_with_rep(mate_id)
@@ -388,6 +398,8 @@ def show_mate(mate_id):
                            comments=comments)
 
 
+# New mate
+# ########################################################################
 @app.route('/registration')
 def register():
     return render_template('new-mate.html')
@@ -402,7 +414,9 @@ def add_new_mate():
         logic.add_new_mate(mate)
     except logic.persistence.db_connection.psycopg2.IntegrityError:
         return render_template('new-mate.html', err=True)
+
     return redirect(url_for('mates_list'))
+
 
 # Run server
 # ########################################################################
