@@ -226,6 +226,7 @@ def delete_answer():
 
     answ_id = int(request.form['id'])
     qstn_id = int(request.form['question_id'])
+    logic.mark_accepted_answer(qstn_id, None)
     logic.delete_answer(answ_id)
 
     return redirect(url_for('show_question', qstn_id=qstn_id))
